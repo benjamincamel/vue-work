@@ -237,7 +237,7 @@
           </el-form>
         </el-tab-pane>
       </el-tabs>
-      <div>
+      <div class="btn-area">
         <el-button type="primary" @click="updateData()" style="margin-left: 180px">修改信息</el-button>
       </div>
     </div>
