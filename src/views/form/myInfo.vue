@@ -238,7 +238,7 @@
         </el-tab-pane>
       </el-tabs>
       <div>
-        <el-button type="primary" @click="updateData()">修改信息</el-button>
+        <el-button type="primary" @click="updateData()" style="margin-left: 180px">修改信息</el-button>
       </div>
     </div>
   </div>
@@ -392,3 +392,8 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+</style>
+
