@@ -370,7 +370,7 @@ export default {
   created() {
     this.getData(
       'personal/getPersonalAllInfoById',
-      { personalInfoId: 21 },
+      { personalInfoId: 23 },
       data => {
         console.log(this.personalAll.personalInfo.birthday)
         this.personalAll.personalInfo = data.personalInfo
