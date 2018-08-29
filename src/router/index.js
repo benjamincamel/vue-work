@@ -102,9 +102,9 @@ export const asyncRouterMap = [
   },
   // 入离职管理
   {
-    path: '/table',
+    path: '/person',
     component: Layout,
-    redirect: '/table/complex-table',
+    redirect: '/person/entry-manage',
     name: '入离职管理',
     meta: {
       title: '入离职管理',
@@ -113,21 +113,21 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'complex-table',
+        path: 'entry-manage',
         name: '入职员工管理',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/person/entry-manage'),
         meta: { title: '入职员工管理', icon: 'fa fa-user-plus', roles: ',12,' }
       },
       {
-        path: 'complex-table1',
+        path: 'turn-manage',
         name: '转正员工查询',
-        component: () => import('@/views/table/complex-table1'),
+        component: () => import('@/views/person/turn-manage'),
         meta: { title: '转正员工查询', icon: 'fa fa-user', roles: ',24,' }
       },
       {
-        path: 'complex-table2',
+        path: 'leave-manage',
         name: '离职员工查询',
-        component: () => import('@/views/table/complex-table2'),
+        component: () => import('@/views/person/leave-manage'),
         meta: { title: '离职员工查询', icon: 'fa fa-user-times', roles: ',25,' }
       }
     ]

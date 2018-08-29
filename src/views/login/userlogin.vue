@@ -80,7 +80,7 @@ export default {
     getData(fun) {
       // 数据请求方法
       this.showLoading = true
-      this.ax.post('logintest', this.loginForm).then(response => {
+      this.ax.post('login', this.loginForm).then(response => {
         this.showLoading = false
         if (response.data.code === 0) {
           // 请求成功
