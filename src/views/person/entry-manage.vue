@@ -128,6 +128,6 @@ export default {
   beforeRouteLeave(to, from, next) {
     this.tools.setLocal(this.$route.name, 'filters', this.filters)
     next()
-  },
+  }
 }
 </script>
