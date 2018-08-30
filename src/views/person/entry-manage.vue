@@ -4,23 +4,19 @@
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
           <i class="el-icon-date"></i> 入离职管理</el-breadcrumb-item>
-        <el-breadcrumb-item>入职管理</el-breadcrumb-item>
+        <el-breadcrumb-item>入职员工管理</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <!--工具条-->
-    <!-- <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true" :model="filters" @submit.native.prevent>
-        <el-form-item>
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" v-on:click="getUsers">查询</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col> -->
+    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+      <el-col :sm="12" :lg="8">
+        <span class="form-fonts">姓名：</span>
+        <el-input v-model="filters.name" placeholder="请输入名字" size="medium"></el-input>
+      </el-col>
+      <el-col :sm="12" :lg="8">
+        <el-button type="primary" @click="handleFilters">查询</el-button>
+      </el-col>
+    </el-col>
 
     <!--列表-->
     <el-table :data="personalAllList" highlight-current-row ref="table" style="width: 100%;">
@@ -40,15 +36,15 @@
       </el-table-column>
       <el-table-column prop="identityCard" label="身份证号" min-width="160">
       </el-table-column>
-      <el-table-column label="操作" width="160">
+      <!-- <el-table-column label="操作" width="160">
         <template slot-scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <!--分页-->
-    <el-pagination @current-change="currentChange" :page-size="personalAllList.pageSize" layout="total, prev, pager, next, jumper" :total="count">
+    <el-pagination @current-change="currentChange" :page-size="1" layout="total, prev, pager, next, jumper" :total="count">
     </el-pagination>
     <!--分页-->
   </section>
@@ -58,9 +54,14 @@
 export default {
   data() {
     return {
-      personalAllList: null,
-      count: null,
-      showLoading: false
+      filters: {
+        name: '',
+        pageIndex: 0, // 查询页页码
+        pageSize: 1 // 查询条数
+      },
+      count: 0, // 数据总共数量 多少条
+      showLoading: true, // 是否展示table的loading状态
+      personalAllList: null
     }
   },
   methods: {
@@ -85,11 +86,22 @@ export default {
           this.tools.alertError(this, '请求错误！')
         })
     },
+    handleFilters() {
+      // 查询按钮事件
+      this.filters.pageIndex = 0
+      this.getData('personal/getList', this.filters, data => {
+        this.count = data.count
+        this.personalAllList = data.personalViewList
+        this.tools.setLocal(this.$route.name, 'filters', this.filters)
+      })
+    },
     currentChange(value) {
       // 分页change方法
-      this.personalAllList.pageIndex = value - 1
-      this.getData(data => {
-        this.getPersonalAllList = data.personalViewList
+      // this.currentPageSize = value
+      this.filters.pageIndex = value - 1
+      this.getData('personal/getList', this.filters, data => {
+        this.count = data.count
+        this.personalAllList = data.personalViewList
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
@@ -97,13 +109,25 @@ export default {
   },
   // 请求数据渲染
   created() {
-    this.getData('personal/getList', { pageSize: 20 }, data => {
-      console.log(data)
+    if (this.tools.getLocal(this.$route.name, 'filters')) {
+      this.filters = this.tools.getLocal(this.$route.name, 'filters')
+      console.log(this.$route.name)
+      this.filters.pageIndex = 0
+      // this.dealDate = [
+      //   new Date(this.dealQueryParam.startTime),
+      //   new Date(this.dealQueryParam.endTime)
+      // ]
+      this.typesArr = this.filters.types.split(',')
+    }
+    // 页面展示后 第一次请求交易列表
+    this.getData('personal/getList', this.filters, data => {
       this.count = data.count
-      this.pageCount = data.pageCount
       this.personalAllList = data.personalViewList
-      // this.personalAllList.birthday = new Date(personalAllList.birthday)
     })
-  }
+  },
+  beforeRouteLeave(to, from, next) {
+    this.tools.setLocal(this.$route.name, 'filters', this.filters)
+    next()
+  },
 }
 </script>
