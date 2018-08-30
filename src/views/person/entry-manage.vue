@@ -9,6 +9,19 @@
     </div>
     <!--工具条-->
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+			<el-form :inline="true" :model="filters" @submit.native.prevent>
+				<el-form-item>
+					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="handleFilters">查询</el-button>
+				</el-form-item>
+				<el-form-item>
+					<!-- <el-button type="primary" @click="handleAdd">新增</el-button> -->
+				</el-form-item>
+			</el-form>
+		</el-col>
+    <!-- <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-col :sm="12" :lg="8">
         <span class="form-fonts">姓名：</span>
         <el-input v-model="filters.name" placeholder="请输入名字" size="medium"></el-input>
@@ -16,7 +29,7 @@
       <el-col :sm="12" :lg="8">
         <el-button type="primary" @click="handleFilters">查询</el-button>
       </el-col>
-    </el-col>
+    </el-col> -->
 
     <!--列表-->
     <el-table :data="personalAllList" highlight-current-row ref="table" style="width: 100%;">
