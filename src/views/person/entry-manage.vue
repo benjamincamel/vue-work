@@ -53,7 +53,10 @@
       </el-table-column>
       <el-table-column prop="expatriateUnit" label="外派单位" min-width="160">
       </el-table-column>
-      <el-table-column prop="arrivalTime" label="入职时间" min-width="160">
+      <el-table-column label="入职时间" min-width="160">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.arrivalTime))}}
+        </template>
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
       </el-table-column>
@@ -118,7 +121,6 @@ export default {
       this.getData('personal/getList', this.filters, data => {
         this.count = data.count
         this.personalAllList = data.personalViewList
-        this.personalAllList.birthday = new Date(this.personalAllList.birthday)
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
@@ -129,7 +131,6 @@ export default {
       this.getData('personal/getList', this.filters, data => {
         this.count = data.count
         this.personalAllList = data.personalViewList
-        this.personalAllList.birthday = new Date(this.personalAllList.birthday)
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
@@ -139,16 +140,13 @@ export default {
   created() {
     if (this.tools.getLocal(this.$route.name, 'filters')) {
       this.filters = this.tools.getLocal(this.$route.name, 'filters')
-      console.log(this.$route.name)
       this.filters.pageIndex = 0
       // this.typesArr = this.filters.types.split(',')
     }
     // 页面展示后 第一次请求人员列表
     this.getData('personal/getList', this.filters, data => {
-      console.log(data)
       this.count = data.count
       this.personalAllList = data.personalViewList
-      this.personalAllList.birthday = new Date(this.personalAllList.birthday)
     })
   },
   beforeRouteLeave(to, from, next) {
