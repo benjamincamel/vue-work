@@ -358,7 +358,7 @@ export default {
       console.log(`当前第${value}页`)
     },
     handleEdit(id) {
-      this.$router.push({ name: 'partner-info-detail', query: { userId: id } })
+      this.$router.push({ path: '/', query: { userId: id }})
     },
     handleDel(index, row) {
       console.log(index, row)
