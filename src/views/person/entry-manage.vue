@@ -76,10 +76,12 @@ export default {
   data() {
     return {
       filters: {
-        employeeNumber: 'QTSC0018',
+        employeeNumber: '',
         name: '',
         position: '',
-        phone: '',
+        level: '',
+        department: '',
+        expatriateUnit: '',
         pageIndex: 0, // 查询页页码
         pageSize: 2 // 查询条数
       },
