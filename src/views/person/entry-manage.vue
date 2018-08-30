@@ -102,7 +102,7 @@
       </el-table-column>
       <el-table-column label="操作" width="160">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -357,8 +357,8 @@ export default {
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
     },
-    handleEdit(index, row) {
-      console.log(index, row)
+    handleEdit(id) {
+      this.$router.push({ name: 'partner-info-detail', query: { userId: id } })
     },
     handleDel(index, row) {
       console.log(index, row)

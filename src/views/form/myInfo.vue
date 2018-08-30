@@ -370,7 +370,7 @@ export default {
   created() {
     this.getData(
       'personal/getPersonalAllInfoById',
-      { personalInfoId: 23 },
+      { personalInfoId: this.$route.query.userId },
       data => {
         console.log(this.personalAll.personalInfo.birthday)
         this.personalAll.personalInfo = data.personalInfo
