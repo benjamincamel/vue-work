@@ -80,7 +80,7 @@
       </el-table-column>
       <el-table-column label="出生日期" sortable min-width="160">
         <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.birthday))}}
+          {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
         </template>
       </el-table-column>
       <el-table-column prop="position" label="职位" width="120">
@@ -95,7 +95,7 @@
       </el-table-column>
       <el-table-column label="入职时间" min-width="160">
         <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.arrivalTime))}}
+          {{tools.dateFormat(new Date(scope.row.arrivalTime)).slice(0, 10)}}
         </template>
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
@@ -402,7 +402,7 @@ export default {
             { personalInfoId: id },
             data => { }
           )
-          this.handleFilters()
+          this.$router.push({ path: '/person/entry-manage' })
         })
         .catch()
     },

@@ -27,7 +27,7 @@
               <el-input v-model="personalAll.personalInfo.age" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="出生日期">
-              <el-date-picker v-model="personalAll.personalInfo.birthday" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="false" placeholder="出生日期">
+              <el-date-picker v-model="personalAll.personalInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="false" placeholder="出生日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="民族">
@@ -43,7 +43,7 @@
               <el-input v-model="personalAll.personalInfo.education" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="毕业时间">
-              <el-date-picker v-model="personalAll.personalInfo.graduationTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="毕业时间">
+              <el-date-picker v-model="personalAll.personalInfo.graduationTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="毕业时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="毕业学校">
@@ -65,7 +65,7 @@
               <el-input v-model="personalAll.personalInfo.contactPhone" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="创建时间">
-              <el-date-picker v-model="personalAll.personalInfo.createTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="创建时间">
+              <el-date-picker v-model="personalAll.personalInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="邮箱">
@@ -100,7 +100,7 @@
         <el-tab-pane label="工资信息">
           <el-form label-width="180px">
             <el-form-item label="到岗时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="到岗时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="到岗时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="招商银行账号">
@@ -113,11 +113,12 @@
               <el-input v-model="personalAll.personalSalaryInfo.basePay" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="创建时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="创建时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="缴纳社保起始月份">
-              <el-input v-model="personalAll.personalSalaryInfo.insuranceBeginDate" auto-complete="off"></el-input>
+              <el-date-picker v-model="personalAll.personalSalaryInfo.insuranceBeginDate" type="month"  default-time="00:00:00" :editable="true" placeholder="缴纳社保起始月份">
+              </el-date-picker>
             </el-form-item>
             <el-form-item label="社保缴纳地点">
               <el-input v-model="personalAll.personalSalaryInfo.insurancePlace" auto-complete="off"></el-input>
@@ -147,7 +148,7 @@
               <el-input v-model="personalAll.personalSalaryInfo.workerPay" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="转正时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.workerTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="转正时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.workerTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="转正时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="转正福利">
@@ -161,51 +162,68 @@
         <el-tab-pane label="工作信息">
           <el-form label-width="180px">
             <el-form-item label="归属中心">
-              <el-input v-model="personalAll.personalWorkInfo.center" auto-complete="off"></el-input>
+              <el-select v-model="personalAll.personalWorkInfo.center" clearable size="medium" placeholder="请选择">
+                <el-option-group v-for="group in centerOptions" :key="group.label" :label="group.label">
+                  <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-option-group>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="中心负责人">
+              <el-input v-model="personalAll.personalWorkInfo.expatriateManager" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="级别">
+              <el-select v-model="personalAll.personalWorkInfo.level" clearable size="medium" placeholder="请选择">
+                <el-option v-for="item in levelOptions" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="所在部门">
+              <el-select v-model="personalAll.personalWorkInfo.department" clearable size="medium" placeholder="请选择">
+                <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="外派单位">
+              <el-select v-model="personalAll.personalWorkInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
+                <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="合同签署次数">
               <el-input v-model="personalAll.personalWorkInfo.contractCount" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="合同生效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractStartdate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="合同生效日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractStartdate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="合同生效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractEnddate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="合同失效日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractEnddate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="合同失效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="续签合同日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewDate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="续签合同日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewEnddate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="续签合同失效日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewEnddate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="续签合同失效日期">
               </el-date-picker>
-            </el-form-item>
-            <el-form-item label="部门">
-              <el-input v-model="personalAll.personalWorkInfo.department" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="全通负责人">
-              <el-input v-model="personalAll.personalWorkInfo.expatriateManager" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="外派单位">
-              <el-input v-model="personalAll.personalWorkInfo.expatriateUnit" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="离职原因">
               <el-input v-model="personalAll.personalWorkInfo.leaveReason" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="离职状态">
-              <el-input v-model="personalAll.personalWorkInfo.leaveStatus" auto-complete="off"></el-input>
+              <el-select v-model="personalAll.personalWorkInfo.leaveStatus" size="medium">
+                <el-option label="已离职" :value="0"></el-option>
+                <el-option label="在职" :value="1"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="离职类型">
               <el-input v-model="personalAll.personalWorkInfo.leaveType" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="离职日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="true" placeholder="离职日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="离职日期">
               </el-date-picker>
-            </el-form-item>
-            <el-form-item label="级别">
-              <el-input v-model="personalAll.personalWorkInfo.level" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="员工信息表ID">
               <el-input v-model="personalAll.personalWorkInfo.personalInfoId" auto-complete="off"></el-input>
@@ -232,7 +250,7 @@
         </el-tab-pane>
       </el-tabs>
       <div class="btn-area">
-        <el-button type="primary" @click="updateData()" style="margin-left: 180px">修改信息</el-button>
+        <el-button type="primary" @click="submitInfo()" style="margin-left: 180px">提交</el-button>
       </div>
     </div>
   </div>
@@ -319,7 +337,186 @@ export default {
           workingAddress: '',
           workingPlace: ''
         }
-      }
+      },
+      sexOptions: [
+        {
+          value: '男',
+          label: '男'
+        },
+        {
+          value: '女',
+          label: '女'
+        }
+      ],
+      levelOptions: [
+        {
+          value: '初级',
+          label: '初级'
+        },
+        {
+          value: '中级',
+          label: '中级'
+        },
+        {
+          value: '高级',
+          label: '高级'
+        },
+        {
+          value: '高级+',
+          label: '高级+'
+        }
+      ],
+      departmentOptions: [
+        {
+          value: '产品事业部',
+          label: '产品事业部'
+        },
+        {
+          value: '市场技术部',
+          label: '市场技术部'
+        },
+        {
+          value: '系统运维部',
+          label: '系统运维部'
+        },
+        {
+          value: '系统集成部',
+          label: '系统集成部'
+        },
+        {
+          value: '政企支撑中心',
+          label: '政企支撑中心'
+        }
+      ],
+      expatriateUnitOptions: [
+        {
+          value: '全通',
+          label: '全通'
+        },
+        {
+          value: '北京物联网',
+          label: '北京物联网'
+        },
+        {
+          value: '成都物联网',
+          label: '成都物联网'
+        },
+        {
+          value: '重庆物联网',
+          label: '重庆物联网'
+        },
+        {
+          value: '百度',
+          label: '百度'
+        }
+      ],
+      centerOptions: [
+        {
+          label: '产品事业部',
+          options: [
+            {
+              value: '管理信息化中心',
+              label: '管理信息化中心'
+            },
+            {
+              value: '交通行业中心',
+              label: '交通行业中心'
+            },
+            {
+              value: '医疗行业中心',
+              label: '医疗行业中心'
+            },
+            {
+              value: '教育行业中心',
+              label: '教育行业中心'
+            },
+            {
+              value: '安全项目中心',
+              label: '安全项目中心'
+            },
+            {
+              value: 'ERP组',
+              label: 'ERP组'
+            },
+            {
+              value: '质量管理中心',
+              label: '质量管理中心'
+            }
+          ]
+        },
+        {
+          label: '市场技术部',
+          options: [
+            {
+              value: '一大区',
+              label: '一大区'
+            },
+            {
+              value: '东北二大区',
+              label: '东北二大区'
+            },
+            {
+              value: '三大区',
+              label: '三大区'
+            },
+            {
+              value: '四大区',
+              label: '四大区'
+            },
+            {
+              value: '五大区',
+              label: '五大区'
+            }
+          ]
+        },
+        {
+          label: '系统运维部',
+          options: [
+            {
+              value: '质量管理中心',
+              label: '质量管理中心'
+            },
+            {
+              value: '百度亦庄',
+              label: '百度亦庄'
+            },
+            {
+              value: '设备维护中心',
+              label: '设备维护中心'
+            }
+          ]
+        },
+        {
+          label: '系统集成部',
+          options: [
+            {
+              value: '技术支持组',
+              label: '技术支持组'
+            },
+            {
+              value: '工程实施中心',
+              label: '工程实施中心'
+            }
+          ]
+        },
+        {
+          label: '政企支撑中心',
+          options: [
+            {
+              value: '人力支撑',
+              label: '人力支撑'
+            },
+            {
+              value: '商务支撑',
+              label: '商务支撑'
+            },
+            {
+              value: '属地化支撑',
+              label: '属地化支撑'
+            }
+          ]
+        }
+      ]
     }
   },
   methods: {
@@ -344,20 +541,33 @@ export default {
           this.tools.alertError(this, '请求错误！')
         })
     },
-    // 编辑
-    updateData() {
+    // 新增&修改
+    submitInfo() {
       this.$confirm('请您确认信息填写无误后提交', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
-          this.getData(
-            'personal/updatePersonalAllInfo',
-            { personalAllJsonStr: JSON.stringify(this.personalAll) },
-            () => {
-              this.tools.alertInfo(this, '修改成功！')
-              this.dialogFormVisible = false
-            }
-          )
+          if (this.pageType === 0 || this.pageType === NaN) {
+            this.getData(
+              'personal/addPersonalAllInfo',
+              { personalAllJsonStr: JSON.stringify(this.personalAll) },
+              () => {
+                this.tools.alertInfo(this, '新增成功！')
+                this.dialogFormVisible = false
+              }
+            )
+            this.$router.push({ path: '/person/entry-manage' })
+          } else {
+            this.getData(
+              'personal/updatePersonalAllInfo',
+              { personalAllJsonStr: JSON.stringify(this.personalAll) },
+              () => {
+                this.tools.alertInfo(this, '修改成功！')
+                this.dialogFormVisible = false
+              }
+            )
+            this.$router.push({ path: '/person/entry-manage' })
+          }
         })
         .catch()
     }
@@ -367,12 +577,12 @@ export default {
     // 0-新建员工信息  1-编辑员工信息
     this.pageType = Number(this.$route.query.pageType)
     this.pageType === 1 && (this.userId = Number(this.$route.query.userId))
-    if (
-      this.pageType === 0 &&
-      this.tools.getLocal(this.$route.name, 'partnerInfo')
-    ) {
-      this.partnerInfo = this.tools.getLocal(this.$route.name, 'partnerInfo')
-    }
+    // if (
+    //   this.pageType === 0 &&
+    //   this.tools.getLocal(this.$route.name, 'partnerInfo')
+    // ) {
+    //   this.partnerInfo = this.tools.getLocal(this.$route.name, 'partnerInfo')
+    // }
     // 如果是编辑员工信息  查询原本数据
     if (this.pageType === 1) {
       this.getData(
@@ -383,19 +593,47 @@ export default {
           this.personalAll.personalInfo = data.personalInfo
           this.personalAll.personalSalaryInfo = data.personalSalaryInfo
           this.personalAll.personalWorkInfo = data.personalWorkInfo
-          this.personalAll.personalInfo.birthday = new Date(this.personalAll.personalInfo.birthday)
-          this.personalAll.personalInfo.graduationTime = new Date(this.personalAll.personalInfo.graduationTime)
-          this.personalAll.personalInfo.createTime = new Date(this.personalAll.personalInfo.createTime)
-          this.personalAll.personalSalaryInfo.arrivalTime = new Date(this.personalAll.personalSalaryInfo.arrivalTime)
-          this.personalAll.personalSalaryInfo.createTime = new Date(this.personalAll.personalInfo.createTime)
-          this.personalAll.personalSalaryInfo.workerTime = new Date(this.personalAll.personalSalaryInfo.workerTime)
-          this.personalAll.personalWorkInfo.contractStartdate = new Date(this.personalAll.personalWorkInfo.contractStartdate)
-          this.personalAll.personalWorkInfo.contractEnddate = new Date(this.personalAll.personalWorkInfo.contractEnddate)
-          this.personalAll.personalWorkInfo.contractRenewDate = new Date(this.personalAll.personalWorkInfo.contractRenewDate)
-          this.personalAll.personalWorkInfo.contractRenewEnddate = new Date(this.personalAll.personalWorkInfo.contractRenewEnddate)
-          this.personalAll.personalWorkInfo.leaveWorkingTime = new Date(this.personalAll.personalWorkInfo.leaveWorkingTime)
+          this.personalAll.personalInfo.birthday = new Date(
+            this.personalAll.personalInfo.birthday
+          )
+          this.personalAll.personalInfo.graduationTime = new Date(
+            this.personalAll.personalInfo.graduationTime
+          )
+          this.personalAll.personalInfo.createTime = new Date(
+            this.personalAll.personalInfo.createTime
+          )
+          this.personalAll.personalSalaryInfo.arrivalTime = new Date(
+            this.personalAll.personalSalaryInfo.arrivalTime
+          )
+          this.personalAll.personalSalaryInfo.createTime = new Date(
+            this.personalAll.personalInfo.createTime
+          )
+          this.personalAll.personalSalaryInfo.insuranceBeginDate = new Date(
+            this.personalAll.personalSalaryInfo.insuranceBeginDate
+          )
+          console.log(this.personalAll.personalSalaryInfo.insuranceBeginDate)
+          this.personalAll.personalSalaryInfo.workerTime = new Date(
+            this.personalAll.personalSalaryInfo.workerTime
+          )
+          this.personalAll.personalWorkInfo.contractStartdate = new Date(
+            this.personalAll.personalWorkInfo.contractStartdate
+          )
+          this.personalAll.personalWorkInfo.contractEnddate = new Date(
+            this.personalAll.personalWorkInfo.contractEnddate
+          )
+          this.personalAll.personalWorkInfo.contractRenewDate = new Date(
+            this.personalAll.personalWorkInfo.contractRenewDate
+          )
+          this.personalAll.personalWorkInfo.contractRenewEnddate = new Date(
+            this.personalAll.personalWorkInfo.contractRenewEnddate
+          )
+          this.personalAll.personalWorkInfo.leaveWorkingTime = new Date(
+            this.personalAll.personalWorkInfo.leaveWorkingTime
+          )
         }
       )
+    } else {
+      this.$router.push({ path: '/', query: { pageType: 0 }})
     }
   }
 }
