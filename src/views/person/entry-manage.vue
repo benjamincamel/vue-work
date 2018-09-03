@@ -16,14 +16,11 @@
         <el-form-item label="姓名">
           <el-input v-model="filters.name" placeholder="姓名"></el-input>
         </el-form-item>
-        <el-form-item label="性别">
-          <el-select v-model="filters.sex" clearable size="medium" placeholder="请选择">
-            <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="出生日期">
-          <el-date-picker v-model="filters.birthday" type="daterange" align="left" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+        <el-form-item label="生日">
+          <el-date-picker v-model="filters.birthdayStartDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
+          </el-date-picker>
+          <span class="el-range-separator">至</span>
+          <el-date-picker v-model="filters.birthdayEndDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="职位">
@@ -56,15 +53,18 @@
           </el-select>
         </el-form-item>
         <el-form-item label="入职时间">
-          <el-date-picker v-model="filters.arrivalTime" type="daterange" align="left" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+          <el-date-picker v-model="filters.entryStartDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
+          </el-date-picker>
+          <span class="el-range-separator">至</span>
+          <el-date-picker v-model="filters.entryEndDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-on:click="handleFilters">查询</el-button>
         </el-form-item>
-        <!-- <el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item> -->
+        <el-form-item>
+          <el-button type="primary" @click="handleAdd">新增</el-button>
+        </el-form-item>
       </el-form>
     </el-col>
 
@@ -340,6 +340,32 @@ export default {
     handleFilters() {
       // 查询按钮事件
       this.filters.pageIndex = 0
+      // 出生日期
+      const bdStart = this.filters.birthdayStartDate
+      const bdEnd = this.filters.birthdayEndDate
+      if (
+        new Date(bdStart === null ? '' : bdStart) >
+        new Date(bdEnd === null ? '' : bdEnd)
+      ) {
+        this.tools.alertError(
+          this,
+          '开始时间大于结束时间，请重新选择出生日期！'
+        )
+        return
+      }
+      // 入职时间
+      const edStart = this.filters.entryStartDate
+      const edEnd = this.filters.entryEndDate
+      if (
+        new Date(edStart === null ? '' : edStart) >
+        new Date(edEnd === null ? '' : edEnd)
+      ) {
+        this.tools.alertError(
+          this,
+          '开始时间大于结束时间，请重新选择入职时间！'
+        )
+        return
+      }
       this.getData('personal/getList', this.filters, data => {
         this.count = data.count
         this.personalAllList = data.personalViewList
@@ -357,8 +383,13 @@ export default {
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
     },
+    // 新建员工信息
+    handleAdd() {
+      this.$router.push({ path: '/', query: { pageType: 0 }})
+    },
+    // 编辑员工信息
     handleEdit(id) {
-      this.$router.push({ path: '/', query: { userId: id }})
+      this.$router.push({ path: '/', query: { pageType: 1, userId: id }})
     },
     handleDel(index, row) {
       console.log(index, row)

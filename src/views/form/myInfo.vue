@@ -27,13 +27,7 @@
               <el-input v-model="personalAll.personalInfo.age" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="出生日期">
-              <el-date-picker
-                v-model="personalAll.personalInfo.birthday"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                default-time="23:59:59"
-                :editable="false"
-                placeholder="出生日期">
+              <el-date-picker v-model="personalAll.personalInfo.birthday" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" default-time="23:59:59" :editable="false" placeholder="出生日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="民族">
@@ -354,46 +348,59 @@ export default {
     updateData() {
       this.$confirm('请您确认信息填写无误后提交', '提示', {
         closeOnClickModal: false
-      }).then(() => {
-        this.getData(
-          'personal/updatePersonalAllInfo',
-          { personalAllJsonStr: JSON.stringify(this.personalAll) },
-          () => {
-            this.tools.alertInfo(this, '修改成功！')
-            this.dialogFormVisible = false
-          }
-        )
-      }).catch()
+      })
+        .then(() => {
+          this.getData(
+            'personal/updatePersonalAllInfo',
+            { personalAllJsonStr: JSON.stringify(this.personalAll) },
+            () => {
+              this.tools.alertInfo(this, '修改成功！')
+              this.dialogFormVisible = false
+            }
+          )
+        })
+        .catch()
     }
   },
   // 请求数据渲染
   created() {
-    this.getData(
-      'personal/getPersonalAllInfoById',
-      { personalInfoId: this.$route.query.userId },
-      data => {
-        console.log(this.personalAll.personalInfo.birthday)
-        this.personalAll.personalInfo = data.personalInfo
-        this.personalAll.personalSalaryInfo = data.personalSalaryInfo
-        this.personalAll.personalWorkInfo = data.personalWorkInfo
-        this.personalAll.personalInfo.birthday = new Date(this.personalAll.personalInfo.birthday)
-        this.personalAll.personalInfo.graduationTime = new Date(this.personalAll.personalInfo.graduationTime)
-        this.personalAll.personalInfo.createTime = new Date(this.personalAll.personalInfo.createTime)
-        this.personalAll.personalSalaryInfo.arrivalTime = new Date(this.personalAll.personalSalaryInfo.arrivalTime)
-        this.personalAll.personalSalaryInfo.createTime = new Date(this.personalAll.personalInfo.createTime)
-        this.personalAll.personalSalaryInfo.workerTime = new Date(this.personalAll.personalSalaryInfo.workerTime)
-        this.personalAll.personalWorkInfo.contractStartdate = new Date(this.personalAll.personalWorkInfo.contractStartdate)
-        this.personalAll.personalWorkInfo.contractEnddate = new Date(this.personalAll.personalWorkInfo.contractEnddate)
-        this.personalAll.personalWorkInfo.contractRenewDate = new Date(this.personalAll.personalWorkInfo.contractRenewDate)
-        this.personalAll.personalWorkInfo.contractRenewEnddate = new Date(this.personalAll.personalWorkInfo.contractRenewEnddate)
-        this.personalAll.personalWorkInfo.leaveWorkingTime = new Date(this.personalAll.personalWorkInfo.leaveWorkingTime)
-      }
-    )
+    // 0-新建员工信息  1-编辑员工信息
+    this.pageType = Number(this.$route.query.pageType)
+    this.pageType === 1 && (this.userId = Number(this.$route.query.userId))
+    if (
+      this.pageType === 0 &&
+      this.tools.getLocal(this.$route.name, 'partnerInfo')
+    ) {
+      this.partnerInfo = this.tools.getLocal(this.$route.name, 'partnerInfo')
+    }
+    // 如果是编辑员工信息  查询原本数据
+    if (this.pageType === 1) {
+      this.getData(
+        'personal/getPersonalAllInfoById',
+        { personalInfoId: this.$route.query.userId },
+        data => {
+          console.log(this.personalAll.personalInfo.birthday)
+          this.personalAll.personalInfo = data.personalInfo
+          this.personalAll.personalSalaryInfo = data.personalSalaryInfo
+          this.personalAll.personalWorkInfo = data.personalWorkInfo
+          this.personalAll.personalInfo.birthday = new Date(this.personalAll.personalInfo.birthday)
+          this.personalAll.personalInfo.graduationTime = new Date(this.personalAll.personalInfo.graduationTime)
+          this.personalAll.personalInfo.createTime = new Date(this.personalAll.personalInfo.createTime)
+          this.personalAll.personalSalaryInfo.arrivalTime = new Date(this.personalAll.personalSalaryInfo.arrivalTime)
+          this.personalAll.personalSalaryInfo.createTime = new Date(this.personalAll.personalInfo.createTime)
+          this.personalAll.personalSalaryInfo.workerTime = new Date(this.personalAll.personalSalaryInfo.workerTime)
+          this.personalAll.personalWorkInfo.contractStartdate = new Date(this.personalAll.personalWorkInfo.contractStartdate)
+          this.personalAll.personalWorkInfo.contractEnddate = new Date(this.personalAll.personalWorkInfo.contractEnddate)
+          this.personalAll.personalWorkInfo.contractRenewDate = new Date(this.personalAll.personalWorkInfo.contractRenewDate)
+          this.personalAll.personalWorkInfo.contractRenewEnddate = new Date(this.personalAll.personalWorkInfo.contractRenewEnddate)
+          this.personalAll.personalWorkInfo.leaveWorkingTime = new Date(this.personalAll.personalWorkInfo.leaveWorkingTime)
+        }
+      )
+    }
   }
 }
 </script>
 
 <style scoped>
-
 </style>
 
