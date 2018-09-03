@@ -103,7 +103,7 @@
       <el-table-column label="操作" width="160">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -383,13 +383,28 @@ export default {
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
     },
-    // 新建员工信息
+    // 新增员工信息
     handleAdd() {
       this.$router.push({ path: '/', query: { pageType: 0 }})
     },
     // 编辑员工信息
     handleEdit(id) {
       this.$router.push({ path: '/', query: { pageType: 1, userId: id }})
+    },
+    // 删除员工信息
+    handleRemove(id) {
+      this.$confirm('是否确认删除，删除后无法恢复', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'personal/deletePersonalAllInfo',
+            { personalInfoId: id },
+            data => { }
+          )
+          this.handleFilters()
+        })
+        .catch()
     },
     handleDel(index, row) {
       console.log(index, row)
