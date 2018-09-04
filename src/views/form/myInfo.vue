@@ -12,22 +12,22 @@
         <el-tab-pane label="基本信息">
           <el-form label-width="180px">
             <el-form-item label="ID">
-              <el-input v-model="personalAll.personalInfo.id" auto-complete="off"></el-input>
+              <el-input v-model="personalAll.personalInfo.id" auto-complete="off" :disabled="true"></el-input>
             </el-form-item>
-            <el-form-item label="姓名">
+            <el-form-item label="姓名" class="is-required">
               <el-input v-model="personalAll.personalInfo.name" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="性别">
-              <el-select v-model="personalAll.personalInfo.sex" size="medium">
+              <el-select v-model="personalAll.personalInfo.sex" size="medium" :disabled="true">
                 <el-option label="男" :value="0"></el-option>
                 <el-option label="女" :value="1"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="年龄">
-              <el-input v-model="personalAll.personalInfo.age" auto-complete="off"></el-input>
+              <el-input v-model="personalAll.personalInfo.age" auto-complete="off" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="出生日期">
-              <el-date-picker v-model="personalAll.personalInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="false" placeholder="出生日期">
+              <el-date-picker v-model="personalAll.personalInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="false" placeholder="出生日期" :disabled="true">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="民族">
@@ -42,7 +42,7 @@
             <el-form-item label="学历">
               <el-input v-model="personalAll.personalInfo.education" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="毕业时间">
+            <el-form-item label="毕业时间" class="is-required">
               <el-date-picker v-model="personalAll.personalInfo.graduationTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="毕业时间">
               </el-date-picker>
             </el-form-item>
@@ -65,14 +65,14 @@
               <el-input v-model="personalAll.personalInfo.contactPhone" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="创建时间">
-              <el-date-picker v-model="personalAll.personalInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间">
+              <el-date-picker v-model="personalAll.personalInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间" :disabled="true">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="邮箱">
               <el-input v-model="personalAll.personalInfo.email" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="员工编号">
-              <el-input v-model="personalAll.personalInfo.employeeNumber" auto-complete="off"></el-input>
+              <el-input v-model="personalAll.personalInfo.employeeNumber" auto-complete="off" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="户籍地址">
               <el-input v-model="personalAll.personalInfo.homeAddress" auto-complete="off"></el-input>
@@ -80,7 +80,7 @@
             <el-form-item label="户口性质">
               <el-input v-model="personalAll.personalInfo.homeProperty" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="身份证">
+            <el-form-item label="身份证号" class="is-required">
               <el-input v-model="personalAll.personalInfo.identityCard" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="籍贯">
@@ -99,8 +99,8 @@
         </el-tab-pane>
         <el-tab-pane label="工资信息">
           <el-form label-width="180px">
-            <el-form-item label="到岗时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="到岗时间">
+            <el-form-item label="入职时间" class="is-required">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="入职时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="招商银行账号">
@@ -109,24 +109,10 @@
             <el-form-item label="开户行">
               <el-input v-model="personalAll.personalSalaryInfo.bankOpenPlace" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="基本工资">
+            <el-form-item label="基本工资" class="is-required">
               <el-input v-model="personalAll.personalSalaryInfo.basePay" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="创建时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="缴纳社保起始月份">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.insuranceBeginDate" type="month"  default-time="00:00:00" :editable="true" placeholder="缴纳社保起始月份">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="社保缴纳地点">
-              <el-input v-model="personalAll.personalSalaryInfo.insurancePlace" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="实际缴纳社保起始月份">
-              <el-input v-model="personalAll.personalSalaryInfo.insuranceRealDate" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="绩效工资">
+            <el-form-item label="绩效工资" class="is-required">
               <el-input v-model="personalAll.personalSalaryInfo.meritPay" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="试用期工资">
@@ -138,11 +124,24 @@
             <el-form-item label="试用期福利">
               <el-input v-model="personalAll.personalSalaryInfo.probationPeriodWelfare" auto-complete="off"></el-input>
             </el-form-item>
+            <el-form-item label="补贴" class="is-required">
+              <el-input v-model="personalAll.personalSalaryInfo.subsidy" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="创建时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间" :disabled="true">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="缴纳社保起始月份">
+              <el-input v-model="personalAll.personalSalaryInfo.insuranceBeginDate" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="实际缴纳社保起始月份">
+              <el-input v-model="personalAll.personalSalaryInfo.insuranceRealDate" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="社保缴纳地点">
+              <el-input v-model="personalAll.personalSalaryInfo.insurancePlace" auto-complete="off"></el-input>
+            </el-form-item>
             <el-form-item label="结算价">
               <el-input v-model="personalAll.personalSalaryInfo.settlementPrice" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="补贴">
-              <el-input v-model="personalAll.personalSalaryInfo.subsidy" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="转正工资">
               <el-input v-model="personalAll.personalSalaryInfo.workerPay" auto-complete="off"></el-input>
@@ -155,7 +154,7 @@
               <el-input v-model="personalAll.personalSalaryInfo.workerWelfare" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="工龄">
-              <el-input v-model="personalAll.personalSalaryInfo.workingYears" auto-complete="off"></el-input>
+              <el-input v-model="personalAll.personalSalaryInfo.workingYears" auto-complete="off" :disabled="true"></el-input>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -543,30 +542,58 @@ export default {
     },
     // 新增&修改
     submitInfo() {
+      if (!this.personalAll.personalInfo.name) {
+        this.tools.alertError(this, '请填写姓名！')
+        return
+      }
+      if (!this.personalAll.personalInfo.graduationTime) {
+        this.tools.alertError(this, '请填写毕业时间！')
+        return
+      }
+      if (!this.personalAll.personalInfo.identityCard) {
+        this.tools.alertError(this, '请填写身份证号！')
+        return
+      }
+      if (!this.personalAll.personalSalaryInfo.arrivalTime) {
+        this.tools.alertError(this, '请填写入职时间！')
+        return
+      }
+      if (!this.personalAll.personalSalaryInfo.basePay || !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.basePay)) {
+        this.tools.alertError(this, '请填写正确的基本工资！')
+        return
+      }
+      if (!this.personalAll.personalSalaryInfo.meritPay || !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.meritPay)) {
+        this.tools.alertError(this, '请填写正确的绩效工资！')
+        return
+      }
+      if (!this.personalAll.personalSalaryInfo.subsidy || !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.subsidy)) {
+        this.tools.alertError(this, '请填写正确的补贴！')
+        return
+      }
       this.$confirm('请您确认信息填写无误后提交', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
-          if (this.pageType === 0 || this.pageType === NaN) {
+          if (this.pageType === 0) {
             this.getData(
               'personal/addPersonalAllInfo',
               { personalAllJsonStr: JSON.stringify(this.personalAll) },
-              () => {
+              data => {
                 this.tools.alertInfo(this, '新增成功！')
                 this.dialogFormVisible = false
+                this.$router.push({ path: '/person/entry-manage' })
               }
             )
-            this.$router.push({ path: '/person/entry-manage' })
           } else {
             this.getData(
               'personal/updatePersonalAllInfo',
               { personalAllJsonStr: JSON.stringify(this.personalAll) },
-              () => {
+              data => {
                 this.tools.alertInfo(this, '修改成功！')
                 this.dialogFormVisible = false
+                this.$router.push({ path: '/person/entry-manage' })
               }
             )
-            this.$router.push({ path: '/person/entry-manage' })
           }
         })
         .catch()
@@ -608,10 +635,6 @@ export default {
           this.personalAll.personalSalaryInfo.createTime = new Date(
             this.personalAll.personalInfo.createTime
           )
-          this.personalAll.personalSalaryInfo.insuranceBeginDate = new Date(
-            this.personalAll.personalSalaryInfo.insuranceBeginDate
-          )
-          console.log(this.personalAll.personalSalaryInfo.insuranceBeginDate)
           this.personalAll.personalSalaryInfo.workerTime = new Date(
             this.personalAll.personalSalaryInfo.workerTime
           )
