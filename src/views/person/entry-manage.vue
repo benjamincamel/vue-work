@@ -87,8 +87,16 @@
       <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
       <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
     </el-upload>
+    <el-button style="margin-left: 10px;" size="small" type="success" @click="changeData">导入</el-button>
+    <div>
+      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange" border>全选</el-checkbox>
+      <div style="margin: 15px 0;"></div>
+      <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+        <el-checkbox v-for="{ prop, label } in cities" :label="label" :key="prop">{{label}}</el-checkbox>
+      </el-checkbox-group>
+    </div>
     <!--列表-->
-    <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;" :default-sort="{prop: 'date', order: 'descending'}">
+    <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="employeeNumber" label="员工编号" width="120">
@@ -119,6 +127,8 @@
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
       </el-table-column>
+      <el-table-column v-for="{ prop, label } in colConfigs" :key="prop" :prop="prop" :label="label">
+      </el-table-column>
       <el-table-column label="操作" width="160">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
@@ -127,16 +137,28 @@
       </el-table-column>
     </el-table>
     <!--分页-->
-    <el-pagination @current-change="currentChange" :page-size="filters.pageSize" layout="total, prev, pager, next, jumper" :total="count">
+    <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :total="count">
     </el-pagination>
     <!--分页-->
   </section>
 </template>
 
 <script>
+const cityConfigs = [
+  { prop: 'date', label: '日期' },
+  { prop: 'name', label: '姓名' },
+  { prop: 'address', label: '地址' }
+]
 export default {
   data() {
     return {
+      colConfigs: [
+
+      ],
+      checkAll: false,
+      checkedCities: [ ],
+      cities: cityConfigs,
+      isIndeterminate: true,
       filters: {
         employeeNumber: '',
         name: '',
@@ -335,6 +357,20 @@ export default {
     }
   },
   methods: {
+    changeData() {
+
+    },
+    handleCheckAllChange(val) {
+      this.checkedCities = val ? cityOptions : []
+      this.isIndeterminate = false
+    },
+    handleCheckedCitiesChange(value) {
+      let checkedCount = value.length
+      this.checkAll = checkedCount === this.cities.length
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.cities.length
+        this.colConfigs.push({ prop: 'date', label: '时间' })
+    },
     submitUpload(content) {
       console.log('myUpload...')
       this.$axios({
