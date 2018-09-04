@@ -54,5 +54,17 @@ export default {
       center: true,
       duration: 5000
     })
+  },
+  checkMail(email) { // 验证邮箱
+    const reg = /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/
+    return reg.test(email)
+  },
+  checkAllNumber(str) { // 验证是否纯数字 包含小数点
+    const reg = /^\d+(\.\d+)?$/g
+    return reg.test(str)
+  },
+  checkJustNumber(str) { // 验证是否纯数字 不包含小数点
+    const reg = /^[0-9]*$/g
+    return reg.test(str)
   }
 }

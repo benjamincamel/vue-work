@@ -67,7 +67,26 @@
         </el-form-item>
       </el-form>
     </el-col>
-
+    <!-- <el-upload ref="upload" action="personal/importExcel" :show-file-list="false" :auto-upload="false">
+      <el-button slot="trigger" icon="el-icon-upload" size="small" type="primary">
+        导入表格
+      </el-button>
+    </el-upload> -->
+    <!-- <el-form :model="ruleForm" ref="ruleForm">
+      <el-form-item label="上传文件">
+        <el-upload ref="uploada" :action="personal/importExcel" :file-list="fileList">
+          <el-button size="small" type="primary">点击上传</el-button>
+        </el-upload>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')">导出</el-button>
+      </el-form-item>
+    </el-form> -->
+    <el-upload class="upload-demo" ref="upload" action="personal/importExcel" :http-request="myUpload" :file-list="fileList" :auto-upload="false">
+      <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+      <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+    </el-upload>
     <!--列表-->
     <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;" :default-sort="{prop: 'date', order: 'descending'}">
       <el-table-column type="selection" width="55">
@@ -316,6 +335,38 @@ export default {
     }
   },
   methods: {
+    submitUpload(content) {
+      console.log('myUpload...')
+      this.$axios({
+        method: 'post',
+        url: content.action,
+        timeout: 20000,
+        data: content.file
+      })
+        .then(res => {
+          content.onSuccess('配时文件上传成功')
+        })
+        .catch(error => {
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            content.onError(
+              '配时文件上传失败(' +
+                error.response.status +
+                ')，' +
+                error.response.data
+            )
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            content.onError('配时文件上传失败，服务器端无响应')
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            content.onError('配时文件上传失败，请求封装失败')
+          }
+        })
+    },
     getData(funName, param, fun) {
       // 数据请求方法
       this.showLoading = true
@@ -400,9 +451,11 @@ export default {
           this.getData(
             'personal/deletePersonalAllInfo',
             { personalInfoId: id },
-            data => { }
+            data => {
+              this.tools.alertInfo(this, '删除成功！')
+              this.$router.go({ path: '/person/entry-manage' })
+            }
           )
-          this.$router.push({ path: '/person/entry-manage' })
         })
         .catch()
     },
