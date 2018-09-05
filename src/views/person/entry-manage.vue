@@ -67,32 +67,17 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <!-- <el-upload ref="upload" action="personal/importExcel" :show-file-list="false" :auto-upload="false">
-      <el-button slot="trigger" icon="el-icon-upload" size="small" type="primary">
-        导入表格
-      </el-button>
-    </el-upload> -->
-    <!-- <el-form :model="ruleForm" ref="ruleForm">
-      <el-form-item label="上传文件">
-        <el-upload ref="uploada" :action="personal/importExcel" :file-list="fileList">
-          <el-button size="small" type="primary">点击上传</el-button>
-        </el-upload>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">导出</el-button>
-      </el-form-item>
-    </el-form> -->
-    <el-upload class="upload-demo" ref="upload" action="personal/importExcel" :http-request="myUpload" :file-list="fileList" :auto-upload="false">
-      <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-      <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
-      <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
-    </el-upload>
-    <el-button style="margin-left: 10px;" size="small" type="success" @click="changeData">导入</el-button>
+    <form id="myForm" enctype="multipart/form-data" method="post">
+      <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+      </el-upload>
+    </form>
     <div>
-      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange" border>全选</el-checkbox>
-      <div style="margin: 15px 0;"></div>
-      <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-        <el-checkbox v-for="{ prop, label } in cities" :label="label" :key="prop">{{label}}</el-checkbox>
+      <h4>显示列</h4>
+      <el-checkbox-group v-model="checkedColums" :inline="true">
+        <el-checkbox v-for="{ prop, label } in columns" :prop="prop" :label="label" :key="prop" @change="handleCheckedColumsChange($event, label)">{{ label }}</el-checkbox>
       </el-checkbox-group>
     </div>
     <!--列表-->
@@ -137,28 +122,38 @@
       </el-table-column>
     </el-table>
     <!--分页-->
-    <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :total="count">
+    <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
     <!--分页-->
   </section>
 </template>
 
 <script>
-const cityConfigs = [
-  { prop: 'date', label: '日期' },
-  { prop: 'name', label: '姓名' },
-  { prop: 'address', label: '地址' }
+import axios from 'axios' // axios请求插件
+const curax = axios.create({
+  timeout: 30000, // 超时时间 10s
+  baseURL: this.env ? '正式环境' : 'api'
+})
+const checkOptions = [
+  { prop: 'age', label: '年龄', width: 180 },
+  { prop: 'bankCardNumber', label: '银行卡号' },
+  { prop: 'bankOpenPlace', label: '开户行' },
+  { prop: 'basePay', label: '基本工资' },
+  { prop: 'contact', label: '紧急联系人' },
+  { prop: 'contactAddress', label: '联系地址' },
+  { prop: 'contactPhone', label: '联系电话' },
+  { prop: 'education', label: '学历' },
+  { prop: 'email', label: '邮箱' },
+  { prop: 'entryTime', label: '入职时间' }
 ]
 export default {
   data() {
     return {
-      colConfigs: [
-
-      ],
       checkAll: false,
-      checkedCities: [ ],
-      cities: cityConfigs,
-      isIndeterminate: true,
+      checkedColums: [],
+      columns: checkOptions,
+      isIndeterminate: false,
+      colConfigs: [],
       filters: {
         employeeNumber: '',
         name: '',
@@ -357,51 +352,49 @@ export default {
     }
   },
   methods: {
-    changeData() {
-
-    },
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : []
-      this.isIndeterminate = false
-    },
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length
-        this.colConfigs.push({ prop: 'date', label: '时间' })
-    },
-    submitUpload(content) {
-      console.log('myUpload...')
-      this.$axios({
-        method: 'post',
-        url: content.action,
-        timeout: 20000,
-        data: content.file
-      })
-        .then(res => {
-          content.onSuccess('配时文件上传成功')
-        })
-        .catch(error => {
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            content.onError(
-              '配时文件上传失败(' +
-                error.response.status +
-                ')，' +
-                error.response.data
-            )
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            content.onError('配时文件上传失败，服务器端无响应')
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            content.onError('配时文件上传失败，请求封装失败')
+    handleCheckedColumsChange(event, value) {
+      if (event) {
+        for (let i = 0; i < checkOptions.length; i++) {
+          if (checkOptions[i].label === value) {
+            this.colConfigs.push(checkOptions[i])
           }
-        })
+        }
+      } else {
+        for (let i = 0; i < this.colConfigs.length; i++) {
+          if (this.colConfigs[i].label === value) {
+            this.colConfigs.splice(i, 1)
+          }
+        }
+      }
+    },
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleURemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleChange(file, fileList) {
+      console.log(file)
+      console.log(fileList)
+    },
+    beforeUpload: function(file) {
+      console.log(file)
+      // 这里是重点，将文件转化为formdata数据上传
+      // var data = document.getElementById('upload')
+      var filedata = new FormData('#myForm')
+      filedata.append('filedata', file)
+      curax.post('personal/importExcel', filedata).then(
+        res => {
+          console.log(res)
+        },
+        res => {
+          console.log(res)
+        }
+      )
+      return false
     },
     getData(funName, param, fun) {
       // 数据请求方法
@@ -533,5 +526,8 @@ export default {
 }
 .hx-container .el-range-separator {
   width: 10% !important;
+}
+.hx-container .el-checkbox {
+  line-height: 3;
 }
 </style>
