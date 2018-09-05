@@ -11,7 +11,7 @@
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
         <el-form-item label="员工编号">
-          <el-input v-model="filters.employeeNumber" placeholder="员工编号"></el-input>
+          <el-input size="small" v-model="filters.employeeNumber" placeholder="员工编号"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
           <el-input v-model="filters.name" placeholder="姓名"></el-input>
@@ -67,12 +67,14 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <!-- 动态插入table列 -->
     <div class="toolbar">
       <h4>显示列</h4>
       <el-checkbox-group v-model="checkedColums">
         <el-checkbox v-for="{ prop, label } in columns" :prop="prop" :label="label" :key="prop" @change="handleCheckedColumsChange($event, label)">{{ label }}</el-checkbox>
       </el-checkbox-group>
     </div>
+    <!-- 导入导出操作区 -->
     <div class="toolbar clearfix">
       <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
         <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
@@ -81,7 +83,7 @@
           <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
         </el-upload>
       </form>
-      <el-button size="small" type="primary" style="float: right">导出</el-button>
+      <el-button size="small" type="primary" style="float: right" @click="handleExport">导出</el-button>
     </div>
     <!--列表-->
     <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
@@ -167,7 +169,7 @@ export default {
         arrivalTime: '',
         leaveStatus: 0,
         pageIndex: 0, // 查询页页码
-        pageSize: 2 // 查询条数
+        pageSize: 8 // 查询条数
       },
       sexOptions: [
         {
@@ -354,6 +356,7 @@ export default {
     }
   },
   methods: {
+    // 动态插入table列
     handleCheckedColumsChange(event, value) {
       if (event) {
         for (let i = 0; i < checkOptions.length; i++) {
@@ -487,6 +490,30 @@ export default {
               this.$router.go({ path: '/person/entry-manage' })
             }
           )
+        })
+        .catch()
+    },
+    // 导出
+    handleExport() {
+      this.$confirm('确认导出表格？', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData('personal/exportPersonalAll', this.filters, {
+            responseType: 'arraybuffer'
+          }).then(res => {
+            let fileName = '商品上架总览.xls'
+            let blob = new Blob([res.data], { type: 'application/x-xls' })
+            if (window.navigator.msSaveOrOpenBlob) {
+              navigator.msSaveBlob(blob, fileName)
+            } else {
+              var link = document.createElement('a')
+              link.href = window.URL.createObjectURL(blob)
+              link.download = fileName
+              link.click()
+              window.URL.revokeObjectURL(link.href)
+            }
+          })
         })
         .catch()
     },
