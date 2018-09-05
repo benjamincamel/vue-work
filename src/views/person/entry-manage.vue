@@ -366,6 +366,7 @@ export default {
         }
       } else {
         for (let i = 0; i < this.colConfigs.length; i++) {
+
           if (this.colConfigs[i].label === value) {
             this.colConfigs.splice(i, 1)
           }
