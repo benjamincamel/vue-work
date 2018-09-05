@@ -75,7 +75,6 @@
       </el-upload>
     </form>
     <div>
-      <h4>显示列</h4>
       <el-checkbox-group v-model="checkedColums" :inline="true">
         <el-checkbox v-for="{ prop, label } in columns" :prop="prop" :label="label" :key="prop" @change="handleCheckedColumsChange($event, label)">{{ label }}</el-checkbox>
       </el-checkbox-group>
@@ -143,8 +142,7 @@ const checkOptions = [
   { prop: 'contactAddress', label: '联系地址' },
   { prop: 'contactPhone', label: '联系电话' },
   { prop: 'education', label: '学历' },
-  { prop: 'email', label: '邮箱' },
-  { prop: 'entryTime', label: '入职时间' }
+  { prop: 'email', label: '邮箱' }
 ]
 export default {
   data() {
