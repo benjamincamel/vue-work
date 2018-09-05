@@ -8,7 +8,7 @@
       </el-breadcrumb>
     </div>
     <!--查询区域-->
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+    <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
         <el-form-item label="员工编号">
           <el-input v-model="filters.employeeNumber" placeholder="员工编号"></el-input>
@@ -67,17 +67,21 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <form id="myForm" enctype="multipart/form-data" method="post">
-      <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
-        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
-      </el-upload>
-    </form>
-    <div>
-      <el-checkbox-group v-model="checkedColums" :inline="true">
+    <div class="toolbar">
+      <h4>显示列</h4>
+      <el-checkbox-group v-model="checkedColums">
         <el-checkbox v-for="{ prop, label } in columns" :prop="prop" :label="label" :key="prop" @change="handleCheckedColumsChange($event, label)">{{ label }}</el-checkbox>
       </el-checkbox-group>
+    </div>
+    <div class="toolbar clearfix">
+      <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
+        <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
+          <el-button slot="trigger" size="small">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="primary" @click="submitUpload">导入</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+        </el-upload>
+      </form>
+      <el-button size="small" type="primary" style="float: right">导出</el-button>
     </div>
     <!--列表-->
     <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
@@ -111,7 +115,7 @@
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
       </el-table-column>
-      <el-table-column v-for="{ prop, label } in colConfigs" :key="prop" :prop="prop" :label="label">
+      <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
       <el-table-column label="操作" width="160">
         <template slot-scope="scope">
@@ -134,15 +138,15 @@ const curax = axios.create({
   baseURL: this.env ? '正式环境' : 'api'
 })
 const checkOptions = [
-  { prop: 'age', label: '年龄', width: 180 },
-  { prop: 'bankCardNumber', label: '银行卡号' },
-  { prop: 'bankOpenPlace', label: '开户行' },
-  { prop: 'basePay', label: '基本工资' },
-  { prop: 'contact', label: '紧急联系人' },
-  { prop: 'contactAddress', label: '联系地址' },
-  { prop: 'contactPhone', label: '联系电话' },
-  { prop: 'education', label: '学历' },
-  { prop: 'email', label: '邮箱' }
+  { prop: 'age', label: '年龄', width: 60 },
+  { prop: 'bankCardNumber', label: '银行卡号', width: 180 },
+  { prop: 'bankOpenPlace', label: '开户行', width: 180 },
+  { prop: 'basePay', label: '基本工资', width: 120 },
+  { prop: 'contact', label: '紧急联系人', width: 120 },
+  { prop: 'contactAddress', label: '联系地址', width: 180 },
+  { prop: 'contactPhone', label: '联系电话', width: 120 },
+  { prop: 'education', label: '学历', width: 50 },
+  { prop: 'email', label: '邮箱', width: 180 }
 ]
 export default {
   data() {
@@ -527,5 +531,8 @@ export default {
 }
 .hx-container .el-checkbox {
   line-height: 3;
+}
+.hx-container .toolbar {
+  padding: 10px 0;
 }
 </style>
