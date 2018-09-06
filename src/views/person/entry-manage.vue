@@ -520,23 +520,41 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
-          this.getData(
+          this.getFile(
             'personal/export',
-            // {
-            //   params: {
-            //     heads: '姓名,年龄,出生日期',
-            //     columns: 'name,age,birthday'
-            //   }
-            // },
             {
-              heads: '姓名, 年龄, 出生日期',
-              columns: 'name, age, birthday'
+              params: {
+                heads: '姓名,年龄,出生日期',
+                columns: 'name,age,birthday'
+              }
             },
-            data => {
-              console.log('columns')
-              this.tools.alertInfo(this, '导出成功！')
-            }
-          )
+            { responseType: 'blob' }
+            // {
+            //   heads: '姓名, 年龄, 出生日期',
+            //   columns: 'name, age, birthday'
+            // },
+            // data => {
+            //   console.log('columns')
+            //   this.tools.alertInfo(this, '导出成功！')
+            // }
+          ).then(res => {
+            const fileName = res.headers['content-disposition'].split('=')[1]
+            const objectUrl = URL.createObjectURL(new Blob([res.data]))
+            const link = document.createElement('a')
+            link.download = fileName
+            link.href = objectUrl
+            link.click()
+          })
+          // curax.post('personal/export', { heads: '姓名,年龄', columns: 'name,age' }, { responseType: 'blob' }).then(
+          //   res => {
+          //     const fileName = res.headers['content-disposition'].split('=')[1]
+          //     const objectUrl = URL.createObjectURL(new Blob([res.data]))
+          //     const link = document.createElement('a')
+          //     link.download = fileName
+          //     link.href = objectUrl
+          //     link.click()
+          //   }
+          // )
         })
         .catch()
     },
