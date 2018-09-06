@@ -422,6 +422,27 @@ export default {
           this.tools.alertError(this, '请求错误！')
         })
     },
+    getFile(funName, param, fun) {
+      // 数据请求方法
+      this.showLoading = true
+      this.ax
+        .get(funName, param)
+        .then(response => {
+          // console.log(response)
+          this.showLoading = false
+          if (response.data.code === 0) {
+            // 请求成功
+            this.tools.alertInfo(this, response.data.msg)
+            fun(response.data.data)
+          } else {
+            this.tools.alertError(this, response.data.msg)
+          }
+        })
+        .catch(Error => {
+          this.showLoading = false
+          this.tools.alertError(this, '请求错误！')
+        })
+    },
     handleFilters() {
       // 查询按钮事件
       this.filters.pageIndex = 0
@@ -499,14 +520,20 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
-          console.log(this.personalAllList)
           this.getData(
             'personal/export',
+            // {
+            //   params: {
+            //     heads: '姓名,年龄,出生日期',
+            //     columns: 'name,age,birthday'
+            //   }
+            // },
             {
-              heads: '姓名,年龄',
-              columns: 'name,age'
+              heads: '姓名, 年龄, 出生日期',
+              columns: 'name, age, birthday'
             },
             data => {
+              console.log('columns')
               this.tools.alertInfo(this, '导出成功！')
             }
           )
