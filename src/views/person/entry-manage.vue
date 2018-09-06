@@ -366,7 +366,6 @@ export default {
         }
       } else {
         for (let i = 0; i < this.colConfigs.length; i++) {
-
           if (this.colConfigs[i].label === value) {
             this.colConfigs.splice(i, 1)
           }
@@ -500,21 +499,17 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
-          this.getData('personal/exportPersonalAll', this.filters, {
-            responseType: 'arraybuffer'
-          }).then(res => {
-            let fileName = '商品上架总览.xls'
-            let blob = new Blob([res.data], { type: 'application/x-xls' })
-            if (window.navigator.msSaveOrOpenBlob) {
-              navigator.msSaveBlob(blob, fileName)
-            } else {
-              var link = document.createElement('a')
-              link.href = window.URL.createObjectURL(blob)
-              link.download = fileName
-              link.click()
-              window.URL.revokeObjectURL(link.href)
+          console.log(this.personalAllList)
+          this.getData(
+            'personal/export',
+            {
+              heads: '姓名,年龄',
+              columns: 'name,age'
+            },
+            data => {
+              this.tools.alertInfo(this, '导出成功！')
             }
-          })
+          )
         })
         .catch()
     },
