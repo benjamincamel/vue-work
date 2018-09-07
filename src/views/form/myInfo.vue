@@ -218,7 +218,10 @@
               </el-select>
             </el-form-item>
             <el-form-item label="离职类型">
-              <el-input v-model="personalAll.personalWorkInfo.leaveType" auto-complete="off"></el-input>
+              <el-select v-model="personalAll.personalWorkInfo.leaveType" size="medium">
+                <el-option v-for="item in leaveTypeOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="离职日期">
               <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="离职日期">
@@ -514,6 +517,24 @@ export default {
               label: '属地化支撑'
             }
           ]
+        }
+      ],
+      leaveTypeOptions: [
+        {
+          value: '1',
+          label: '辞职'
+        },
+        {
+          value: '2',
+          label: '退休'
+        },
+        {
+          value: '3',
+          label: '合同期满'
+        },
+        {
+          value: '4',
+          label: '试用期未通过'
         }
       ]
     }

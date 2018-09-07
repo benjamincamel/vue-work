@@ -84,6 +84,7 @@
         </el-upload>
       </form>
       <el-button size="small" type="primary" style="float: right" @click="handleExport">导出</el-button>
+      <a :href="downloadURL" ref="downloadA2" class="download-a" style="display: none"></a>
     </div>
     <!--列表-->
     <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
@@ -119,17 +120,36 @@
       </el-table-column>
       <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
-      <el-table-column label="操作" width="160">
+      <el-table-column label="操作" width="340">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
+          <el-button type="primary" size="small" @click="handleAssign(scope.row.id)">分配账号</el-button>
+          <el-button type="danger" size="small" @click="handleLeave(scope.row.id)">办理离职</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--分页-->
+    <!--分配账号-->
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="活动名称" :label-width="formLabelWidth">
+          <el-input v-model="form.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="活动区域" :label-width="formLabelWidth">
+          <el-select v-model="form.region" placeholder="请选择活动区域">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -153,6 +173,24 @@ const checkOptions = [
 export default {
   data() {
     return {
+      dialogStatus: '',
+      dialogFormVisible: false,
+      textMap: {
+        update: 'Edit',
+        create: 'Create'
+      },
+      editFormRules: {
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+      },
+      // 编辑界面数据
+      editForm: {
+        id: '0',
+        name: '',
+        sex: 1,
+        age: 0,
+        birth: '',
+        addr: ''
+      },
       checkAll: false,
       checkedColums: [],
       columns: checkOptions,
@@ -352,7 +390,8 @@ export default {
       ],
       count: 0, // 数据总共数量 多少条
       showLoading: true, // 是否展示table的loading状态
-      personalAllList: null
+      personalAllList: null,
+      downloadURL: ''
     }
   },
   methods: {
@@ -422,27 +461,6 @@ export default {
           this.tools.alertError(this, '请求错误！')
         })
     },
-    getFile(funName, param, fun) {
-      // 数据请求方法
-      this.showLoading = true
-      this.ax
-        .get(funName, param)
-        .then(response => {
-          // console.log(response)
-          this.showLoading = false
-          if (response.data.code === 0) {
-            // 请求成功
-            this.tools.alertInfo(this, response.data.msg)
-            fun(response.data.data)
-          } else {
-            this.tools.alertError(this, response.data.msg)
-          }
-        })
-        .catch(Error => {
-          this.showLoading = false
-          this.tools.alertError(this, '请求错误！')
-        })
-    },
     handleFilters() {
       // 查询按钮事件
       this.filters.pageIndex = 0
@@ -491,11 +509,11 @@ export default {
     },
     // 新增员工信息
     handleAdd() {
-      this.$router.push({ path: '/', query: { pageType: 0 }})
+      this.$router.push({ path: '/', query: { pageType: 0 } })
     },
     // 编辑员工信息
     handleEdit(id) {
-      this.$router.push({ path: '/', query: { pageType: 1, userId: id }})
+      this.$router.push({ path: '/', query: { pageType: 1, userId: id } })
     },
     // 删除员工信息
     handleRemove(id) {
@@ -514,47 +532,44 @@ export default {
         })
         .catch()
     },
+    handleAssign(index, row) {
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.editForm = Object.assign({}, row)
+    },
+    handleLeave(index, row) {
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.editForm = Object.assign({}, row)
+    },
     // 导出
     handleExport() {
       this.$confirm('确认导出表格？', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
-          this.getFile(
-            'personal/export',
-            {
-              params: {
-                heads: '姓名,年龄,出生日期',
-                columns: 'name,age,birthday'
-              }
-            },
-            { responseType: 'blob' }
-            // {
-            //   heads: '姓名, 年龄, 出生日期',
-            //   columns: 'name, age, birthday'
-            // },
-            // data => {
-            //   console.log('columns')
-            //   this.tools.alertInfo(this, '导出成功！')
-            // }
-          ).then(res => {
-            const fileName = res.headers['content-disposition'].split('=')[1]
-            const objectUrl = URL.createObjectURL(new Blob([res.data]))
-            const link = document.createElement('a')
-            link.download = fileName
-            link.href = objectUrl
-            link.click()
-          })
-          // curax.post('personal/export', { heads: '姓名,年龄', columns: 'name,age' }, { responseType: 'blob' }).then(
-          //   res => {
-          //     const fileName = res.headers['content-disposition'].split('=')[1]
-          //     const objectUrl = URL.createObjectURL(new Blob([res.data]))
-          //     const link = document.createElement('a')
-          //     link.download = fileName
-          //     link.href = objectUrl
-          //     link.click()
-          //   }
-          // )
+          this.ax
+            .post(
+              'personal/export',
+              {
+                heads:
+                  'ID,员工编号,姓名,联系电话,邮箱,身份证,性别,年龄,出生日期,户口性质,籍贯,婚姻状况,民族,职称,学历,毕业学校,毕业专业,英语,毕业时间,工作年限,联系地址,户籍地址,紧急联系人,紧急联系人电话,备注,创建时间,工作地点,岗位类别,职位,级别,部门,中心,项目,全通负责人,外派单位,招聘渠道,工作地址,合同签署次数,合同生效日期,合同失效日期,续签合同日期,续签合同失效日期,离职状态,离职类型,离职原因,离职日期,入职时间,到岗时间,转正时间,工龄,缴纳社保起始月份,社保缴纳地点,实际缴纳社保起始月份,招商银行卡号,开户行,试用期,试用期福利,转正福利,基本工资,绩效工资,补贴,转正工资,试用期工资,结算价',
+                columns:
+                  'id,employeeNumber,name,phone,email,identityCard,sex,age,birthday,homeProperty,nativePlace,marriage,nation,title,education,school,major,english,graduationTime,workingLife,contactAddress,homeAddress,contact,contactPhone,memo,createTime,workingPlace,postType,position,level,department,center,project,expatriateManager,expatriateUnit,recruitChannel,workingAddress,contractCount,contractStartdate,contractEnddate,contractRenewDate,contractRenewEnddate,leaveStatus,leaveType,leaveReason,leaveWorkingTime,entryTime,arrivalTime,workerTime,workingYears,insuranceBeginDate,insurancePlace,insuranceRealDate,bankCardNumber,bankOpenPlace,probationPeriod,probationPeriodWelfare,workerWelfare,basePay,meritPay,subsidy,workerPay,probationaryPay,settlementPrice'
+              },
+              { responseType: 'blob' }
+            )
+            .then(response => {
+              this.downloadURL = window.URL.createObjectURL(response.data)
+              console.log(this.downloadURL)
+              this.$refs.downloadA2.href = this.downloadURL
+              this.$refs.downloadA2.click()
+              this.tools.alertInfo(this, '导出成功！')
+            })
+            .catch(Error => {
+              this.showLoading = false
+              this.tools.alertError(this, '请求错误！')
+            })
         })
         .catch()
     },
