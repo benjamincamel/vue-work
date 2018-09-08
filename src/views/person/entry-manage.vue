@@ -120,12 +120,12 @@
       </el-table-column>
       <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
-      <el-table-column label="操作" width="340">
+      <el-table-column fixed="right" label="操作" width="340">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
-          <el-button type="primary" size="small" @click="handleAssign(scope.row.id)">分配账号</el-button>
-          <el-button type="danger" size="small" @click="handleLeave(scope.row.id)">办理离职</el-button>
+          <el-button type="primary" size="small" @click="handleDialogAssignVisible(scope.row)">分配账号</el-button>
+          <el-button type="danger" size="small" @click="handleDialogLeaveVisible(scope.row)">办理离职</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -133,21 +133,52 @@
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
     <!--分配账号-->
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="活动名称" :label-width="formLabelWidth">
-          <el-input v-model="form.name" auto-complete="off"></el-input>
+    <el-dialog title="分配账号" :visible.sync="dialogAssignVisible">
+      <el-form :model="assignForm">
+        <el-form-item label="员工ID" :label-width="formLabelWidth">
+          <el-input v-model="assignForm.id" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名" :label-width="formLabelWidth">
+          <el-input v-model="assignForm.name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="活动区域" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="assignForm.role" placeholder="请选择用户角色">
+            <el-option v-for="item in rolesOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button @click="dialogAssignVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAssign">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--办理离职-->
+    <el-dialog title="办理离职" :visible.sync="dialogLeaveVisible">
+      <el-form :model="leaveForm">
+        <el-form-item label="员工ID" :label-width="formLabelWidth">
+          <el-input v-model="leaveForm.id" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名" :label-width="formLabelWidth">
+          <el-input v-model="leaveForm.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="离职类型" :label-width="formLabelWidth">
+          <el-select v-model="leaveForm.leaveType" placeholder="请选择离职类型">
+            <el-option v-for="item in leaveTypeOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="离职原因" :label-width="formLabelWidth">
+          <el-input v-model="leaveForm.leaveReason" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="离职日期" :label-width="formLabelWidth">
+          <el-date-picker v-model="leaveForm.leaveWorkingTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="离职日期">
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogLeaveVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleLeave">确 定</el-button>
       </div>
     </el-dialog>
   </section>
@@ -173,24 +204,21 @@ const checkOptions = [
 export default {
   data() {
     return {
-      dialogStatus: '',
-      dialogFormVisible: false,
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      editFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
-      },
-      // 编辑界面数据
-      editForm: {
-        id: '0',
+      dialogLeaveVisible: false,
+      dialogAssignVisible: false,
+      assignForm: {
+        id: '',
         name: '',
-        sex: 1,
-        age: 0,
-        birth: '',
-        addr: ''
+        role: ''
       },
+      leaveForm: {
+        id: '',
+        name: '',
+        leaveType: '',
+        leaveReason: '',
+        leaveWorkingTime: ''
+      },
+      formLabelWidth: '120px',
       checkAll: false,
       checkedColums: [],
       columns: checkOptions,
@@ -205,9 +233,11 @@ export default {
         department: '',
         expatriateUnit: '',
         arrivalTime: '',
-        leaveStatus: 0,
-        pageIndex: 0, // 查询页页码
-        pageSize: 8 // 查询条数
+        leaveStatus: 1,
+        // 查询页页码
+        pageIndex: 0,
+        // 查询条数
+        pageSize: 8
       },
       sexOptions: [
         {
@@ -388,8 +418,58 @@ export default {
           ]
         }
       ],
-      count: 0, // 数据总共数量 多少条
-      showLoading: true, // 是否展示table的loading状态
+      leaveTypeOptions: [
+        {
+          value: '1',
+          label: '辞职'
+        },
+        {
+          value: '2',
+          label: '退休'
+        },
+        {
+          value: '3',
+          label: '合同期满'
+        },
+        {
+          value: '4',
+          label: '试用期未通过'
+        }
+      ],
+      rolesOptions: [
+        {
+          value: '1',
+          label: '超级管理员'
+        },
+        {
+          value: '2',
+          label: '普通管理员'
+        },
+        {
+          value: '3',
+          label: '人事经理'
+        },
+        {
+          value: '4',
+          label: '人事专员'
+        },
+        {
+          value: '5',
+          label: '中心领导'
+        },
+        {
+          value: '6',
+          label: '中心管理'
+        },
+        {
+          value: '7',
+          label: '普通员工'
+        }
+      ],
+      // 数据总共数量 多少条
+      count: 0,
+      // 是否展示table的loading状态
+      showLoading: true,
       personalAllList: null,
       downloadURL: ''
     }
@@ -440,8 +520,8 @@ export default {
       )
       return false
     },
+    // 数据请求方法
     getData(funName, param, fun) {
-      // 数据请求方法
       this.showLoading = true
       this.ax
         .post(funName, param)
@@ -461,8 +541,8 @@ export default {
           this.tools.alertError(this, '请求错误！')
         })
     },
+    // 查询按钮事件
     handleFilters() {
-      // 查询按钮事件
       this.filters.pageIndex = 0
       // 出生日期
       const bdStart = this.filters.birthdayStartDate
@@ -496,9 +576,8 @@ export default {
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
+    // 分页change方法
     currentChange(value) {
-      // 分页change方法
-      // this.currentPageSize = value
       this.filters.pageIndex = value - 1
       this.getData('personal/getList', this.filters, data => {
         this.count = data.count
@@ -509,11 +588,17 @@ export default {
     },
     // 新增员工信息
     handleAdd() {
-      this.$router.push({ path: '/', query: { pageType: 0 } })
+      this.$router.push({
+        path: '/',
+        query: { pageType: 0 }
+      })
     },
     // 编辑员工信息
     handleEdit(id) {
-      this.$router.push({ path: '/', query: { pageType: 1, userId: id } })
+      this.$router.push({
+        path: '/',
+        query: { pageType: 1, userId: id }
+      })
     },
     // 删除员工信息
     handleRemove(id) {
@@ -527,22 +612,62 @@ export default {
             data => {
               this.tools.alertInfo(this, '删除成功！')
               this.$router.go({ path: '/person/entry-manage' })
+              this.handleFilters()
             }
           )
         })
         .catch()
     },
-    handleAssign(index, row) {
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.editForm = Object.assign({}, row)
+    // 显示分配员工账号
+    handleDialogAssignVisible(row) {
+      console.log(row.id)
+      this.dialogAssignVisible = true
+      this.assignForm.id = row.id
+      this.assignForm.name = row.name
     },
-    handleLeave(index, row) {
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.editForm = Object.assign({}, row)
+    // 分配员工账号
+    handleAssign() {
+      this.$confirm('确认提交分配角色?', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'personal/addAdminByid',
+            { personalInfoId: this.assignForm.id },
+            data => {
+              this.tools.alertInfo(this, '分配成功！')
+              this.dialogAssignVisible = false
+            }
+          )
+        })
+        .catch()
     },
-    // 导出
+    // 显示办理离职
+    handleDialogLeaveVisible(row) {
+      console.log(row.id)
+      this.dialogLeaveVisible = true
+      this.leaveForm.id = row.id
+      this.leaveForm.name = row.name
+    },
+    // 办理离职
+    handleLeave() {
+      this.$confirm('确认办理离职?', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'personal/addLeaveInfo',
+            { personalInfoId: this.leaveForm.id },
+            data => {
+              this.tools.alertInfo(this, '办理成功！')
+              this.dialogLeaveVisible = false
+              this.$router.go({ path: '/person/entry-manage' })
+            }
+          )
+        })
+        .catch()
+    },
+    // 导出excel
     handleExport() {
       this.$confirm('确认导出表格？', '提示', {
         closeOnClickModal: false

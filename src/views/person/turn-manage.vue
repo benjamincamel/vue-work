@@ -1,273 +1,460 @@
 <template>
-	<section class="app-container">
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters" @submit.native.prevent>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
-
-		<!--列表-->
-		<el-table :data="users" highlight-current-row @selection-change="selsChange" style="width: 100%;">
-			<el-table-column type="selection" width="55">
-			</el-table-column>
-			<el-table-column type="index" width="60">
-			</el-table-column>
-			<el-table-column prop="name" label="姓名" width="120">
-			</el-table-column>
-			<el-table-column prop="sex" label="性别" width="120" :formatter="formatSex">
-			</el-table-column>
-			<el-table-column prop="age" label="年龄" width="120">
-			</el-table-column>
-			<el-table-column prop="birth" label="生日" width="120">
-			</el-table-column>
-			<el-table-column prop="addr" label="地址" min-width="160">
-			</el-table-column>
-      <el-table-column prop="remark" label="身份证号" min-width="160">
-			</el-table-column>
-			<el-table-column label="操作" width="160">
-				<template slot-scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
-
-		<!--工具条-->
-		<el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>
-
-		<!--编辑界面-->
-		<el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label=1>男</el-radio>
-						<el-radio class="radio" :label=0>女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-			 <el-button @click.native="dialogFormVisible=false">取消</el-button>
-			  <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">添加</el-button>
-        <el-button v-else type="primary" @click="updateData">修改</el-button>
-			</div>
-		</el-dialog>
-	</section>
+  <section class="app-container hx-container">
+    <div class="crumbs">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item>
+          <i class="el-icon-date"></i> 入离职管理</el-breadcrumb-item>
+        <el-breadcrumb-item>转正员工管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!--查询区域-->
+    <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
+      <el-form :inline="true" :model="filters" @submit.native.prevent>
+        <el-form-item label="姓名">
+          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="转正时间">
+          <el-date-picker v-model="filters.workerStartDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
+          </el-date-picker>
+          <span class="el-range-separator">至</span>
+          <el-date-picker v-model="filters.workerEndDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-on:click="handleFilters">查询</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
+    <!-- 动态插入table列 -->
+    <div class="toolbar">
+      <h4>显示列</h4>
+      <el-checkbox-group v-model="checkedColums">
+        <el-checkbox v-for="{ prop, label } in columns" :prop="prop" :label="label" :key="prop" @change="handleCheckedColumsChange($event, label)">{{ label }}</el-checkbox>
+      </el-checkbox-group>
+    </div>
+    <!--列表-->
+    <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+      <el-table-column type="selection" width="55">
+      </el-table-column>
+      <el-table-column prop="employeeNumber" label="员工编号" width="120">
+      </el-table-column>
+      <el-table-column prop="name" label="姓名" width="80">
+      </el-table-column>
+      <el-table-column prop="sex" label="性别" width="80">
+      </el-table-column>
+      <el-table-column label="出生日期" sortable min-width="160">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="position" label="职位" width="120">
+      </el-table-column>
+      <el-table-column prop="level" label="级别" width="120">
+      </el-table-column>
+      <el-table-column prop="department" label="所在部门" width="120">
+      </el-table-column>
+      <el-table-column prop="center" label="归属中心" width="120">
+      </el-table-column>
+      <el-table-column prop="expatriateUnit" label="外派单位" min-width="160">
+      </el-table-column>
+      <el-table-column label="转正时间" min-width="160">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.workerTime)).slice(0, 10)}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="workingPlace" label="所在职场" min-width="160">
+      </el-table-column>
+      <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
+      </el-table-column>
+    </el-table>
+    <!--分页-->
+    <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
+    </el-pagination>
+  </section>
 </template>
 
 <script>
-import util from '@/utils/table.js'
-import {
-  getUserListPage,
-  removeUser,
-  batchRemoveUser,
-  editUser,
-  addUser
-} from '@/api/userTable'
-
+const checkOptions = [
+  { prop: 'age', label: '年龄', width: 60 },
+  { prop: 'bankCardNumber', label: '银行卡号', width: 180 },
+  { prop: 'bankOpenPlace', label: '开户行', width: 180 },
+  { prop: 'basePay', label: '基本工资', width: 120 },
+  { prop: 'contact', label: '紧急联系人', width: 120 },
+  { prop: 'contactAddress', label: '联系地址', width: 180 },
+  { prop: 'contactPhone', label: '联系电话', width: 120 },
+  { prop: 'education', label: '学历', width: 50 },
+  { prop: 'email', label: '邮箱', width: 180 }
+]
 export default {
   data() {
     return {
-      dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogFormVisible: false,
+      checkAll: false,
+      checkedColums: [],
+      columns: checkOptions,
+      isIndeterminate: false,
+      colConfigs: [],
       filters: {
-        name: ''
-      },
-      users: [],
-      total: 0,
-      page: 1,
-      sels: [], // 列表选中列
-      editFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
-      },
-      // 编辑界面数据
-      editForm: {
-        id: '0',
+        employeeNumber: '',
         name: '',
-        sex: 1,
-        age: 0,
-        birth: '',
-        addr: ''
+        birthday: '',
+        position: '',
+        level: '',
+        department: '',
+        expatriateUnit: '',
+        arrivalTime: '',
+        leaveStatus: 1,
+        // 查询页页码
+        pageIndex: 0,
+        // 查询条数
+        pageSize: 8
       },
-
-      addFormVisible: false, // 新增界面是否显示
-      addFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
-      }
+      sexOptions: [
+        {
+          value: '男',
+          label: '男'
+        },
+        {
+          value: '女',
+          label: '女'
+        }
+      ],
+      levelOptions: [
+        {
+          value: '初级',
+          label: '初级'
+        },
+        {
+          value: '中级',
+          label: '中级'
+        },
+        {
+          value: '高级',
+          label: '高级'
+        },
+        {
+          value: '高级+',
+          label: '高级+'
+        }
+      ],
+      departmentOptions: [
+        {
+          value: '产品事业部',
+          label: '产品事业部'
+        },
+        {
+          value: '市场技术部',
+          label: '市场技术部'
+        },
+        {
+          value: '系统运维部',
+          label: '系统运维部'
+        },
+        {
+          value: '系统集成部',
+          label: '系统集成部'
+        },
+        {
+          value: '政企支撑中心',
+          label: '政企支撑中心'
+        }
+      ],
+      expatriateUnitOptions: [
+        {
+          value: '全通',
+          label: '全通'
+        },
+        {
+          value: '北京物联网',
+          label: '北京物联网'
+        },
+        {
+          value: '成都物联网',
+          label: '成都物联网'
+        },
+        {
+          value: '重庆物联网',
+          label: '重庆物联网'
+        },
+        {
+          value: '百度',
+          label: '百度'
+        }
+      ],
+      centerOptions: [
+        {
+          label: '产品事业部',
+          options: [
+            {
+              value: '管理信息化中心',
+              label: '管理信息化中心'
+            },
+            {
+              value: '交通行业中心',
+              label: '交通行业中心'
+            },
+            {
+              value: '医疗行业中心',
+              label: '医疗行业中心'
+            },
+            {
+              value: '教育行业中心',
+              label: '教育行业中心'
+            },
+            {
+              value: '安全项目中心',
+              label: '安全项目中心'
+            },
+            {
+              value: 'ERP组',
+              label: 'ERP组'
+            },
+            {
+              value: '质量管理中心',
+              label: '质量管理中心'
+            }
+          ]
+        },
+        {
+          label: '市场技术部',
+          options: [
+            {
+              value: '一大区',
+              label: '一大区'
+            },
+            {
+              value: '东北二大区',
+              label: '东北二大区'
+            },
+            {
+              value: '三大区',
+              label: '三大区'
+            },
+            {
+              value: '四大区',
+              label: '四大区'
+            },
+            {
+              value: '五大区',
+              label: '五大区'
+            }
+          ]
+        },
+        {
+          label: '系统运维部',
+          options: [
+            {
+              value: '质量管理中心',
+              label: '质量管理中心'
+            },
+            {
+              value: '百度亦庄',
+              label: '百度亦庄'
+            },
+            {
+              value: '设备维护中心',
+              label: '设备维护中心'
+            }
+          ]
+        },
+        {
+          label: '系统集成部',
+          options: [
+            {
+              value: '技术支持组',
+              label: '技术支持组'
+            },
+            {
+              value: '工程实施中心',
+              label: '工程实施中心'
+            }
+          ]
+        },
+        {
+          label: '政企支撑中心',
+          options: [
+            {
+              value: '人力支撑',
+              label: '人力支撑'
+            },
+            {
+              value: '商务支撑',
+              label: '商务支撑'
+            },
+            {
+              value: '属地化支撑',
+              label: '属地化支撑'
+            }
+          ]
+        }
+      ],
+      leaveTypeOptions: [
+        {
+          value: '1',
+          label: '辞职'
+        },
+        {
+          value: '2',
+          label: '退休'
+        },
+        {
+          value: '3',
+          label: '合同期满'
+        },
+        {
+          value: '4',
+          label: '试用期未通过'
+        }
+      ],
+      rolesOptions: [
+        {
+          value: '1',
+          label: '超级管理员'
+        },
+        {
+          value: '2',
+          label: '普通管理员'
+        },
+        {
+          value: '3',
+          label: '人事经理'
+        },
+        {
+          value: '4',
+          label: '人事专员'
+        },
+        {
+          value: '5',
+          label: '中心领导'
+        },
+        {
+          value: '6',
+          label: '中心管理'
+        },
+        {
+          value: '7',
+          label: '普通员工'
+        }
+      ],
+      // 数据总共数量 多少条
+      count: 0,
+      // 是否展示table的loading状态
+      showLoading: true,
+      personalAllList: null
     }
   },
   methods: {
-    // 性别显示转换
-    formatSex: function(row, column) {
-      return row.sex === 1 ? '男' : row.sex === 0 ? '女' : '未知'
-    },
-    handleCurrentChange(val) {
-      this.page = val
-      this.getUsers()
-    },
-    // 获取用户列表
-    getUsers() {
-      const para = {
-        page: this.page,
-        name: this.filters.name
+    // 动态插入table列
+    handleCheckedColumsChange(event, value) {
+      if (event) {
+        for (let i = 0; i < checkOptions.length; i++) {
+          if (checkOptions[i].label === value) {
+            this.colConfigs.push(checkOptions[i])
+          }
+        }
+      } else {
+        for (let i = 0; i < this.colConfigs.length; i++) {
+          if (this.colConfigs[i].label === value) {
+            this.colConfigs.splice(i, 1)
+          }
+        }
       }
-      getUserListPage(para).then(res => {
-        this.total = res.data.total
-        this.users = res.data.users
+    },
+    // 数据请求方法
+    getData(funName, param, fun) {
+      this.showLoading = true
+      this.ax
+        .post(funName, param)
+        .then(response => {
+          // console.log(response)
+          this.showLoading = false
+          if (response.data.code === 0) {
+            // 请求成功
+            this.tools.alertInfo(this, response.data.msg)
+            fun(response.data.data)
+          } else {
+            this.tools.alertError(this, response.data.msg)
+          }
+        })
+        .catch(Error => {
+          this.showLoading = false
+          this.tools.alertError(this, '请求错误！')
+        })
+    },
+    // 查询按钮事件
+    handleFilters() {
+      this.filters.pageIndex = 0
+      // 转正时间
+      const tdStart = this.filters.workerStartDate
+      const tdEnd = this.filters.workerEndDate
+      if (
+        new Date(tdStart === null ? '' : tdStart) >
+        new Date(tdEnd === null ? '' : tdEnd)
+      ) {
+        this.tools.alertError(
+          this,
+          '开始时间大于结束时间，请重新选择转正时间！'
+        )
+        return
+      }
+      this.getData('personal/getList', this.filters, data => {
+        this.count = data.count
+        this.personalAllList = data.personalViewList
+        this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
-    // 删除
+    // 分页change方法
+    currentChange(value) {
+      this.filters.pageIndex = value - 1
+      this.getData('personal/getList', this.filters, data => {
+        this.count = data.count
+        this.personalAllList = data.personalViewList
+      })
+      this.$refs.table.bodyWrapper.scrollTop = 0
+      console.log(`当前第${value}页`)
+    },
     handleDel(index, row) {
-      this.$confirm('确认删除该记录吗?', '提示', {
-        type: 'warning'
-      })
-        .then(() => {
-          const para = { id: row.id }
-          removeUser(para).then(res => {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.getUsers()
-          })
-        })
-        .catch(() => {})
-    },
-    // 显示编辑界面
-    handleEdit(index, row) {
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.editForm = Object.assign({}, row)
-    },
-    // 显示新增界面
-    handleAdd() {
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.editForm = {
-        id: '0',
-        name: '',
-        sex: 1,
-        age: 0,
-        birth: '',
-        addr: ''
-      }
-    },
-    // 编辑
-    updateData() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          this.$confirm('确认提交吗？', '提示', {})
-            .then(() => {
-              const para = Object.assign({}, this.editForm)
-              para.birth =
-                !para.birth || para.birth === ''
-                  ? ''
-                  : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd')
-              editUser(para).then(res => {
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                })
-                this.$refs['editForm'].resetFields()
-                this.dialogFormVisible = false
-                this.getUsers()
-              })
-            })
-            .catch(e => {
-              // 打印一下错误
-              console.log(e)
-            })
-        }
-      })
-    },
-    // 新增
-    createData: function() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          this.$confirm('确认提交吗？', '提示', {})
-            .then(() => {
-              this.editForm.id = (parseInt(Math.random() * 100)).toString() // mock a id
-              const para = Object.assign({}, this.editForm)
-              console.log(para)
-
-              para.birth =
-                !para.birth || para.birth === ''
-                  ? ''
-                  : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd')
-              addUser(para).then(res => {
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                })
-                this.$refs['editForm'].resetFields()
-                this.dialogFormVisible = false
-                this.getUsers()
-              })
-            })
-            .catch(e => {
-              // 打印一下错误
-              console.log(e)
-            })
-        }
-      })
-    },
-    // 全选单选多选
-    selsChange(sels) {
-      this.sels = sels
-    },
-    // 批量删除
-    batchRemove() {
-      var ids = this.sels.map(item => item.id).toString()
-      this.$confirm('确认删除选中记录吗？', '提示', {
-        type: 'warning'
-      })
-        .then(() => {
-          const para = { ids: ids }
-          batchRemoveUser(para).then(res => {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.getUsers()
-          })
-        })
-        .catch(() => {})
+      console.log(index, row)
     }
   },
-  mounted() {
-    this.getUsers()
+  // 请求数据渲染
+  created() {
+    if (this.tools.getLocal(this.$route.name, 'filters')) {
+      this.filters = this.tools.getLocal(this.$route.name, 'filters')
+      this.filters.pageIndex = 0
+      // this.typesArr = this.filters.types.split(',')
+    }
+    // 页面展示后 第一次请求人员列表
+    this.getData('personal/getList', this.filters, data => {
+      this.count = data.count
+      console.log(data)
+      this.personalAllList = data.personalViewList
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.tools.setLocal(this.$route.name, 'filters', this.filters)
+    next()
   }
 }
 </script>
 
-<style scoped>
-
+<style>
+.hx-container .el-table {
+  border: 1px solid rgb(235, 238, 245);
+  border-bottom-width: 0;
+}
+.hx-container .el-pagination {
+  text-align: center;
+  padding: 1em 0;
+  border: 1px solid rgb(235, 238, 245);
+  border-top-width: 0;
+}
+.hx-container .el-range-separator {
+  width: 10% !important;
+}
+.hx-container .el-checkbox {
+  line-height: 3;
+}
+.hx-container .toolbar {
+  padding: 10px 0;
+}
 </style>
