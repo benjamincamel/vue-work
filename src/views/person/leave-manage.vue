@@ -43,7 +43,7 @@
       <el-table-column prop="sex" label="性别" width="80">
       </el-table-column>
       <el-table-column label="出生日期" sortable min-width="160">
-        <template slot-scope="scope">
+          <template slot-scope="scope">
           {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
         </template>
       </el-table-column>
@@ -61,6 +61,8 @@
         <template slot-scope="scope">
           {{tools.dateFormat(new Date(scope.row.leaveWorkingTime)).slice(0, 10)}}
         </template>
+      </el-table-column>
+      <el-table-column prop="leaveType" :formatter="leaveTypeFormat" label="离职类型" min-width="160">
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
       </el-table-column>
@@ -104,6 +106,7 @@ export default {
         expatriateUnit: '',
         leaveWorkingTime: '',
         leaveStatus: 0,
+        leaveType: '',
         // 查询页页码
         pageIndex: 0,
         // 查询条数
@@ -359,6 +362,26 @@ export default {
           }
         }
       }
+    },
+    // 离职类型数据翻译
+    leaveTypeFormat(row, column) {
+      if (row.leaveType === 1) {
+        return this.leaveTypeOptions[0].label
+      } else if (row.leaveType === 2) {
+        return this.leaveTypeOptions[1].label
+      } else if (row.leaveType === 3) {
+        return this.leaveTypeOptions[2].label
+      } else if (row.leaveType === 4) {
+        return this.leaveTypeOptions[3].label
+      }
+      // return row.leaveType === 1
+      //   ? this.leaveTypeOptions[0].label
+      //   : row.leaveType === 2
+      //     ? this.leaveTypeOptions[1].label
+      //     : row.leaveType === 3
+      //       ? this.leaveTypeOptions[2].label
+      //       : row.leaveType === 4
+      //       ?  this.leaveTypeOptions[3].label
     },
     // 数据请求方法
     getData(funName, param, fun) {

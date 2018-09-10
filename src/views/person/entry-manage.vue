@@ -138,9 +138,9 @@
         <el-form-item label="员工ID" :label-width="formLabelWidth">
           <el-input v-model="assignForm.id" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="姓名" :label-width="formLabelWidth">
+        <!-- <el-form-item label="姓名" :label-width="formLabelWidth">
           <el-input v-model="assignForm.name" auto-complete="off"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="活动区域" :label-width="formLabelWidth">
           <el-select v-model="assignForm.role" placeholder="请选择用户角色">
             <el-option v-for="item in rolesOptions" clearable :key="item.value" :label="item.label" :value="item.value">
@@ -443,26 +443,22 @@ export default {
         },
         {
           value: '2',
-          label: '普通管理员'
+          label: '人事主管'
         },
         {
           value: '3',
-          label: '人事经理'
+          label: '招聘主管'
         },
         {
           value: '4',
-          label: '人事专员'
+          label: '项目经营'
         },
         {
           value: '5',
-          label: '中心领导'
+          label: '职场主管'
         },
         {
           value: '6',
-          label: '中心管理'
-        },
-        {
-          value: '7',
           label: '普通员工'
         }
       ],
@@ -632,8 +628,8 @@ export default {
       })
         .then(() => {
           this.getData(
-            'personal/addAdminByid',
-            { personalInfoId: this.assignForm.id },
+            'personal/addAdminByPInfoId',
+            { personalInfoId: this.assignForm.id, roleId: this.assignForm.role },
             data => {
               this.tools.alertInfo(this, '分配成功！')
               this.dialogAssignVisible = false
@@ -657,7 +653,7 @@ export default {
         .then(() => {
           this.getData(
             'personal/addLeaveInfo',
-            { personalInfoId: this.leaveForm.id },
+            { personalInfoId: this.leaveForm.id, leaveType: this.leaveForm.leaveType, leaveReason: this.leaveForm.leaveReason, leaveWorkingTime: this.leaveForm.leaveWorkingTime },
             data => {
               this.tools.alertInfo(this, '办理成功！')
               this.dialogLeaveVisible = false
