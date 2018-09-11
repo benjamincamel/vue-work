@@ -137,7 +137,7 @@ export default {
         // 查询页页码
         pageIndex: 0,
         // 查询条数
-        pageSize: 5
+        pageSize: 1
       },
       recruitInfo: {
         id: '',
