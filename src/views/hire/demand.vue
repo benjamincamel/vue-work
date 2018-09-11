@@ -58,7 +58,7 @@
       </el-table-column>
       <el-table-column prop="city" label="城市" width="120">
       </el-table-column>
-      <el-table-column prop="status" label="状态" width="120" :formatter="statusFormat">
+      <el-table-column prop="status" label="状态" min-width="120" :formatter="statusFormat">
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
@@ -81,7 +81,7 @@
           <el-input v-model="recruitInfo.postDuty" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="人员缺口" :label-width="formLabelWidth">
-          <el-input v-model="recruitInfo.pepoleNeed" auto-complete="off"></el-input>
+          <el-input-number v-model="recruitInfo.pepoleNeed" :min="0" :max="200"></el-input-number>
         </el-form-item>
         <el-form-item label="外派单位" :label-width="formLabelWidth">
           <el-select v-model="recruitInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
@@ -137,7 +137,7 @@ export default {
         // 查询页页码
         pageIndex: 0,
         // 查询条数
-        pageSize: 8
+        pageSize: 5
       },
       recruitInfo: {
         id: '',
@@ -345,6 +345,20 @@ export default {
     handleAddDialogVisible() {
       this.dialogStatus = 'add'
       this.dialogVisible = true
+      this.recruitInfo = {
+        id: '',
+        center: '',
+        city: '',
+        createTime: '',
+        createUser: '',
+        expatriateUnit: '',
+        isDel: '',
+        pepoleNeed: '',
+        position: '',
+        postDuty: '',
+        serialVersionUID: '',
+        workPlace: ''
+      }
     },
     // 新增招聘需求
     handleAdd() {
@@ -358,7 +372,7 @@ export default {
             data => {
               this.tools.alertInfo(this, '新增成功！')
               this.dialogVisible = false
-              this.$router.go(0)
+              this.handleFilters()
             }
           )
         })
@@ -382,7 +396,7 @@ export default {
             data => {
               this.tools.alertInfo(this, '修改成功！')
               this.dialogVisible = false
-              this.$router.go(0)
+              this.handleFilters()
             }
           )
         })
@@ -399,7 +413,7 @@ export default {
             { recruitInfoId: row.id },
             data => {
               this.tools.alertInfo(this, '更改成功！')
-              this.$router.go(0)
+              this.handleFilters()
             }
           )
         })
@@ -416,7 +430,7 @@ export default {
             { recruitInfoId: row.id },
             data => {
               this.tools.alertInfo(this, '删除成功！')
-              this.$router.go(0)
+              this.handleFilters()
             }
           )
         })
@@ -435,7 +449,7 @@ export default {
       this.filters.pageIndex = value - 1
       this.getData('resume/getRecruitList', this.filters, data => {
         this.count = data.count
-        this.recruitList = data.recruitList
+        this.recruitList = data.recruitLists
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
