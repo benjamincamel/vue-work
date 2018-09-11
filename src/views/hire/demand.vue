@@ -1,79 +1,118 @@
 <template>
-  <section class="app-container">
-    <!--工具条-->
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+  <section class="app-container hx-container">
+    <div class="crumbs">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item>
+          <i class="el-icon-date"></i> 招聘管理</el-breadcrumb-item>
+        <el-breadcrumb-item>招聘需求</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <!--查询区域-->
+    <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
-        <el-form-item>
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+        <el-form-item label="岗位名称">
+          <el-input v-model="filters.position" placeholder="岗位名称"></el-input>
+        </el-form-item>
+        <el-form-item label="外派单位">
+          <el-select v-model="filters.expatriateUnit" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="filters.status" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" v-on:click="getUsers">查询</el-button>
+          <el-button type="primary" v-on:click="handleFilters">查询</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
+          <el-button type="primary" @click="handleDialogVisible">新增</el-button>
         </el-form-item>
       </el-form>
     </el-col>
-
     <!--列表-->
-    <el-table :data="users" highlight-current-row @selection-change="selsChange" style="width: 100%;">
+    <el-table :data="recruitList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
-      <el-table-column type="index" width="60">
+      <el-table-column prop="position" label="岗位名称" width="150">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120">
+      <el-table-column prop="postDuty" label="岗位职责" width="180">
       </el-table-column>
-      <el-table-column prop="sex" label="性别" width="120" :formatter="formatSex">
+      <el-table-column prop="pepoleNeed" label="人员缺口" width="80">
       </el-table-column>
-      <el-table-column prop="age" label="年龄" width="120">
+      <el-table-column prop="createUser" label="创建人" width="120">
       </el-table-column>
-      <el-table-column prop="birth" label="生日" width="120">
-      </el-table-column>
-      <el-table-column prop="addr" label="地址" min-width="160">
-      </el-table-column>
-      <el-table-column prop="remark" label="身份证号" min-width="160">
-      </el-table-column>
-      <el-table-column label="操作" width="160">
+      <el-table-column label="创建时间" width="160">
         <template slot-scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          {{tools.dateFormat(new Date(scope.row.createTime)).slice(0, 10)}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="center" label="所属中心" width="120">
+      </el-table-column>
+      <el-table-column prop="expatriateUnit" label="外派单位" width="120">
+      </el-table-column>
+      <el-table-column prop="workPlace" label="所在职场" width="120">
+      </el-table-column>
+      <el-table-column prop="city" label="城市" width="120">
+      </el-table-column>
+      <el-table-column prop="status" label="状态" width="120" :formatter="statusFormat">
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="240">
+        <template slot-scope="scope">
+          <el-button type="primary" size="small" @click="handleDialogVisible(scope.row.id)">编辑</el-button>
+          <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
+          <el-button type="danger" size="small" @click="handleStatus(scope.row.id)">更改状态</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <!--工具条-->
-    <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-      </el-pagination>
-    </el-col>
-
-    <!--编辑界面-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="editForm.name" auto-complete="off"></el-input>
+    <!--分页-->
+    <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
+    </el-pagination>
+    <!--新增招聘需求-->
+    <el-dialog title="新增招聘需求" :visible.sync="dialogVisible">
+      <el-form :model="addRecruitInfo">
+        <el-form-item label="岗位名称" :label-width="formLabelWidth">
+          <el-input v-model="addRecruitInfo.position" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="性别">
-          <el-radio-group v-model="editForm.sex">
-            <el-radio class="radio" :label=1>男</el-radio>
-            <el-radio class="radio" :label=0>女</el-radio>
-          </el-radio-group>
+        <el-form-item label="岗位职责" :label-width="formLabelWidth">
+          <el-input v-model="addRecruitInfo.postDuty" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="年龄">
-          <el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
+        <el-form-item label="人员缺口" :label-width="formLabelWidth">
+          <el-input v-model="addRecruitInfo.pepoleNeed" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="生日">
-          <el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
+        <el-form-item label="外派单位" :label-width="formLabelWidth">
+          <el-select v-model="addRecruitInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="地址">
-          <el-input type="textarea" v-model="editForm.addr"></el-input>
+        <el-form-item label="归属中心" :label-width="formLabelWidth">
+          <el-select v-model="addRecruitInfo.center" clearable size="medium" placeholder="请选择">
+            <el-option-group v-for="group in centerOptions" :key="group.label" :label="group.label">
+              <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-option-group>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所在职场" :label-width="formLabelWidth">
+          <el-input v-model="addRecruitInfo.workPlace" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="城市" :label-width="formLabelWidth">
+          <el-input v-model="addRecruitInfo.city" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" :label-width="formLabelWidth">
+          <el-select v-model="addRecruitInfo.status" placeholder="请选择状态">
+            <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="dialogFormVisible=false">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">添加</el-button>
-        <el-button v-else type="primary" @click="updateData">修改</el-button>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAdd">确 定</el-button>
       </div>
     </el-dialog>
   </section>
@@ -83,12 +122,190 @@
 export default {
   data() {
     return {
-
+      dialogVisible: false,
+      formLabelWidth: '120px',
+      filters: {
+        position: '',
+        expatriateUnit: '',
+        status: '',
+        // 查询页页码
+        pageIndex: 0,
+        // 查询条数
+        pageSize: 8
+      },
+      addRecruitInfo: {
+        id: '',
+        center: '',
+        city: '',
+        createTime: '',
+        createUser: '',
+        expatriateUnit: '',
+        isDel: '',
+        pepoleNeed: '',
+        position: '',
+        postDuty: '',
+        serialVersionUID: '',
+        workPlace: ''
+      },
+      isDelOptions: [
+        {
+          value: '0',
+          label: '未删除'
+        },
+        {
+          value: '1',
+          label: '已删除'
+        }
+      ],
+      statusOptions: [
+        {
+          value: '0',
+          label: '已完成'
+        },
+        {
+          value: '1',
+          label: '进行中'
+        }
+      ],
+      expatriateUnitOptions: [
+        {
+          value: '全通',
+          label: '全通'
+        },
+        {
+          value: '北京物联网',
+          label: '北京物联网'
+        },
+        {
+          value: '成都物联网',
+          label: '成都物联网'
+        },
+        {
+          value: '重庆物联网',
+          label: '重庆物联网'
+        },
+        {
+          value: '百度',
+          label: '百度'
+        }
+      ],
+      centerOptions: [
+        {
+          label: '产品事业部',
+          options: [
+            {
+              value: '管理信息化中心',
+              label: '管理信息化中心'
+            },
+            {
+              value: '交通行业中心',
+              label: '交通行业中心'
+            },
+            {
+              value: '医疗行业中心',
+              label: '医疗行业中心'
+            },
+            {
+              value: '教育行业中心',
+              label: '教育行业中心'
+            },
+            {
+              value: '安全项目中心',
+              label: '安全项目中心'
+            },
+            {
+              value: 'ERP组',
+              label: 'ERP组'
+            },
+            {
+              value: '质量管理中心',
+              label: '质量管理中心'
+            }
+          ]
+        },
+        {
+          label: '市场技术部',
+          options: [
+            {
+              value: '一大区',
+              label: '一大区'
+            },
+            {
+              value: '东北二大区',
+              label: '东北二大区'
+            },
+            {
+              value: '三大区',
+              label: '三大区'
+            },
+            {
+              value: '四大区',
+              label: '四大区'
+            },
+            {
+              value: '五大区',
+              label: '五大区'
+            }
+          ]
+        },
+        {
+          label: '系统运维部',
+          options: [
+            {
+              value: '质量管理中心',
+              label: '质量管理中心'
+            },
+            {
+              value: '百度亦庄',
+              label: '百度亦庄'
+            },
+            {
+              value: '设备维护中心',
+              label: '设备维护中心'
+            }
+          ]
+        },
+        {
+          label: '系统集成部',
+          options: [
+            {
+              value: '技术支持组',
+              label: '技术支持组'
+            },
+            {
+              value: '工程实施中心',
+              label: '工程实施中心'
+            }
+          ]
+        },
+        {
+          label: '政企支撑中心',
+          options: [
+            {
+              value: '人力支撑',
+              label: '人力支撑'
+            },
+            {
+              value: '商务支撑',
+              label: '商务支撑'
+            },
+            {
+              value: '属地化支撑',
+              label: '属地化支撑'
+            }
+          ]
+        }
+      ],
+      // 数据总共数量 多少条
+      count: 0,
+      // 是否展示table的loading状态
+      showLoading: true,
+      recruitList: null
     }
   },
   methods: {
+    // 数据请求方法
     getData(funName, param, fun) {
-      // 数据请求方法
       this.showLoading = true
       this.ax
         .post(funName, param)
@@ -107,17 +324,148 @@ export default {
           this.showLoading = false
           this.tools.alertError(this, '请求错误！')
         })
+    },
+    // 查询按钮事件
+    handleFilters() {
+      this.filters.pageIndex = 0
+      this.getData('resume/getRecruitList', this.filters, data => {
+        console.log(data)
+        this.count = data.count
+        this.recruitList = data.recruitList
+        this.tools.setLocal(this.$route.name, 'filters', this.filters)
+      })
+    },
+    // 显示新增招聘需求
+    // handleDialogVisible(id) {
+    //   this.dialogVisible = true
+    // },
+    // 新增招聘需求
+    handleAdd() {
+      this.$confirm('确认新增招聘需求?', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'resume/addRecruitInfo',
+            { recruitInfoJsonStr: JSON.stringify(this.addRecruitInfo) },
+            data => {
+              this.tools.alertInfo(this, '新增成功！')
+              this.dialogVisible = false
+              this.$router.go(0)
+            }
+          )
+        })
+        .catch()
+    },
+    // // 显示修改招聘需求
+    // handleDialogVisible(id) {
+    //   this.dialogVisible = true
+    // },
+    // 编辑招聘信息
+    handleDialogVisible(id) {
+      this.dialogVisible = true
+      this.getData('resume/getRecruitList', { recruitInfoId: id }, this.filters, data => {
+        console.log(data)
+        this.count = data.count
+        this.addRecruitInfo = data.recruitList
+        this.tools.setLocal(this.$route.name, 'filters', this.filters)
+      })
+    },
+    // 更改状态
+    handleStatus(id) {
+      this.$confirm('确认更改状态?', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'resume/updateRecruitStatusComplete',
+            { recruitInfoId: id },
+            data => {
+              this.tools.alertInfo(this, '更改成功！')
+              this.$router.go(0)
+            }
+          )
+        })
+        .catch()
+    },
+    // 删除招聘信息
+    handleRemove(id) {
+      this.$confirm('是否确认删除，删除后无法恢复', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'resume/deleteRecruitInfo',
+            { recruitInfoId: id },
+            data => {
+              this.tools.alertInfo(this, '删除成功！')
+              this.$router.go(0)
+            }
+          )
+        })
+        .catch()
+    },
+    // 状态数据翻译
+    statusFormat(row, column) {
+      if (row.status === 0) {
+        return this.statusOptions[0].label
+      } else if (row.status === 1) {
+        return this.statusOptions[1].label
+      }
+    },
+    // 分页change方法
+    currentChange(value) {
+      this.filters.pageIndex = value - 1
+      this.getData('resume/getRecruitList', this.filters, data => {
+        this.count = data.count
+        this.recruitList = data.recruitList
+      })
+      this.$refs.table.bodyWrapper.scrollTop = 0
+      console.log(`当前第${value}页`)
+    },
+    handleDel(index, row) {
+      console.log(index, row)
     }
   },
+  // 请求数据渲染
   created() {
-    this.getData(
-      'resume/getRecruitList', {}, data => {
-        console.log(data)
-      }
-    )
+    if (this.tools.getLocal(this.$route.name, 'filters')) {
+      this.filters = this.tools.getLocal(this.$route.name, 'filters')
+      this.filters.pageIndex = 0
+      // this.typesArr = this.filters.types.split(',')
+    }
+    // 页面展示后 第一次请求人员列表
+    this.getData('resume/getRecruitList', this.filters, data => {
+      this.count = data.count
+      console.log(data)
+      this.recruitList = data.recruitLists
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.tools.setLocal(this.$route.name, 'filters', this.filters)
+    next()
   }
 }
 </script>
 
-<style scoped>
+<style>
+.hx-container .el-table {
+  border: 1px solid rgb(235, 238, 245);
+  border-bottom-width: 0;
+}
+.hx-container .el-pagination {
+  text-align: center;
+  padding: 1em 0;
+  border: 1px solid rgb(235, 238, 245);
+  border-top-width: 0;
+}
+.hx-container .el-range-separator {
+  width: 10% !important;
+}
+.hx-container .el-checkbox {
+  line-height: 3;
+}
+.hx-container .toolbar {
+  padding: 10px 0;
+}
 </style>

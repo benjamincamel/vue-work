@@ -43,7 +43,7 @@
       <el-table-column prop="sex" label="性别" width="80">
       </el-table-column>
       <el-table-column label="出生日期" sortable min-width="160">
-          <template slot-scope="scope">
+        <template slot-scope="scope">
           {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
         </template>
       </el-table-column>
@@ -374,14 +374,6 @@ export default {
       } else if (row.leaveType === 4) {
         return this.leaveTypeOptions[3].label
       }
-      // return row.leaveType === 1
-      //   ? this.leaveTypeOptions[0].label
-      //   : row.leaveType === 2
-      //     ? this.leaveTypeOptions[1].label
-      //     : row.leaveType === 3
-      //       ? this.leaveTypeOptions[2].label
-      //       : row.leaveType === 4
-      //       ?  this.leaveTypeOptions[3].label
     },
     // 数据请求方法
     getData(funName, param, fun) {

@@ -607,7 +607,7 @@ export default {
             { personalInfoId: id },
             data => {
               this.tools.alertInfo(this, '删除成功！')
-              this.$router.go({ path: '/person/entry-manage' })
+              this.$router.go(0)
               this.handleFilters()
             }
           )
@@ -657,7 +657,7 @@ export default {
             data => {
               this.tools.alertInfo(this, '办理成功！')
               this.dialogLeaveVisible = false
-              this.$router.go({ path: '/person/entry-manage' })
+              this.$router.go(0)
             }
           )
         })
