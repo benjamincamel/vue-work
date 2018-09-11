@@ -97,6 +97,13 @@ export const asyncRouterMap = [
         name: '简历筛选',
         component: () => import('@/views/hire/resume'),
         meta: { title: '简历筛选', icon: 'fa fa-filter', roles: ',10,' }
+      },
+      {
+        path: 'interview',
+        name: '面试沟通',
+        component: () => import('@/views/hire/interview'),
+        meta: { title: '面试沟通', icon: 'fa fa-filter', roles: ',10,' },
+        hidden: true
       }
     ]
   },

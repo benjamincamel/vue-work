@@ -27,10 +27,6 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <!-- 查看沟通表 -->
-    <div class="toolbar clearfix">
-      <el-button size="small" type="primary" style="float: right" @click="interViewList">查看沟通表</el-button>
-    </div>
     <!--列表-->
     <el-table :data="resumeList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
@@ -247,12 +243,6 @@ export default {
         this.count = data.count
         this.resumeList = data.resumeViewList
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
-      })
-    },
-    interViewList() {
-      this.$router.push({
-        path: '/hire/interview',
-        // query: { pageType: 1, userId: id }
       })
     },
     // 显示新增简历
