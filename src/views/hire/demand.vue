@@ -29,7 +29,7 @@
           <el-button type="primary" v-on:click="handleFilters">查询</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleDialogVisible">新增</el-button>
+          <el-button type="primary" @click="handleAddDialogVisible">新增</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -62,9 +62,9 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleDialogVisible(scope.row.id)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
-          <el-button type="danger" size="small" @click="handleStatus(scope.row.id)">更改状态</el-button>
+          <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
+          <el-button type="danger" size="small" @click="handleStatus(scope.row)">更改状态</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,25 +72,25 @@
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
     <!--新增招聘需求-->
-    <el-dialog title="新增招聘需求" :visible.sync="dialogVisible">
-      <el-form :model="addRecruitInfo">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
+      <el-form :model="recruitInfo">
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
-          <el-input v-model="addRecruitInfo.position" auto-complete="off"></el-input>
+          <el-input v-model="recruitInfo.position" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="岗位职责" :label-width="formLabelWidth">
-          <el-input v-model="addRecruitInfo.postDuty" auto-complete="off"></el-input>
+          <el-input v-model="recruitInfo.postDuty" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="人员缺口" :label-width="formLabelWidth">
-          <el-input v-model="addRecruitInfo.pepoleNeed" auto-complete="off"></el-input>
+          <el-input v-model="recruitInfo.pepoleNeed" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="外派单位" :label-width="formLabelWidth">
-          <el-select v-model="addRecruitInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
+          <el-select v-model="recruitInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
             <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="归属中心" :label-width="formLabelWidth">
-          <el-select v-model="addRecruitInfo.center" clearable size="medium" placeholder="请选择">
+          <el-select v-model="recruitInfo.center" clearable size="medium" placeholder="请选择">
             <el-option-group v-for="group in centerOptions" :key="group.label" :label="group.label">
               <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
@@ -98,13 +98,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="所在职场" :label-width="formLabelWidth">
-          <el-input v-model="addRecruitInfo.workPlace" auto-complete="off"></el-input>
+          <el-input v-model="recruitInfo.workPlace" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="城市" :label-width="formLabelWidth">
-          <el-input v-model="addRecruitInfo.city" auto-complete="off"></el-input>
+          <el-input v-model="recruitInfo.city" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="状态" :label-width="formLabelWidth">
-          <el-select v-model="addRecruitInfo.status" placeholder="请选择状态">
+          <el-select v-model="recruitInfo.status" placeholder="请选择状态">
             <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -112,7 +112,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleAdd">确 定</el-button>
+        <el-button v-if="dialogStatus==='add'" type="primary" @click="handleAdd">新 增</el-button>
+        <el-button v-else type="primary" @click="handleEdit">修 改</el-button>
       </div>
     </el-dialog>
   </section>
@@ -123,6 +124,11 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      dialogStatus: '',
+      textMap: {
+        edit: '修改招聘需求',
+        add: '新增招聘需求'
+      },
       formLabelWidth: '120px',
       filters: {
         position: '',
@@ -133,7 +139,7 @@ export default {
         // 查询条数
         pageSize: 8
       },
-      addRecruitInfo: {
+      recruitInfo: {
         id: '',
         center: '',
         city: '',
@@ -331,14 +337,15 @@ export default {
       this.getData('resume/getRecruitList', this.filters, data => {
         console.log(data)
         this.count = data.count
-        this.recruitList = data.recruitList
+        this.recruitList = data.recruitLists
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
     // 显示新增招聘需求
-    // handleDialogVisible(id) {
-    //   this.dialogVisible = true
-    // },
+    handleAddDialogVisible() {
+      this.dialogStatus = 'add'
+      this.dialogVisible = true
+    },
     // 新增招聘需求
     handleAdd() {
       this.$confirm('确认新增招聘需求?', '提示', {
@@ -347,7 +354,7 @@ export default {
         .then(() => {
           this.getData(
             'resume/addRecruitInfo',
-            { recruitInfoJsonStr: JSON.stringify(this.addRecruitInfo) },
+            { recruitInfoJsonStr: JSON.stringify(this.recruitInfo) },
             data => {
               this.tools.alertInfo(this, '新增成功！')
               this.dialogVisible = false
@@ -357,29 +364,39 @@ export default {
         })
         .catch()
     },
-    // // 显示修改招聘需求
-    // handleDialogVisible(id) {
-    //   this.dialogVisible = true
-    // },
-    // 编辑招聘信息
-    handleDialogVisible(id) {
+    // 显示修改招聘需求
+    handleEditDialogVisible(row) {
+      this.dialogStatus = 'edit'
       this.dialogVisible = true
-      this.getData('resume/getRecruitList', { recruitInfoId: id }, this.filters, data => {
-        console.log(data)
-        this.count = data.count
-        this.addRecruitInfo = data.recruitList
-        this.tools.setLocal(this.$route.name, 'filters', this.filters)
+      this.recruitInfo = Object.assign({}, row)
+    },
+    // 编辑招聘信息
+    handleEdit(row) {
+      this.$confirm('确认修改招聘需求?', '提示', {
+        closeOnClickModal: false
       })
+        .then(() => {
+          this.getData(
+            'resume/updateRecruitInfo',
+            { recruitInfoJsonStr: JSON.stringify(this.recruitInfo) },
+            data => {
+              this.tools.alertInfo(this, '修改成功！')
+              this.dialogVisible = false
+              this.$router.go(0)
+            }
+          )
+        })
+        .catch()
     },
     // 更改状态
-    handleStatus(id) {
+    handleStatus(row) {
       this.$confirm('确认更改状态?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
           this.getData(
             'resume/updateRecruitStatusComplete',
-            { recruitInfoId: id },
+            { recruitInfoId: row.id },
             data => {
               this.tools.alertInfo(this, '更改成功！')
               this.$router.go(0)
@@ -388,15 +405,15 @@ export default {
         })
         .catch()
     },
-    // 删除招聘信息
-    handleRemove(id) {
+    // 删除招聘需求
+    handleRemove(row) {
       this.$confirm('是否确认删除，删除后无法恢复', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
           this.getData(
             'resume/deleteRecruitInfo',
-            { recruitInfoId: id },
+            { recruitInfoId: row.id },
             data => {
               this.tools.alertInfo(this, '删除成功！')
               this.$router.go(0)
@@ -432,7 +449,6 @@ export default {
     if (this.tools.getLocal(this.$route.name, 'filters')) {
       this.filters = this.tools.getLocal(this.$route.name, 'filters')
       this.filters.pageIndex = 0
-      // this.typesArr = this.filters.types.split(',')
     }
     // 页面展示后 第一次请求人员列表
     this.getData('resume/getRecruitList', this.filters, data => {
