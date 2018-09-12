@@ -27,10 +27,6 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <!-- 查看沟通表 -->
-    <div class="toolbar clearfix">
-      <el-button size="small" type="primary" style="float: right" @click="interViewList">查看沟通表</el-button>
-    </div>
     <!--列表-->
     <el-table :data="resumeList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
@@ -79,8 +75,8 @@
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
-          <el-button type="success" size="small" @click="handlePass(scope.row)">通过</el-button>
-          <el-button type="danger" size="small" @click="handleNotPass(scope.row)">未通过</el-button>
+          <el-button type="success" size="small" v-if="scope.row.status===1" @click="handlePass(scope.row)">通过</el-button>
+          <el-button type="danger" size="small" v-if="scope.row.status===1" @click="handleNotPass(scope.row)">未通过</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -132,8 +128,8 @@
         <el-form-item label="专业" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.major" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="状态" :label-width="formLabelWidth">
-          <el-select v-model="resumeInfo.status" placeholder="请选择状态">
+        <el-form-item label="入职状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
+          <el-select v-model="resumeInfo.status" clearable size="medium" placeholder="请选择" disabled>
             <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -273,7 +269,7 @@ export default {
         position: '',
         school: '',
         sex: '',
-        status: ''
+        status: 1
       }
     },
     // 新增简历

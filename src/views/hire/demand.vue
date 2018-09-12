@@ -64,7 +64,7 @@
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
-          <el-button type="danger" size="small" @click="handleStatus(scope.row)">更改状态</el-button>
+          <el-button type="danger" v-if="scope.row.status===1" size="small" @click="handleStatus(scope.row)">更改状态</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -103,8 +103,8 @@
         <el-form-item label="城市" :label-width="formLabelWidth">
           <el-input v-model="recruitInfo.city" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="状态" :label-width="formLabelWidth">
-          <el-select v-model="recruitInfo.status" placeholder="请选择状态">
+        <el-form-item label="状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
+          <el-select v-model="recruitInfo.status" placeholder="请选择状态" disabled>
             <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -151,6 +151,7 @@ export default {
         position: '',
         postDuty: '',
         serialVersionUID: '',
+        status: 1,
         workPlace: ''
       },
       isDelOptions: [
@@ -357,7 +358,8 @@ export default {
         position: '',
         postDuty: '',
         serialVersionUID: '',
-        workPlace: ''
+        workPlace: '',
+        status: '1'
       }
     },
     // 新增招聘需求

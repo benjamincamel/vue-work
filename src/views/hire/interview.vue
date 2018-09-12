@@ -31,9 +31,6 @@
         <el-form-item>
           <el-button type="primary" v-on:click="handleFilters">查询</el-button>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleAddDialogVisible">新增</el-button>
-        </el-form-item>
       </el-form>
     </el-col>
     <!--列表-->
@@ -42,103 +39,191 @@
       </el-table-column>
       <el-table-column prop="position" label="岗位名称" width="150">
       </el-table-column>
+      <el-table-column prop="level" label="级别" width="150">
+      </el-table-column>
+      <el-table-column prop="recruitChannel" label="招聘渠道" width="150">
+      </el-table-column>
+      <el-table-column prop="projectManager" label="项目经理" width="150">
+      </el-table-column>
+      <el-table-column prop="location" label="驻场位置" width="150">
+      </el-table-column>
       <el-table-column label="面试时间" width="120">
         <template slot-scope="scope">
           {{tools.dateFormat(new Date(scope.row.interviewTime)).slice(0, 10)}}
         </template>
       </el-table-column>
-      <el-table-column label="邀约时间" width="120">
+      <el-table-column label="初步沟通时间" width="120">
         <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.inviteTime)).slice(0, 10)}}
+          {{tools.dateFormat(new Date(scope.row.firstCommunicateTime)).slice(0, 10)}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="finalCommunicateResult" label="初步沟通结果" width="150">
+      </el-table-column>
+      <el-table-column label="最终沟通时间" width="120">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.finalCommunicateTime)).slice(0, 10)}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="firstCommunicateResult" label="最终沟通结果" width="150">
+      </el-table-column>
+      <el-table-column prop="firstTime" label="首日回访到岗情况" width="150">
+      </el-table-column>
+      <el-table-column label="办理入职时间" width="150">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.entryTime)).slice(0, 10)}}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="姓名" width="120">
       </el-table-column>
       <el-table-column prop="sex" label="性别" width="50">
       </el-table-column>
-      <el-table-column label="出生日期" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
-        </template>
-      </el-table-column>
       <el-table-column prop="phone" label="联系电话" width="120">
       </el-table-column>
-      <el-table-column prop="email" label="邮箱" width="120">
+      <el-table-column prop="email" label="邮箱" width="250">
       </el-table-column>
-      <el-table-column prop="experience" label="工作年限" width="120">
+      <el-table-column prop="wantSalary" label="期望薪资" width="120">
       </el-table-column>
-      <el-table-column prop="education" label="学历" width="120">
+      <el-table-column prop="finalSalary" label="最终薪资" width="120">
       </el-table-column>
-      <el-table-column prop="school" label="毕业院校" width="120">
+      <el-table-column prop="probationPeriod" label="试用期" width="120">
       </el-table-column>
-      <el-table-column prop="major" label="专业" width="120">
+      <el-table-column prop="probationaryPay" label="试用期工资" width="120">
+      </el-table-column>
+      <el-table-column prop="probationPeriodWelfare" label="试用期福利" width="120">
+      </el-table-column>
+      <el-table-column prop="basePay" label="基本工资" width="120">
+      </el-table-column>
+      <el-table-column prop="insurance" label="五险" width="120">
+      </el-table-column>
+      <el-table-column prop="meritPay" label="绩效工资" width="120">
+      </el-table-column>
+      <el-table-column prop="workerWelfare" label="转正福利" width="120">
+      </el-table-column>
+      <el-table-column prop="subsidy" label="补贴" width="120">
       </el-table-column>
       <el-table-column label="创建时间" width="160">
         <template slot-scope="scope">
           {{tools.dateFormat(new Date(scope.row.createTime)).slice(0, 10)}}
         </template>
       </el-table-column>
+      <el-table-column label="修改时间" width="160">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.updateTime)).slice(0, 10)}}
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="状态" min-width="120" :formatter="statusFormat">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="300">
+      <el-table-column fixed="right" label="操作" width="360">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
-          <el-button type="success" size="small" @click="handlePass">通过</el-button>
-          <el-button type="danger" size="small" @click="handleNotPass">未通过</el-button>
+          <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">查看/编辑</el-button>
+          <el-button type="success" size="small" v-if="scope.row.status === 1" @click="handleEntry(scope.row)">入职</el-button>
+          <el-button type="danger" size="small" v-if="scope.row.status === 1" @click="handleNotEntry(scope.row)">未入职</el-button>
+          <el-button type="success" size="small" v-if="scope.row.status === 2" @click="handleReEntry(scope.row)">再次入职</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--新增招聘需求-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
-      <el-form :model="resumeInfo">
+    <!--查看/修改面试沟通-->
+    <el-dialog title="查看/修改面试沟通" :visible.sync="dialogVisible" :close-on-click-modal="false">
+      <el-form :model="interViewInfo">
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.position" auto-complete="off"></el-input>
+          <el-input v-model="interViewInfo.position" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="外派单位" :label-width="formLabelWidth">
+          <el-select v-model="interViewInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="级别" :label-width="formLabelWidth">
+          <el-select v-model="interViewInfo.level" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in levelOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="招聘渠道" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.recruitChannel" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="项目经理" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.projectManager" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="驻场位置" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.location" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="面试时间" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.interviewTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="面试时间">
+          <el-date-picker v-model="interViewInfo.interviewTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="面试时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="邀约时间" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.inviteTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="邀约时间">
+        <el-form-item label="初步沟通时间" :label-width="formLabelWidth">
+          <el-date-picker v-model="interViewInfo.firstCommunicateTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="初步沟通时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="初步沟通结果" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.finalCommunicateResult" type="textarea" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="最终沟通时间" :label-width="formLabelWidth">
+          <el-date-picker v-model="interViewInfo.finalCommunicateTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="初步沟通时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="最终沟通结果" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.firstCommunicateResult" type="textarea" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="首日回访到岗情况" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.firstTime" type="textarea" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="办理入职时间" :label-width="formLabelWidth">
+          <el-date-picker v-model="interViewInfo.entryTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="办理入职时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.name" auto-complete="off"></el-input>
+          <el-input v-model="interViewInfo.name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="性别" :label-width="formLabelWidth">
-          <el-select v-model="resumeInfo.sex" size="medium">
+          <el-select v-model="interViewInfo.sex" size="medium">
             <el-option label="男" value="男"></el-option>
             <el-option label="女" value="女"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="出生日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="出生日期">
-          </el-date-picker>
-        </el-form-item>
         <el-form-item label="联系电话" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.phone" auto-complete="off"></el-input>
+          <el-input v-model="interViewInfo.phone" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.email" auto-complete="off"></el-input>
+          <el-input v-model="interViewInfo.email" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="工作年限" :label-width="formLabelWidth">
-          <el-input-number v-model="resumeInfo.experience" :min="0" :max="200"></el-input-number>
+        <el-form-item label="期望薪资" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.wantSalary" :step="500" :min="1000" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="学历" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.education" auto-complete="off"></el-input>
+        <el-form-item label="最终薪资" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.finalSalary" :step="500" :min="1000" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="毕业院校" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.school" auto-complete="off"></el-input>
+        <el-form-item label="试用期" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.probationPeriod" :min="0" :max="5"></el-input-number>
         </el-form-item>
-        <el-form-item label="专业" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.major" auto-complete="off"></el-input>
+        <el-form-item label="试用期工资" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.probationaryPay" :step="500" :min="1000" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="状态" :label-width="formLabelWidth">
-          <el-select v-model="resumeInfo.status" placeholder="请选择状态">
+        <el-form-item label="试用期福利" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.probationPeriodWelfare" :step="100" :min="100" :max="2000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="基本工资" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.basePay" :step="500" :min="1000" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="五险" :label-width="formLabelWidth">
+          <el-input v-model="interViewInfo.insurance" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="绩效工资" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.meritPay" :step="500" :min="1000" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="转正福利" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.workerWelfare" :step="100" :min="100" :max="2000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="补贴" :label-width="formLabelWidth">
+          <el-input-number v-model="interViewInfo.subsidy" :step="500" :min="1000" :max="2000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="入职状态" :label-width="formLabelWidth">
+          <el-select v-model="interViewInfo.status" clearable size="medium" placeholder="请选择" disabled>
             <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -146,8 +231,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button v-if="dialogStatus==='add'" type="primary" @click="handleAdd">新 增</el-button>
-        <el-button v-else type="primary" @click="handleEdit">修 改</el-button>
+        <el-button type="primary" @click="handleEdit">修 改</el-button>
       </div>
     </el-dialog>
   </section>
@@ -158,13 +242,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      dialogStatus: '',
       passStatus: '',
-      textMap: {
-        edit: '修改简历',
-        add: '新增简历'
-      },
-      formLabelWidth: '120px',
+      formLabelWidth: '130px',
       filters: {
         age: '',
         position: '',
@@ -174,22 +253,8 @@ export default {
         // 查询条数
         pageSize: 8
       },
-      resumeInfo: {
-        id: '',
-        birthday: '',
-        createTime: '',
-        education: '',
-        email: '',
-        experience: '',
-        interviewTime: '',
-        inviteTime: '',
-        major: '',
-        name: '',
-        phone: '',
-        position: '',
-        school: '',
-        sex: '',
-        status: ''
+      interViewInfo: {
+        status: 1
       },
       isDelOptions: [
         {
@@ -199,6 +264,24 @@ export default {
         {
           value: '1',
           label: '已删除'
+        }
+      ],
+      levelOptions: [
+        {
+          value: '初级',
+          label: '初级'
+        },
+        {
+          value: '中级',
+          label: '中级'
+        },
+        {
+          value: '高级',
+          label: '高级'
+        },
+        {
+          value: '高级+',
+          label: '高级+'
         }
       ],
       expatriateUnitOptions: [
@@ -276,61 +359,21 @@ export default {
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
-    // 显示新增简历
-    handleAddDialogVisible() {
-      this.dialogStatus = 'add'
-      this.dialogVisible = true
-      this.resumeInfo = {
-        id: '',
-        birthday: '',
-        createTime: '',
-        education: '',
-        email: '',
-        experience: '',
-        interviewTime: '',
-        inviteTime: '',
-        major: '',
-        name: '',
-        phone: '',
-        position: '',
-        school: '',
-        sex: '',
-        status: ''
-      }
-    },
-    // 新增简历
-    handleAdd() {
-      this.$confirm('确认新增招聘需求?', '提示', {
-        closeOnClickModal: false
-      })
-        .then(() => {
-          this.getData(
-            'resume/addResumeInfo',
-            { resumeInfoJsonStr: JSON.stringify(this.resumeInfo) },
-            data => {
-              this.tools.alertInfo(this, '新增成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
-    },
-    // 显示修改简历
+    // 显示查看/修改面试沟通
     handleEditDialogVisible(row) {
-      this.dialogStatus = 'edit'
       this.dialogVisible = true
-      this.resumeInfo = Object.assign({}, row)
+      this.interViewInfo = Object.assign({}, row)
+      this.interViewInfo.status = this.statusFormat(row)
     },
-    // 编辑简历
+    // 编辑面试沟通
     handleEdit(row) {
       this.$confirm('确认修改招聘需求?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
           this.getData(
-            'resume/updateResumeInfo',
-            { resumeInfoJsonStr: JSON.stringify(this.resumeInfo) },
+            'resume/updateResumeInterview',
+            { resumeInterviewJsonStr: JSON.stringify(this.interViewInfo) },
             data => {
               this.tools.alertInfo(this, '修改成功！')
               this.dialogVisible = false
@@ -340,15 +383,15 @@ export default {
         })
         .catch()
     },
-    // 更改通过状态
-    handlePass(row) {
-      this.$confirm('确认更改状态?', '提示', {
+    // 入职
+    handleEntry(row) {
+      this.$confirm('确认已入职?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
           this.getData(
-            'resume/updateResumePass',
-            { resumeInfoId: row.id },
+            'resume/updateInterviewEntry',
+            { resumeInterviewId: row.id },
             data => {
               this.tools.alertInfo(this, '更改成功！')
               this.handleFilters()
@@ -357,15 +400,15 @@ export default {
         })
         .catch()
     },
-    // 更改未通过状态
-    handleNotPass(row) {
-      this.$confirm('确认更改状态?', '提示', {
+    // 再次办理入职入职
+    handleReEntry(row) {
+      this.$confirm('确认已入职?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
           this.getData(
-            'resume/updateResumeNotPass',
-            { resumeInfoId: row.id },
+            'resume/updateInterviewReEntry',
+            { resumeInterviewId: row.id },
             data => {
               this.tools.alertInfo(this, '更改成功！')
               this.handleFilters()
@@ -374,17 +417,17 @@ export default {
         })
         .catch()
     },
-    // 删除招聘需求
-    handleRemove(row) {
-      this.$confirm('是否确认删除，删除后无法恢复', '提示', {
+    // 未入职
+    handleNotEntry(row) {
+      this.$confirm('确认未入职?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
           this.getData(
-            'resume/deleteResumeInfo',
-            { resumeInfoId: row.id },
+            'resume/updateInterviewNotEntry',
+            { resumeInterviewId: row.id },
             data => {
-              this.tools.alertInfo(this, '删除成功！')
+              this.tools.alertInfo(this, '更改成功！')
               this.handleFilters()
             }
           )
@@ -397,6 +440,8 @@ export default {
         return this.statusOptions[0].label
       } else if (row.status === 1) {
         return this.statusOptions[1].label
+      } else if (row.status === 2) {
+        return this.statusOptions[2].label
       }
     },
     // 分页change方法
