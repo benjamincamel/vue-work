@@ -79,8 +79,8 @@
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
-          <el-button type="success" size="small" @click="handlePass">通过</el-button>
-          <el-button type="danger" size="small" @click="handleNotPass">未通过</el-button>
+          <el-button type="success" size="small" @click="handlePass(scope.row)">通过</el-button>
+          <el-button type="danger" size="small" @click="handleNotPass(scope.row)">未通过</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -377,6 +377,8 @@ export default {
         return this.statusOptions[0].label
       } else if (row.status === 1) {
         return this.statusOptions[1].label
+      } else if (row.status === 2) {
+        return this.statusOptions[2].label
       }
     },
     // 分页change方法
