@@ -137,7 +137,7 @@ export default {
         // 查询页页码
         pageIndex: 0,
         // 查询条数
-        pageSize: 1
+        pageSize: 8
       },
       recruitInfo: {
         id: '',
@@ -383,6 +383,7 @@ export default {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.recruitInfo = Object.assign({}, row)
+      this.recruitInfo.status = this.statusFormat(row)
     },
     // 编辑招聘信息
     handleEdit(row) {
@@ -453,9 +454,6 @@ export default {
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
-    },
-    handleDel(index, row) {
-      console.log(index, row)
     }
   },
   // 请求数据渲染

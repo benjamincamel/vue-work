@@ -427,9 +427,6 @@ export default {
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
-    },
-    handleDel(index, row) {
-      console.log(index, row)
     }
   },
   // 请求数据渲染

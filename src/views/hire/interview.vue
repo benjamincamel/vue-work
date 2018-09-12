@@ -10,14 +10,23 @@
     <!--查询区域-->
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
-        <el-form-item label="年龄">
-          <el-input-number v-model="filters.age" :min="18" :max="65"></el-input-number>
+        <el-form-item label="姓名">
+          <el-input v-model="filters.name" placeholder="姓名"></el-input>
         </el-form-item>
         <el-form-item label="岗位名称">
           <el-input v-model="filters.position" placeholder="岗位名称"></el-input>
         </el-form-item>
-        <el-form-item label="工作年限">
-          <el-input-number v-model="filters.experience" :min="0" :max="50"></el-input-number>
+        <el-form-item label="外派单位">
+          <el-select v-model="filters.expatriateUnit" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="入职状态">
+          <el-select v-model="filters.status" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-on:click="handleFilters">查询</el-button>
@@ -28,7 +37,7 @@
       </el-form>
     </el-col>
     <!--列表-->
-    <el-table :data="resumeList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table :data="interViewList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="position" label="岗位名称" width="150">
@@ -192,25 +201,47 @@ export default {
           label: '已删除'
         }
       ],
+      expatriateUnitOptions: [
+        {
+          value: '全通',
+          label: '全通'
+        },
+        {
+          value: '北京物联网',
+          label: '北京物联网'
+        },
+        {
+          value: '成都物联网',
+          label: '成都物联网'
+        },
+        {
+          value: '重庆物联网',
+          label: '重庆物联网'
+        },
+        {
+          value: '百度',
+          label: '百度'
+        }
+      ],
       statusOptions: [
         {
           value: '0',
-          label: '未通过'
+          label: '未入职'
         },
         {
           value: '1',
-          label: '进行中'
+          label: '待入职'
         },
         {
           value: '2',
-          label: '面试通过'
+          label: '已入职'
         }
       ],
       // 数据总共数量 多少条
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
-      resumeList: null
+      interViewList: null
     }
   },
   methods: {
@@ -238,10 +269,10 @@ export default {
     // 查询按钮事件
     handleFilters() {
       this.filters.pageIndex = 0
-      this.getData('resume/getResumeList', this.filters, data => {
+      this.getData('resume/getInterViewList', this.filters, data => {
         console.log(data)
         this.count = data.count
-        this.resumeList = data.resumeViewList
+        this.interViewList = data.interviewLists
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
@@ -371,15 +402,12 @@ export default {
     // 分页change方法
     currentChange(value) {
       this.filters.pageIndex = value - 1
-      this.getData('resume/getResumeList', this.filters, data => {
+      this.getData('resume/getInterViewList', this.filters, data => {
         this.count = data.count
-        this.resumeList = data.resumeViewList
+        this.interViewList = data.interviewLists
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
-    },
-    handleDel(index, row) {
-      console.log(index, row)
     }
   },
   // 请求数据渲染
@@ -389,10 +417,10 @@ export default {
       this.filters.pageIndex = 0
     }
     // 页面展示后 第一次请求人员列表
-    this.getData('resume/getResumeList', this.filters, data => {
+    this.getData('resume/getInterViewList', this.filters, data => {
       this.count = data.count
       console.log(data)
-      this.resumeList = data.resumeViewList
+      this.interViewList = data.interviewLists
     })
   },
   beforeRouteLeave(to, from, next) {

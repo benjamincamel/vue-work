@@ -102,8 +102,7 @@ export const asyncRouterMap = [
         path: 'interview',
         name: '面试沟通',
         component: () => import('@/views/hire/interview'),
-        meta: { title: '面试沟通', icon: 'fa fa-filter', roles: ',10,' },
-        hidden: true
+        meta: { title: '面试沟通', icon: 'fa fa-handshake-o', roles: ',10,' }
       }
     ]
   },

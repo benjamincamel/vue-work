@@ -693,9 +693,6 @@ export default {
             })
         })
         .catch()
-    },
-    handleDel(index, row) {
-      console.log(index, row)
     }
   },
   // 请求数据渲染

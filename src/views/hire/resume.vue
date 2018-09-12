@@ -58,7 +58,7 @@
       </el-table-column>
       <el-table-column prop="phone" label="联系电话" width="120">
       </el-table-column>
-      <el-table-column prop="email" label="邮箱" width="120">
+      <el-table-column prop="email" label="邮箱" width="220">
       </el-table-column>
       <el-table-column prop="experience" label="工作年限" width="120">
       </el-table-column>
@@ -251,8 +251,7 @@ export default {
     },
     interViewList() {
       this.$router.push({
-        path: '/hire/interview',
-        // query: { pageType: 1, userId: id }
+        path: '/hire/interview'
       })
     },
     // 显示新增简历
@@ -300,6 +299,7 @@ export default {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.resumeInfo = Object.assign({}, row)
+      this.resumeInfo.status = this.statusFormat(row)
     },
     // 编辑简历
     handleEdit(row) {
@@ -321,7 +321,7 @@ export default {
     },
     // 更改通过状态
     handlePass(row) {
-      this.$confirm('确认更改状态?', '提示', {
+      this.$confirm('确认通过?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
@@ -338,7 +338,7 @@ export default {
     },
     // 更改未通过状态
     handleNotPass(row) {
-      this.$confirm('确认更改状态?', '提示', {
+      this.$confirm('确认未通过?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
@@ -346,6 +346,7 @@ export default {
             'resume/updateResumeNotPass',
             { resumeInfoId: row.id },
             data => {
+              console.log(row.id)
               this.tools.alertInfo(this, '更改成功！')
               this.handleFilters()
             }
@@ -387,9 +388,6 @@ export default {
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
-    },
-    handleDel(index, row) {
-      console.log(index, row)
     }
   },
   // 请求数据渲染
