@@ -84,7 +84,7 @@
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
     <!--新增招聘需求-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
+    <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="resumeInfo">
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.position" auto-complete="off"></el-input>
@@ -427,5 +427,9 @@ export default {
 }
 .hx-container .toolbar {
   padding: 10px 0;
+}
+.hx-container .addEditDialog .el-dialog__body {
+  height: 60vh;
+  overflow: auto;
 }
 </style>
