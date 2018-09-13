@@ -39,6 +39,8 @@
       </el-table-column>
       <el-table-column prop="position" label="岗位名称" width="150">
       </el-table-column>
+      <el-table-column prop="expatriateUnit" label="外派单位" width="150">
+      </el-table-column>
       <el-table-column prop="level" label="级别" width="150">
       </el-table-column>
       <el-table-column prop="recruitChannel" label="招聘渠道" width="150">
@@ -374,9 +376,11 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
+          const myData = { ...this.interViewInfo }
+          myData.status = myData.status === '未入职' ? 0 : myData.status === '待入职' ? 1 : myData.status === '已入职' ? 2 : ''
           this.getData(
             'resume/updateResumeInterview',
-            { resumeInterviewJsonStr: JSON.stringify(this.interViewInfo) },
+            { resumeInterviewJsonStr: JSON.stringify(myData) },
             data => {
               this.tools.alertInfo(this, '修改成功！')
               this.dialogVisible = false
@@ -396,8 +400,16 @@ export default {
             'resume/updateInterviewEntry',
             { resumeInterviewId: row.id },
             data => {
-              this.tools.alertInfo(this, '更改成功！')
+              this.tools.alertInfo(this, '入职成功！')
               this.handleFilters()
+              console.log(data)
+              localStorage.interViewData = JSON.stringify(data)
+              this.$router.push({
+                name: 'addEdit',
+                paramas: {
+                  pageType: 0
+                }
+              })
             }
           )
         })
@@ -405,7 +417,7 @@ export default {
     },
     // 再次办理入职
     handleReEntry(row) {
-      this.$confirm('确认已入职?', '提示', {
+      this.$confirm('确认再次入职?', '提示', {
         closeOnClickModal: false
       })
         .then(() => {
@@ -413,13 +425,13 @@ export default {
             'resume/updateInterviewReEntry',
             { resumeInterviewId: row.id },
             data => {
-              this.tools.alertInfo(this, '更改成功！')
+              this.tools.alertInfo(this, '再次入职成功！')
               this.handleFilters()
               console.log(data)
               localStorage.interViewData = JSON.stringify(data)
               this.$router.push({
-                path: '/',
-                query: {
+                name: 'addEdit',
+                paramas: {
                   pageType: 0
                 }
               })

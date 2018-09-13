@@ -393,11 +393,11 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
-          let a = {...this.recruitInfo}
-          a.status = a.status === '进行中' ? 1 : a.status === '已完成' ? 0 : ''
+          const myData = { ...this.recruitInfo }
+          myData.status = myData.status === '进行中' ? 1 : 0
           this.getData(
             'resume/updateRecruitInfo',
-            { recruitInfoJsonStr: JSON.stringify(a) },
+            { recruitInfoJsonStr: JSON.stringify(myData) },
             data => {
               this.tools.alertInfo(this, '修改成功！')
               this.dialogVisible = false

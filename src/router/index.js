@@ -61,9 +61,9 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'EditPassword',
+        path: 'editPassword',
         name: 'EditPassword',
-        component: () => import('@/views/form/EditPassword'),
+        component: () => import('@/views/form/editPassword'),
         meta: { title: '修改密码', icon: 'fa fa-key', roles: ',8,' }
       },
       {
@@ -135,6 +135,12 @@ export const asyncRouterMap = [
         name: '离职员工查询',
         component: () => import('@/views/person/leave-manage'),
         meta: { title: '离职员工查询', icon: 'fa fa-user-times', roles: ',25,' }
+      },
+      {
+        path: 'add-edit-info',
+        name: 'addEdit',
+        component: () => import('@/views/person/add-edit-info'),
+        meta: { title: '新增/修改员工信息', icon: 'fa fa-user-circle-o', roles: ',25,' }
       }
     ]
   },

@@ -303,9 +303,11 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
+          const myData = { ...this.resumeInfo }
+          myData.status = myData.status === '未通过' ? 0 : myData.status === '进行中' ? 1 : myData.status === '面试通过' ? 2 : ''
           this.getData(
             'resume/updateResumeInfo',
-            { resumeInfoJsonStr: JSON.stringify(this.resumeInfo) },
+            { resumeInfoJsonStr: JSON.stringify(myData) },
             data => {
               this.tools.alertInfo(this, '修改成功！')
               this.dialogVisible = false

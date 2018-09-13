@@ -85,7 +85,7 @@ export default {
         if (response.data.code === 0) {
           // 请求成功
           setToken(response.data.data)
-          this.$router.push({ path: '/' })
+          this.$router.push({ name: 'myInfo' })
         } else {
           this.tools.alertError(this, response)
         }

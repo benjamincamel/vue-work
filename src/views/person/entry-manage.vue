@@ -118,6 +118,11 @@
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
       </el-table-column>
+      <el-table-column label="到岗时间" min-width="160">
+        <template slot-scope="scope">
+          {{tools.dateFormat(new Date(scope.row.arrivalTime)).slice(0, 10)}}
+        </template>
+      </el-table-column>
       <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="340">
@@ -584,16 +589,13 @@ export default {
     },
     // 新增员工信息
     handleAdd() {
-      this.$router.push({
-        path: '/',
-        query: { pageType: 0 }
-      })
+      this.$router.push({ name: 'addEdit' })
     },
     // 编辑员工信息
     handleEdit(id) {
       this.$router.push({
-        path: '/',
-        query: { pageType: 1, userId: id }
+        name: 'addEdit',
+        params: { pageType: 1, userId: id }
       })
     },
     // 删除员工信息
