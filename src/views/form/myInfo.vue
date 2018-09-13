@@ -100,7 +100,7 @@
         <el-tab-pane label="工资信息">
           <el-form label-width="180px">
             <el-form-item label="入职时间" class="is-required">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" placeholder="入职时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.entryTime" type="date" placeholder="入职时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="招商银行账号">
@@ -690,19 +690,22 @@ export default {
     } else {
       this.pageType = 0
       if (localStorage.interViewData) {
-        const a = JSON.parse(localStorage.interViewData)
+        const busInfo = JSON.parse(localStorage.interViewData)
         // console.log(a)
-        // this.personalAll.personalInfo = a.resumeInfo
-        // this.personalAll.personalSalaryInfo = a.resumeInterview
-        // this.personalAll.personalWorkInfo = a.resumeInterview
-        for (let i in a.resumeInfo) {
-          this.personalAll.personalInfo[i] = a.resumeInfo[i]
+        // this.personalAll.personalInfo = busInfo.resumeInfo
+        // this.personalAll.personalSalaryInfo = busInfo.resumeInterview
+        // this.personalAll.personalWorkInfo = busInfo.resumeInterview
+        for (const i in busInfo.resumeInfo) {
+          this.personalAll.personalInfo[i] = busInfo.resumeInfo[i]
+          this.personalAll.personalInfo.id = ''
         }
-        for (let i in a.resumeInterview) {
-          this.personalAll.personalSalaryInfo[i] = a.resumeInterview[i]
+        for (const i in busInfo.resumeInterview) {
+          this.personalAll.personalSalaryInfo[i] = busInfo.resumeInterview[i]
+          this.personalAll.personalSalaryInfo.id = ''
         }
-        for (let i in a.resumeInterview) {
-          this.personalAll.personalWorkInfo[i] = a.resumeInterview[i]
+        for (const i in busInfo.resumeInterview) {
+          this.personalAll.personalWorkInfo[i] = busInfo.resumeInterview[i]
+          this.personalAll.personalWorkInfo.id = ''
         }
         console.log(123)
         console.log(this.personalAll)

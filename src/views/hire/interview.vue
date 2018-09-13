@@ -421,8 +421,7 @@ export default {
                 path: '/',
                 query: {
                   pageType: 0
-                },
-
+                }
               })
             }
           )

@@ -113,7 +113,7 @@
       </el-table-column>
       <el-table-column label="入职时间" min-width="160">
         <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.arrivalTime)).slice(0, 10)}}
+          {{tools.dateFormat(new Date(scope.row.entryTime)).slice(0, 10)}}
         </template>
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
