@@ -27,7 +27,7 @@
               <el-input v-model="personalAll.personalInfo.age" auto-complete="off" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="出生日期">
-              <el-date-picker v-model="personalAll.personalInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="false" placeholder="出生日期" :disabled="true">
+              <el-date-picker v-model="personalAll.personalInfo.birthday" type="date" :editable="false" placeholder="出生日期" :disabled="true">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="民族">
@@ -43,7 +43,7 @@
               <el-input v-model="personalAll.personalInfo.education" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="毕业时间" class="is-required">
-              <el-date-picker v-model="personalAll.personalInfo.graduationTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="毕业时间">
+              <el-date-picker v-model="personalAll.personalInfo.graduationTime" type="date" :editable="true" placeholder="毕业时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="毕业学校">
@@ -65,7 +65,7 @@
               <el-input v-model="personalAll.personalInfo.contactPhone" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="创建时间">
-              <el-date-picker v-model="personalAll.personalInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间" :disabled="true">
+              <el-date-picker v-model="personalAll.personalInfo.createTime" type="date" :editable="true" placeholder="创建时间" :disabled="true">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="邮箱">
@@ -100,7 +100,7 @@
         <el-tab-pane label="工资信息">
           <el-form label-width="180px">
             <el-form-item label="入职时间" class="is-required">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="入职时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" placeholder="入职时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="招商银行账号">
@@ -128,7 +128,7 @@
               <el-input v-model="personalAll.personalSalaryInfo.subsidy" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="创建时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="创建时间" :disabled="true">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="date" :editable="true" placeholder="创建时间" :disabled="true">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="缴纳社保起始月份">
@@ -147,7 +147,7 @@
               <el-input v-model="personalAll.personalSalaryInfo.workerPay" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="转正时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.workerTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="转正时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.workerTime" type="date" :editable="true" placeholder="转正时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="转正福利">
@@ -193,19 +193,19 @@
               <el-input v-model="personalAll.personalWorkInfo.contractCount" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="合同生效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractStartdate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="合同生效日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractStartdate" type="date" :editable="true" placeholder="合同生效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractEnddate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="合同失效日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractEnddate" type="date" :editable="true" placeholder="合同失效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewDate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="续签合同日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewDate" type="date" :editable="true" placeholder="续签合同日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewEnddate" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="续签合同失效日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewEnddate" type="date" :editable="true" placeholder="续签合同失效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="离职原因">
@@ -224,7 +224,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="离职日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="离职日期">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="date" :editable="true" placeholder="离职日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="员工信息表ID">
@@ -579,15 +579,26 @@ export default {
         this.tools.alertError(this, '请填写入职时间！')
         return
       }
-      if (!this.personalAll.personalSalaryInfo.basePay || !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.basePay)) {
+      if (
+        !this.personalAll.personalSalaryInfo.basePay ||
+        !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.basePay)
+      ) {
         this.tools.alertError(this, '请填写正确的基本工资！')
         return
       }
-      if (!this.personalAll.personalSalaryInfo.meritPay || !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.meritPay)) {
+      if (
+        !this.personalAll.personalSalaryInfo.meritPay ||
+        !this.tools.checkJustNumber(
+          this.personalAll.personalSalaryInfo.meritPay
+        )
+      ) {
         this.tools.alertError(this, '请填写正确的绩效工资！')
         return
       }
-      if (!this.personalAll.personalSalaryInfo.subsidy || !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.subsidy)) {
+      if (
+        !this.personalAll.personalSalaryInfo.subsidy ||
+        !this.tools.checkJustNumber(this.personalAll.personalSalaryInfo.subsidy)
+      ) {
         this.tools.alertError(this, '请填写正确的补贴！')
         return
       }
@@ -677,7 +688,25 @@ export default {
         }
       )
     } else {
-      this.$router.push({ path: '/', query: { pageType: 0 }})
+      this.pageType = 0
+      if (localStorage.interViewData) {
+        const a = JSON.parse(localStorage.interViewData)
+        // console.log(a)
+        // this.personalAll.personalInfo = a.resumeInfo
+        // this.personalAll.personalSalaryInfo = a.resumeInterview
+        // this.personalAll.personalWorkInfo = a.resumeInterview
+        for (let i in a.resumeInfo) {
+          this.personalAll.personalInfo[i] = a.resumeInfo[i]
+        }
+        for (let i in a.resumeInterview) {
+          this.personalAll.personalSalaryInfo[i] = a.resumeInterview[i]
+        }
+        for (let i in a.resumeInterview) {
+          this.personalAll.personalWorkInfo[i] = a.resumeInterview[i]
+        }
+        console.log(123)
+        console.log(this.personalAll)
+      }
     }
   }
 }

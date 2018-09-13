@@ -83,7 +83,7 @@
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--新增招聘需求-->
+    <!--新增/修改招聘需求-->
     <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="resumeInfo">
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
@@ -350,7 +350,7 @@ export default {
         })
         .catch()
     },
-    // 删除招聘需求
+    // 删除简历
     handleRemove(row) {
       this.$confirm('是否确认删除，删除后无法恢复', '提示', {
         closeOnClickModal: false

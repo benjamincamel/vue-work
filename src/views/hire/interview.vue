@@ -4,7 +4,7 @@
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
           <i class="el-icon-date"></i> 招聘管理</el-breadcrumb-item>
-        <el-breadcrumb-item>简历筛选</el-breadcrumb-item>
+        <el-breadcrumb-item>面试沟通</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <!--查询区域-->
@@ -85,7 +85,7 @@
       </el-table-column>
       <el-table-column prop="finalSalary" label="最终薪资" width="120">
       </el-table-column>
-      <el-table-column prop="probationPeriod" label="试用期" width="120">
+      <el-table-column prop="probationPeriod" label="试用期" width="120" :formatter="completeProbationPeriod">
       </el-table-column>
       <el-table-column prop="probationaryPay" label="试用期工资" width="120">
       </el-table-column>
@@ -328,6 +328,9 @@ export default {
     }
   },
   methods: {
+    completeProbationPeriod(row, column) {
+      return ` ${row.probationPeriod}月 `
+    },
     // 数据请求方法
     getData(funName, param, fun) {
       this.showLoading = true
@@ -400,7 +403,7 @@ export default {
         })
         .catch()
     },
-    // 再次办理入职入职
+    // 再次办理入职
     handleReEntry(row) {
       this.$confirm('确认已入职?', '提示', {
         closeOnClickModal: false
@@ -412,6 +415,15 @@ export default {
             data => {
               this.tools.alertInfo(this, '更改成功！')
               this.handleFilters()
+              console.log(data)
+              localStorage.interViewData = JSON.stringify(data)
+              this.$router.push({
+                path: '/',
+                query: {
+                  pageType: 0
+                },
+
+              })
             }
           )
         })
