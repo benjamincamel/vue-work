@@ -146,9 +146,9 @@ export const asyncRouterMap = [
   },
   // 合同管理
   {
-    path: '/table',
+    path: '/contract',
     component: Layout,
-    redirect: '/table/complex-table',
+    redirect: '/contract/contract-manage',
     name: '合同管理',
     meta: {
       title: '合同管理',
@@ -157,9 +157,9 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'complex-table',
+        path: 'contract-manage',
         name: '合同管理',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/contract/contract-manage'),
         meta: { title: '合同管理', icon: 'fa fa-file-o', roles: ',23,' }
       }
     ]

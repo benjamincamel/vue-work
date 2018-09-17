@@ -691,10 +691,6 @@ export default {
       this.pageType = 0
       if (localStorage.interViewData) {
         const busInfo = JSON.parse(localStorage.interViewData)
-        // console.log(a)
-        // this.personalAll.personalInfo = busInfo.resumeInfo
-        // this.personalAll.personalSalaryInfo = busInfo.resumeInterview
-        // this.personalAll.personalWorkInfo = busInfo.resumeInterview
         for (const i in busInfo.resumeInfo) {
           this.personalAll.personalInfo[i] = busInfo.resumeInfo[i]
           this.personalAll.personalInfo.id = ''
