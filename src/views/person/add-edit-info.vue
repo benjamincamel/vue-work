@@ -195,22 +195,22 @@
               </el-select>
             </el-form-item>
             <el-form-item label="合同签署次数">
-              <el-input v-model="personalAll.personalWorkInfo.contractCount" auto-complete="off"></el-input>
+              <el-input-number v-model="personalAll.personalWorkInfo.contractCount" :min="1" :max="20" disabled></el-input-number>
             </el-form-item>
             <el-form-item label="合同生效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractStartdate" type="date" :editable="true" placeholder="合同生效日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractStartdate" type="date" :editable="true" placeholder="合同生效日期" disabled>
               </el-date-picker>
             </el-form-item>
             <el-form-item label="合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractEnddate" type="date" :editable="true" placeholder="合同失效日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractEnddate" type="date" :editable="true" placeholder="合同失效日期" disabled>
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewDate" type="date" :editable="true" placeholder="续签合同日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractRenewDate" type="date" :editable="true" placeholder="续签合同日期" disabled>
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewEnddate" type="date" :editable="true" placeholder="续签合同失效日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractRenewEnddate" type="date" :editable="true" placeholder="续签合同失效日期" disabled>
               </el-date-picker>
             </el-form-item>
             <el-form-item label="离职原因">
@@ -229,7 +229,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="离职日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="date" :editable="true" placeholder="离职日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.leaveWorkingTime" type="date" :editable="true" placeholder="离职日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="职位">

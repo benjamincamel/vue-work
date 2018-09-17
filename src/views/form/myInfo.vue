@@ -193,19 +193,19 @@
               <el-input v-model="personalAll.personalWorkInfo.contractCount" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="合同生效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractStartdate" type="date" :editable="true" placeholder="合同生效日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractStartdate" type="date" :editable="true" placeholder="合同生效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractEnddate" type="date" :editable="true" placeholder="合同失效日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractEnddate" type="date" :editable="true" placeholder="合同失效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewDate" type="date" :editable="true" placeholder="续签合同日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractRenewDate" type="date" :editable="true" placeholder="续签合同日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="续签合同失效日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.contractRenewEnddate" type="date" :editable="true" placeholder="续签合同失效日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.contractRenewEnddate" type="date" :editable="true" placeholder="续签合同失效日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="离职原因">
@@ -224,7 +224,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="离职日期">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.leaveWorkingTime" type="date" :editable="true" placeholder="离职日期">
+              <el-date-picker v-model="personalAll.personalWorkInfo.leaveWorkingTime" type="date" :editable="true" placeholder="离职日期">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="职位">
@@ -555,7 +555,7 @@ export default {
           this.tools.alertError(this, '请求错误！')
         })
     },
-    // 新增&修改
+    // 修改
     submitInfo() {
       if (!this.personalAll.personalInfo.name) {
         this.tools.alertError(this, '请填写姓名！')
@@ -575,7 +575,7 @@ export default {
         .then(() => {
           this.getData(
             'personal/updatePersonalAllInfoBySelf',
-            { personalAllJsonStr: JSON.stringify(this.personalAll) },
+            { personalAllJsonStr: JSON.stringify(this.personalAll), personalInfoId: this.personalAll.personalSalaryInfo.personalInfoId },
             data => {
               this.tools.alertInfo(this, '修改成功！')
               this.dialogFormVisible = false
@@ -592,7 +592,7 @@ export default {
       'personal/getPersonalAllInfoBySelfId',
       { personalInfoId: '' },
       data => {
-        console.log(this.personalAll.personalInfo.birthday)
+        console.log(data)
         this.personalAll.personalInfo = data.personalInfo
         this.personalAll.personalSalaryInfo = data.personalSalaryInfo
         this.personalAll.personalWorkInfo = data.personalWorkInfo

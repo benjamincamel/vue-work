@@ -14,7 +14,7 @@
           <el-input v-model="filters.employeeNumber"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="filters.name" placeholder="岗位名称"></el-input>
+          <el-input v-model="filters.name" placeholder="姓名"></el-input>
         </el-form-item>
         <el-form-item label="合同结束时间">
           <el-date-picker v-model="filters.startDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
@@ -34,7 +34,7 @@
       </el-table-column>
       <el-table-column prop="contractNumber" label="合同编号" width="150">
       </el-table-column>
-      <el-table-column prop="contractCount" label="合同签署次数" width="150">
+      <el-table-column prop="contractCount" label="合同签署次数" width="110">
       </el-table-column>
       <el-table-column label="合同开始日期" width="120">
         <template slot-scope="scope">
@@ -59,10 +59,10 @@
       </el-table-column>
       <el-table-column prop="memo" label="备注" min-width="250">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="180">
+      <el-table-column fixed="right" label="操作" width="170">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
-          <el-button type="success" size="small" @click="handleAddDialogVisible(scope.row)">续签</el-button>
+          <el-button type="success" size="small" @click="handleAddDialogVisible(scope.row)">续签合同</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,6 +72,9 @@
     <!--新增/修改合同信息-->
     <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="contractInfo">
+        <el-form-item label="合同签署次数" :label-width="formLabelWidth">
+          <el-input-number v-model="contractInfo.contractCount" :min="1" :max="20" disabled></el-input-number>
+        </el-form-item>
         <el-form-item label="合同开始日期" :label-width="formLabelWidth">
           <el-date-picker v-model="contractInfo.startDate" type="date" placeholder="合同开始日期">
           </el-date-picker>
@@ -81,10 +84,10 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="contractInfo.name" auto-complete="off"></el-input>
+          <el-input v-model="contractInfo.name" auto-complete="off" disabled></el-input>
         </el-form-item>
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
-          <el-input v-model="contractInfo.position" auto-complete="off"></el-input>
+          <el-input v-model="contractInfo.position" auto-complete="off" disabled></el-input>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input v-model="contractInfo.memo" type="textarea" auto-complete="off"></el-input>
@@ -108,7 +111,7 @@ export default {
       passStatus: '',
       textMap: {
         edit: '修改合同信息',
-        add: '新增合同信息'
+        add: '续签合同'
       },
       formLabelWidth: '120px',
       filters: {
@@ -177,16 +180,17 @@ export default {
       this.dialogStatus = 'add'
       this.dialogVisible = true
       this.contractInfo = {
-        contractNumber: row.contractNumber,
+        contractNumber: '',
         contractCount: row.contractCount + 1,
+        id: '',
         createTime: '',
         employeeNumber: row.employeeNumber,
         endDate: '',
-        personalInfoId: row.id,
+        personalInfoId: row.personalInfoId,
         isDel: '',
         memo: '',
         name: row.name,
-        position: '',
+        position: row.position,
         serialVersionUID: '',
         startDate: ''
       }
@@ -234,29 +238,13 @@ export default {
         })
         .catch()
     },
-    // 删除合同信息
-    handleRemove(row) {
-      this.$confirm('是否确认删除，删除后无法恢复', '提示', {
-        closeOnClickModal: false
-      })
-        .then(() => {
-          this.getData(
-            'contract/deleteContractInfo',
-            { contractInfoId: row.id },
-            data => {
-              this.tools.alertInfo(this, '删除成功！')
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
-    },
     // 分页change方法
     currentChange(value) {
       this.filters.pageIndex = value - 1
       this.getData('contract/getList', this.filters, data => {
         this.count = data.count
         this.contractList = data.contractViewList
+        console.log(data)
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
       console.log(`当前第${value}页`)
@@ -272,8 +260,7 @@ export default {
     this.getData('contract/getList', this.filters, data => {
       this.count = data.count
       this.contractList = data.contractViewList
-
-      console.log(data.updateTime)
+      console.log(data)
     })
   },
   beforeRouteLeave(to, from, next) {
