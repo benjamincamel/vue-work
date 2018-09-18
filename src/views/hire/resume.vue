@@ -14,7 +14,7 @@
           <el-input-number v-model="filters.age" :min="18" :max="65"></el-input-number>
         </el-form-item>
         <el-form-item label="岗位名称">
-          <el-input v-model="filters.position" placeholder="岗位名称"></el-input>
+          <el-input v-model="filters.position" placeholder="岗位名称" clearable></el-input>
         </el-form-item>
         <el-form-item label="工作年限">
           <el-input-number v-model="filters.experience" :min="0" :max="50"></el-input-number>

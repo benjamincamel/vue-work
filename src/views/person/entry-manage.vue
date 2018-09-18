@@ -11,10 +11,10 @@
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
         <el-form-item label="员工编号">
-          <el-input size="small" v-model="filters.employeeNumber" placeholder="员工编号"></el-input>
+          <el-input size="small" v-model="filters.employeeNumber" placeholder="员工编号" clearable></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+          <el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
         </el-form-item>
         <el-form-item label="生日">
           <el-date-picker v-model="filters.birthdayStartDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
@@ -139,14 +139,11 @@
     </el-pagination>
     <!--分配账号-->
     <el-dialog title="分配账号" :visible.sync="dialogAssignVisible">
-      <el-form :model="assignForm">
+      <el-form :model="assignForm" ref="assignForm" :rules="assignFormRules">
         <el-form-item label="员工ID" :label-width="formLabelWidth">
-          <el-input v-model="assignForm.id" auto-complete="off"></el-input>
+          <el-input v-model="assignForm.id" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <!-- <el-form-item label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="assignForm.name" auto-complete="off"></el-input>
-        </el-form-item> -->
-        <el-form-item label="活动区域" :label-width="formLabelWidth">
+        <el-form-item prop="role" label="用户角色" :label-width="formLabelWidth">
           <el-select v-model="assignForm.role" placeholder="请选择用户角色">
             <el-option v-for="item in rolesOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
@@ -160,24 +157,24 @@
     </el-dialog>
     <!--办理离职-->
     <el-dialog title="办理离职" :visible.sync="dialogLeaveVisible">
-      <el-form :model="leaveForm">
+      <el-form :model="leaveForm" ref="leaveForm" :rules="leaveFormRules">
         <el-form-item label="员工ID" :label-width="formLabelWidth">
-          <el-input v-model="leaveForm.id" auto-complete="off"></el-input>
+          <el-input v-model="leaveForm.id" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="leaveForm.name" auto-complete="off"></el-input>
+          <el-input v-model="leaveForm.name" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="离职类型" :label-width="formLabelWidth">
+        <el-form-item prop="leaveType" label="离职类型" :label-width="formLabelWidth">
           <el-select v-model="leaveForm.leaveType" placeholder="请选择离职类型">
             <el-option v-for="item in leaveTypeOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="离职原因" :label-width="formLabelWidth">
+        <el-form-item prop="leaveReason" label="离职原因" :label-width="formLabelWidth">
           <el-input v-model="leaveForm.leaveReason" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="离职日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="leaveForm.leaveWorkingTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="离职日期">
+        <el-form-item prop="leaveWorkingTime" label="离职日期" :label-width="formLabelWidth">
+          <el-date-picker v-model="leaveForm.leaveWorkingTime" type="date" placeholder="离职日期">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -216,12 +213,33 @@ export default {
         name: '',
         role: ''
       },
+      assignFormRules: {
+        role: [
+          { required: true, message: '请选择用户角色', trigger: 'change' }
+        ]
+      },
       leaveForm: {
         id: '',
         name: '',
         leaveType: '',
         leaveReason: '',
         leaveWorkingTime: ''
+      },
+      leaveFormRules: {
+        leaveType: [
+          { required: true, message: '请选择离职类型', trigger: 'change' }
+        ],
+        leaveWorkingTime: [
+          {
+            type: 'date',
+            required: true,
+            message: '请选择日期',
+            trigger: 'change'
+          }
+        ],
+        leaveReason: [
+          { required: true, message: '请填写离职原因', trigger: 'blur' }
+        ]
       },
       formLabelWidth: '120px',
       checkAll: false,
@@ -621,24 +639,31 @@ export default {
       console.log(row.id)
       this.dialogAssignVisible = true
       this.assignForm.id = row.id
-      this.assignForm.name = row.name
+      this.assignForm.role = ''
     },
     // 分配员工账号
     handleAssign() {
-      this.$confirm('确认提交分配角色?', '提示', {
-        closeOnClickModal: false
+      this.$refs.assignForm.validate(valid => {
+        if (valid) {
+          this.$confirm('确认提交分配角色?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'personal/addAdminByPInfoId',
+                { personalInfoId: this.assignForm.id, roleId: this.assignForm.role },
+                data => {
+                  this.tools.alertInfo(this, '分配成功！')
+                  this.dialogAssignVisible = false
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          this.getData(
-            'personal/addAdminByPInfoId',
-            { personalInfoId: this.assignForm.id, roleId: this.assignForm.role },
-            data => {
-              this.tools.alertInfo(this, '分配成功！')
-              this.dialogAssignVisible = false
-            }
-          )
-        })
-        .catch()
     },
     // 显示办理离职
     handleDialogLeaveVisible(row) {
@@ -646,24 +671,34 @@ export default {
       this.dialogLeaveVisible = true
       this.leaveForm.id = row.id
       this.leaveForm.name = row.name
+      this.leaveForm.leaveType = ''
+      this.leaveForm.leaveWorkingTime = ''
+      this.leaveForm.leaveReason = ''
     },
     // 办理离职
     handleLeave() {
-      this.$confirm('确认办理离职?', '提示', {
-        closeOnClickModal: false
+      this.$refs.leaveForm.validate(valid => {
+        if (valid) {
+          this.$confirm('确认办理离职?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'personal/addLeaveInfo',
+                { personalInfoId: this.leaveForm.id, leaveType: this.leaveForm.leaveType, leaveReason: this.leaveForm.leaveReason, leaveWorkingTime: this.leaveForm.leaveWorkingTime },
+                data => {
+                  this.tools.alertInfo(this, '办理成功！')
+                  this.dialogLeaveVisible = false
+                  this.$router.go(0)
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          this.getData(
-            'personal/addLeaveInfo',
-            { personalInfoId: this.leaveForm.id, leaveType: this.leaveForm.leaveType, leaveReason: this.leaveForm.leaveReason, leaveWorkingTime: this.leaveForm.leaveWorkingTime },
-            data => {
-              this.tools.alertInfo(this, '办理成功！')
-              this.dialogLeaveVisible = false
-              this.$router.go(0)
-            }
-          )
-        })
-        .catch()
     },
     // 导出excel
     handleExport() {

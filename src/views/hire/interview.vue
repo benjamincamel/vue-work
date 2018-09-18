@@ -11,10 +11,10 @@
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
         <el-form-item label="姓名">
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+          <el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
         </el-form-item>
         <el-form-item label="岗位名称">
-          <el-input v-model="filters.position" placeholder="岗位名称"></el-input>
+          <el-input v-model="filters.position" placeholder="岗位名称" clearable></el-input>
         </el-form-item>
         <el-form-item label="外派单位">
           <el-select v-model="filters.expatriateUnit" clearable size="medium" placeholder="请选择">
