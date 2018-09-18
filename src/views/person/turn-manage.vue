@@ -11,7 +11,7 @@
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
         <el-form-item label="姓名">
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+          <el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
         </el-form-item>
         <el-form-item label="转正时间">
           <el-date-picker v-model="filters.workerStartDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
