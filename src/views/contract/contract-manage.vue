@@ -10,11 +10,11 @@
     <!--查询区域-->
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
-        <el-form-item label="员工编号 ">
-          <el-input v-model="filters.employeeNumber"></el-input>
+        <el-form-item label="员工编号">
+          <el-input v-model="filters.employeeNumber" clearable></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+          <el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
         </el-form-item>
         <el-form-item label="合同结束时间">
           <el-date-picker v-model="filters.startDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
@@ -71,16 +71,16 @@
     </el-pagination>
     <!--新增/修改合同信息-->
     <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
-      <el-form :model="contractInfo">
+      <el-form :model="contractInfo" ref="contractInfo" :rules="rules">
         <el-form-item label="合同签署次数" :label-width="formLabelWidth">
           <el-input-number v-model="contractInfo.contractCount" :min="1" :max="20" disabled></el-input-number>
         </el-form-item>
-        <el-form-item label="合同开始日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="contractInfo.startDate" type="date" placeholder="合同开始日期">
+        <el-form-item prop="startDate" label="合同开始日期" :label-width="formLabelWidth">
+          <el-date-picker v-model="contractInfo.startDate" type="date" placeholder="合同开始日期" required>
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="合同截止日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="contractInfo.endDate" type="date" placeholder="合同截止日期">
+        <el-form-item prop="endDate" label="合同截止日期" :label-width="formLabelWidth">
+          <el-date-picker v-model="contractInfo.endDate" type="date" placeholder="合同截止日期" required>
           </el-date-picker>
         </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
@@ -89,7 +89,7 @@
         <el-form-item label="岗位名称" :label-width="formLabelWidth">
           <el-input v-model="contractInfo.position" auto-complete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth">
+        <el-form-item label="备注" prop="memo" :label-width="formLabelWidth">
           <el-input v-model="contractInfo.memo" type="textarea" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -136,6 +136,24 @@ export default {
         startDate: '',
         updateTime: ''
       },
+      rules: {
+        startDate: [
+          {
+            type: 'date',
+            required: true,
+            message: '请选择日期',
+            trigger: 'change'
+          }
+        ],
+        endDate: [
+          {
+            type: 'date',
+            required: true,
+            message: '请选择日期',
+            trigger: 'change'
+          }
+        ]
+      },
       // 数据总共数量 多少条
       count: 0,
       // 是否展示table的loading状态
@@ -179,6 +197,7 @@ export default {
     handleAddDialogVisible(row) {
       this.dialogStatus = 'add'
       this.dialogVisible = true
+      this.$refs.contractInfo.clearValidate()
       this.contractInfo = {
         contractNumber: '',
         contractCount: row.contractCount + 1,
@@ -198,45 +217,60 @@ export default {
     },
     // 新增合同信息
     handleAdd() {
-      this.$confirm('确认新增合同信息?', '提示', {
-        closeOnClickModal: false
+      this.$refs.contractInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认新增合同信息?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'contract/addContractInfo',
+                { contractInfoJsonStr: JSON.stringify(this.contractInfo) },
+                data => {
+                  this.tools.alertInfo(this, '新增成功！')
+                  this.dialogVisible = false
+                  this.handleFilters()
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          this.getData(
-            'contract/addContractInfo',
-            { contractInfoJsonStr: JSON.stringify(this.contractInfo) },
-            data => {
-              this.tools.alertInfo(this, '新增成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
     },
     // 显示修改合同信息
     handleEditDialogVisible(row) {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.contractInfo = Object.assign({}, row)
+      this.$refs.contractInfo.clearValidate()
     },
     // 修改合同信息
     handleEdit(row) {
-      this.$confirm('确认修改合同信息?', '提示', {
-        closeOnClickModal: false
+      this.$refs.contractInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认修改合同信息?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'contract/updateContractInfo',
+                { contractInfoJsonStr: JSON.stringify(this.contractInfo) },
+                data => {
+                  this.tools.alertInfo(this, '修改成功！')
+                  this.dialogVisible = false
+                  this.handleFilters()
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          this.getData(
-            'contract/updateContractInfo',
-            { contractInfoJsonStr: JSON.stringify(this.contractInfo) },
-            data => {
-              this.tools.alertInfo(this, '修改成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
     },
     // 分页change方法
     currentChange(value) {
