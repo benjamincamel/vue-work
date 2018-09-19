@@ -73,23 +73,23 @@
     </el-pagination>
     <!--新增招聘需求-->
     <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
-      <el-form :model="recruitInfo">
-        <el-form-item label="岗位名称" :label-width="formLabelWidth">
+      <el-form :model="recruitInfo" ref="recruitInfo" :rules="recruitInfoRules">
+        <el-form-item prop="position" label="岗位名称" :label-width="formLabelWidth">
           <el-input v-model="recruitInfo.position" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="岗位职责" :label-width="formLabelWidth">
+        <el-form-item prop="postDuty" label="岗位职责" :label-width="formLabelWidth">
           <el-input v-model="recruitInfo.postDuty" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="人员缺口" :label-width="formLabelWidth">
-          <el-input-number v-model="recruitInfo.pepoleNeed" :min="0" :max="200"></el-input-number>
+        <el-form-item prop="pepoleNeed" label="人员缺口" :label-width="formLabelWidth">
+          <el-input-number v-model="recruitInfo.pepoleNeed" :min="1" :max="200"></el-input-number>
         </el-form-item>
-        <el-form-item label="外派单位" :label-width="formLabelWidth">
+        <el-form-item prop="expatriateUnit" label="外派单位" :label-width="formLabelWidth">
           <el-select v-model="recruitInfo.expatriateUnit" clearable size="medium" placeholder="请选择">
             <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="归属中心" :label-width="formLabelWidth">
+        <el-form-item prop="center" label="归属中心" :label-width="formLabelWidth">
           <el-select v-model="recruitInfo.center" clearable size="medium" placeholder="请选择">
             <el-option-group v-for="group in centerOptions" :key="group.label" :label="group.label">
               <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
@@ -97,10 +97,10 @@
             </el-option-group>
           </el-select>
         </el-form-item>
-        <el-form-item label="所在职场" :label-width="formLabelWidth">
+        <el-form-item prop="workPlace" label="所在职场" :label-width="formLabelWidth">
           <el-input v-model="recruitInfo.workPlace" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="城市" :label-width="formLabelWidth">
+        <el-form-item prop="city" label="城市" :label-width="formLabelWidth">
           <el-input v-model="recruitInfo.city" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
@@ -153,6 +153,30 @@ export default {
         serialVersionUID: '',
         status: 1,
         workPlace: ''
+      },
+      recruitInfoRules: {
+        position: [
+          { required: true, message: '请输入岗位名称', trigger: 'blur' }
+        ],
+        postDuty: [
+          { required: true, message: '请输入岗位职责', trigger: 'blur' }
+        ],
+        pepoleNeed: [
+          { required: true, message: '人员缺口不能为空' },
+          { type: 'number', message: '人员缺口必须为数字值' }
+        ],
+        expatriateUnit: [
+          { required: true, message: '请选择外派单位', trigger: 'change' }
+        ],
+        center: [
+          { required: true, message: '请选择归属中心', trigger: 'change' }
+        ],
+        workPlace: [
+          { required: true, message: '请输入所在职场', trigger: 'blur' }
+        ],
+        city: [
+          { required: true, message: '请输入城市', trigger: 'blur' }
+        ]
       },
       isDelOptions: [
         {
@@ -346,6 +370,7 @@ export default {
     handleAddDialogVisible() {
       this.dialogStatus = 'add'
       this.dialogVisible = true
+      this.$refs.recruitInfo.clearValidate()
       this.recruitInfo = {
         id: '',
         center: '',
@@ -364,48 +389,63 @@ export default {
     },
     // 新增招聘需求
     handleAdd() {
-      this.$confirm('确认新增招聘需求?', '提示', {
-        closeOnClickModal: false
+      this.$refs.recruitInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认新增招聘需求?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'resume/addRecruitInfo',
+                { recruitInfoJsonStr: JSON.stringify(this.recruitInfo) },
+                data => {
+                  this.tools.alertInfo(this, '新增成功！')
+                  this.dialogVisible = false
+                  this.handleFilters()
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          this.getData(
-            'resume/addRecruitInfo',
-            { recruitInfoJsonStr: JSON.stringify(this.recruitInfo) },
-            data => {
-              this.tools.alertInfo(this, '新增成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
     },
     // 显示修改招聘需求
     handleEditDialogVisible(row) {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
+      this.$refs.recruitInfo.clearValidate()
       this.recruitInfo = Object.assign({}, row)
       this.recruitInfo.status = this.statusFormat(row)
     },
     // 编辑招聘信息
     handleEdit(row) {
-      this.$confirm('确认修改招聘需求?', '提示', {
-        closeOnClickModal: false
+      this.$refs.recruitInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认修改招聘需求?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              const myData = { ...this.recruitInfo }
+              myData.status = myData.status === '进行中' ? 1 : 0
+              this.getData(
+                'resume/updateRecruitInfo',
+                { recruitInfoJsonStr: JSON.stringify(myData) },
+                data => {
+                  this.tools.alertInfo(this, '修改成功！')
+                  this.dialogVisible = false
+                  this.handleFilters()
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          const myData = { ...this.recruitInfo }
-          myData.status = myData.status === '进行中' ? 1 : 0
-          this.getData(
-            'resume/updateRecruitInfo',
-            { recruitInfoJsonStr: JSON.stringify(myData) },
-            data => {
-              this.tools.alertInfo(this, '修改成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
     },
     // 更改状态
     handleStatus(row) {

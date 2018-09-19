@@ -197,6 +197,7 @@ export default {
     handleAddDialogVisible(row) {
       this.dialogStatus = 'add'
       this.dialogVisible = true
+      this.$refs.contractInfo.clearValidate()
       this.contractInfo = {
         contractNumber: '',
         contractCount: row.contractCount + 1,
@@ -244,6 +245,7 @@ export default {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.contractInfo = Object.assign({}, row)
+      this.$refs.contractInfo.clearValidate()
     },
     // 修改合同信息
     handleEdit(row) {
