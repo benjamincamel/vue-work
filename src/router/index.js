@@ -210,9 +210,9 @@ export const asyncRouterMap = [
   },
   // 薪酬管理
   {
-    path: '/table',
+    path: '/salary',
     component: Layout,
-    redirect: '/table/complex-table',
+    redirect: '/salary/salary-manage',
     name: '薪酬管理',
     meta: {
       title: '薪酬管理',
@@ -221,21 +221,21 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'complex-table',
+        path: 'salary-manage',
         name: '工资管理',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/salary/salary-manage'),
         meta: { title: '工资管理', icon: 'fa fa-credit-card', roles: ',19,' }
       },
       {
-        path: 'complex-table',
+        path: 'reward-punish',
         name: '奖惩管理',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/salary/reward-punish'),
         meta: { title: '奖惩管理', icon: 'fa fa-meh-o', roles: ',20,' }
       },
       {
-        path: 'complex-table',
+        path: 'search-manage',
         name: '查询管理',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/salary/search-manage'),
         meta: { title: '查询管理', icon: 'fa fa-search', roles: ',21,' }
       }
     ]
