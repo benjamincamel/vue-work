@@ -145,10 +145,9 @@ export default {
       }
     },
     // 降薪行警告背景色
-    tableRowClassName({ row, rowIndex, column, columnIndex }) {
+    tableRowClassName({ row, rowIndex }) {
       if (row.changeRange < 0) {
         return 'warning-row'
-        return coulumn[columnIndex]
       }
     }
   },
