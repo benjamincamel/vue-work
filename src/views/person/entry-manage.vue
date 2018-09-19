@@ -776,6 +776,9 @@ export default {
         }
       })
     },
+    clearValidate(formName) {
+      this.$refs[formName].clearValidate()
+    },
     // 显示新增调薪信息
     handleDialogAddSalaryVisible(row) {
       this.dialogAddSalaryVisible = true
@@ -790,7 +793,7 @@ export default {
         reason: '', // 调薪原因
         type: '' // 调薪类型
       }
-      this.$refs.salaryInfo.clearValidate()
+      this.clearValidate('salaryInfo')
     },
     handleChangeRange(value) {
       this.salaryInfo.finalSalary = value + this.salaryInfo.workerPay
@@ -808,7 +811,7 @@ export default {
                 { salaryChangeJsonStr: JSON.stringify(this.salaryInfo) },
                 data => {
                   this.tools.alertInfo(this, '新增成功！')
-                  this.dialogVisible = false
+                  this.dialogAddSalaryVisible = false
                   this.handleFilters()
                 }
               )
