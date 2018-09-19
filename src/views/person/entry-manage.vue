@@ -125,11 +125,12 @@
       </el-table-column>
       <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="340">
+      <el-table-column fixed="right" label="操作" width="410">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
           <el-button type="primary" size="small" @click="handleDialogAssignVisible(scope.row)">分配账号</el-button>
+          <el-button type="success" size="small" @click="handleDialogAddSalaryVisible(scope.row)">调薪</el-button>
           <el-button type="danger" size="small" @click="handleDialogLeaveVisible(scope.row)">办理离职</el-button>
         </template>
       </el-table-column>
@@ -183,6 +184,42 @@
         <el-button type="primary" @click="handleLeave">确 定</el-button>
       </div>
     </el-dialog>
+    <!--新增调薪信息-->
+    <el-dialog class="addSalaryDialog" title="新增调薪" :visible.sync="dialogAddSalaryVisible" :close-on-click-modal="false">
+      <el-form :model="salaryInfo" ref="salaryInfo" :rules="rules">
+        <el-form-item label="员工编号" :label-width="formLabelWidth">
+          <el-input v-model="salaryInfo.employeeNumber" auto-complete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="ID" :label-width="formLabelWidth">
+          <el-input v-model="salaryInfo.personalInfoId" auto-complete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名" :label-width="formLabelWidth">
+          <el-input v-model="salaryInfo.name" auto-complete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="调薪幅度" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.changeRange" @change="handleChangeRange" :step="100" :min="-10000" :max="10000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="调薪后工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.finalSalary" :step="100" :min="0" :max="50000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item prop="reason" label="调薪原因" :label-width="formLabelWidth">
+          <el-input v-model="salaryInfo.reason" type="textarea" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="type" label="调薪类型" :label-width="formLabelWidth">
+          <el-select v-model="salaryInfo.type" placeholder="请选择调薪类型">
+            <el-option v-for="item in typeOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="memo" label="备注" :label-width="formLabelWidth">
+          <el-input v-model="salaryInfo.memo" type="textarea" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddSalaryVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAddSalary">提 交</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -208,6 +245,7 @@ export default {
     return {
       dialogLeaveVisible: false,
       dialogAssignVisible: false,
+      dialogAddSalaryVisible: false,
       assignForm: {
         id: '',
         name: '',
@@ -240,6 +278,30 @@ export default {
         leaveReason: [
           { required: true, message: '请填写离职原因', trigger: 'blur' }
         ]
+      },
+      salaryInfo: {
+        changeRange: '', // 调薪幅度
+        createTime: '', // 创建时间
+        employeeNumber: '', // 员工编号
+        finalSalary: '', // 调薪后工资
+        memo: '', // 备注
+        name: '', // 姓名
+        personalInfoId: '', // 员工信息表ID
+        reason: '', // 调薪原因
+        type: '', // 调薪类型
+        id: '' // 表的主键
+      },
+      rules: {
+        type: [
+          { required: true, message: '请选择调薪类型', trigger: 'change' }
+        ],
+        reason: [
+          { required: true, message: '请输入调薪原因', trigger: 'blur' }
+        ],
+        memo: [
+          { required: true, message: '请输入备注', trigger: 'blur' }
+        ]
+
       },
       formLabelWidth: '120px',
       checkAll: false,
@@ -485,6 +547,20 @@ export default {
           label: '普通员工'
         }
       ],
+      typeOptions: [
+        {
+          value: '1',
+          label: '调级别'
+        },
+        {
+          value: '2',
+          label: '调薪'
+        },
+        {
+          value: '3',
+          label: '其他'
+        }
+      ],
       // 数据总共数量 多少条
       count: 0,
       // 是否展示table的loading状态
@@ -690,6 +766,53 @@ export default {
                   this.tools.alertInfo(this, '办理成功！')
                   this.dialogLeaveVisible = false
                   this.$router.go(0)
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    clearValidate(formName) {
+      this.$refs[formName].clearValidate()
+    },
+    // 显示新增调薪信息
+    handleDialogAddSalaryVisible(row) {
+      this.dialogAddSalaryVisible = true
+      this.salaryInfo = {
+        workerPay: row.workerPay, // 转正工资
+        name: row.name, // 姓名
+        personalInfoId: row.id, // 员工信息表ID
+        employeeNumber: row.employeeNumber, // 员工编号
+        changeRange: '', // 调薪幅度
+        finalSalary: '', // 调薪后工资
+        memo: '', // 备注
+        reason: '', // 调薪原因
+        type: '' // 调薪类型
+      }
+      this.clearValidate('salaryInfo')
+    },
+    handleChangeRange(value) {
+      this.salaryInfo.finalSalary = value + this.salaryInfo.workerPay
+    },
+    // 新增调薪信息
+    handleAddSalary() {
+      this.$refs.salaryInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认新增调薪信息?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'salary/addSalaryChange',
+                { salaryChangeJsonStr: JSON.stringify(this.salaryInfo) },
+                data => {
+                  this.tools.alertInfo(this, '新增成功！')
+                  this.dialogAddSalaryVisible = false
+                  this.handleFilters()
                 }
               )
             })
