@@ -29,7 +29,7 @@
       </el-form>
     </el-col>
     <!--列表-->
-    <el-table :data="salaryList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table :data="salaryList" :row-class-name="tableRowClassName" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="employeeNumber" label="员工编号" width="150">
@@ -143,6 +143,13 @@ export default {
       } else if (row.type === 3) {
         return this.typeOptions[2].label
       }
+    },
+    // 降薪行警告背景色
+    tableRowClassName({ row, rowIndex, column, columnIndex }) {
+      if (row.changeRange < 0) {
+        return 'warning-row'
+        return coulumn[columnIndex]
+      }
     }
   },
   // 请求数据渲染
@@ -188,5 +195,9 @@ export default {
 .hx-container .addEditDialog .el-dialog__body {
   height: 60vh;
   overflow: auto;
+}
+.hx-container .el-table .warning-row td {
+  background: oldlace !important;
+  color: #F56C6C;
 }
 </style>
