@@ -114,7 +114,7 @@
       </el-table-column>
       <el-table-column prop="arrivalTime" label="到岗时间" sortable min-width="160" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width" :formatter="formatter">
+      <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="410">
         <template slot-scope="scope">
@@ -856,7 +856,6 @@ export default {
     if (this.tools.getLocal(this.$route.name, 'filters')) {
       this.filters = this.tools.getLocal(this.$route.name, 'filters')
       this.filters.pageIndex = 0
-      // this.typesArr = this.filters.types.split(',')
     }
     // 页面展示后 第一次请求人员列表
     this.getData('personal/getList', this.filters, data => {
