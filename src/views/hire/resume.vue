@@ -85,47 +85,47 @@
     </el-pagination>
     <!--新增/修改招聘需求-->
     <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
-      <el-form :model="resumeInfo">
-        <el-form-item label="岗位名称" :label-width="formLabelWidth">
+      <el-form :model="resumeInfo" ref="resumeInfo" :rules="resumeInfoRules">
+        <el-form-item prop="position" label="岗位名称" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.position" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="面试时间" :label-width="formLabelWidth">
+        <el-form-item prop="interviewTime" label="面试时间" :label-width="formLabelWidth">
           <el-date-picker v-model="resumeInfo.interviewTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="面试时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="邀约时间" :label-width="formLabelWidth">
+        <el-form-item prop="inviteTime" label="邀约时间" :label-width="formLabelWidth">
           <el-date-picker v-model="resumeInfo.inviteTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="邀约时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="姓名" :label-width="formLabelWidth">
+        <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="性别" :label-width="formLabelWidth">
+        <el-form-item prop="sex" label="性别" :label-width="formLabelWidth">
           <el-select v-model="resumeInfo.sex" size="medium">
             <el-option label="男" value="男"></el-option>
             <el-option label="女" value="女"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="出生日期" :label-width="formLabelWidth">
+        <el-form-item prop="birthday" label="出生日期" :label-width="formLabelWidth">
           <el-date-picker v-model="resumeInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="出生日期">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="联系电话" :label-width="formLabelWidth">
+        <el-form-item prop="phone" label="联系电话" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.phone" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item prop="email" label="邮箱" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.email" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="工作年限" :label-width="formLabelWidth">
+        <el-form-item prop="experience" label="工作年限" :label-width="formLabelWidth">
           <el-input-number v-model="resumeInfo.experience" :min="0" :max="200"></el-input-number>
         </el-form-item>
-        <el-form-item label="学历" :label-width="formLabelWidth">
+        <el-form-item prop="education" label="学历" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.education" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="毕业院校" :label-width="formLabelWidth">
+        <el-form-item prop="school" label="毕业院校" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.school" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="专业" :label-width="formLabelWidth">
+        <el-form-item prop="major" label="专业" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.major" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="入职状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
@@ -181,6 +181,44 @@ export default {
         school: '',
         sex: '',
         status: ''
+      },
+      resumeInfoRules: {
+        position: [
+          { required: true, message: '请输入岗位名称', trigger: 'blur' }
+        ],
+        interviewTime: [
+          { required: true, message: '请输入面试时间', trigger: 'blur' }
+        ],
+        inviteTime: [
+          { required: true, message: '请输入邀约时间', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '请输入姓名', trigger: 'change' }
+        ],
+        sex: [
+          { required: true, message: '请选择性别', trigger: 'change' }
+        ],
+        birthday: [
+          { required: true, message: '请输入出生日期', trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: '请输入联系电话', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' }
+        ],
+        experience: [
+          { required: true, message: '请输入工作年限', trigger: 'change' }
+        ],
+        education: [
+          { required: true, message: '请输入学历', trigger: 'blur' }
+        ],
+        school: [
+          { required: true, message: '请输入毕业院校', trigger: 'blur' }
+        ],
+        major: [
+          { required: true, message: '请输入专业', trigger: 'blur' }
+        ]
       },
       isDelOptions: [
         {
@@ -274,21 +312,28 @@ export default {
     },
     // 新增简历
     handleAdd() {
-      this.$confirm('确认新增招聘需求?', '提示', {
-        closeOnClickModal: false
+      this.$refs.resumeInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认新增简历?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              this.getData(
+                'resume/addResumeInfo',
+                { resumeInfoJsonStr: JSON.stringify(this.resumeInfo) },
+                data => {
+                  this.tools.alertInfo(this, '新增成功！')
+                  this.dialogVisible = false
+                  this.handleFilters()
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          this.getData(
-            'resume/addResumeInfo',
-            { resumeInfoJsonStr: JSON.stringify(this.resumeInfo) },
-            data => {
-              this.tools.alertInfo(this, '新增成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
     },
     // 显示修改简历
     handleEditDialogVisible(row) {
@@ -299,23 +344,30 @@ export default {
     },
     // 编辑简历
     handleEdit(row) {
-      this.$confirm('确认修改招聘需求?', '提示', {
-        closeOnClickModal: false
+      this.$refs.resumeInfo.validate(valid => {
+        if (valid) {
+          this.$confirm('确认修改招聘需求?', '提示', {
+            closeOnClickModal: false
+          })
+            .then(() => {
+              const myData = { ...this.resumeInfo }
+              myData.status = myData.status === '未通过' ? 0 : myData.status === '进行中' ? 1 : myData.status === '面试通过' ? 2 : ''
+              this.getData(
+                'resume/updateResumeInfo',
+                { resumeInfoJsonStr: JSON.stringify(myData) },
+                data => {
+                  this.tools.alertInfo(this, '修改成功！')
+                  this.dialogVisible = false
+                  this.handleFilters()
+                }
+              )
+            })
+            .catch()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
-        .then(() => {
-          const myData = { ...this.resumeInfo }
-          myData.status = myData.status === '未通过' ? 0 : myData.status === '进行中' ? 1 : myData.status === '面试通过' ? 2 : ''
-          this.getData(
-            'resume/updateResumeInfo',
-            { resumeInfoJsonStr: JSON.stringify(myData) },
-            data => {
-              this.tools.alertInfo(this, '修改成功！')
-              this.dialogVisible = false
-              this.handleFilters()
-            }
-          )
-        })
-        .catch()
     },
     // 更改通过状态
     handlePass(row) {
