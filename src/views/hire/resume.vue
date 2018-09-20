@@ -11,7 +11,7 @@
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
         <el-form-item label="年龄">
-          <el-input-number v-model="filters.age" :min="18" :max="65"></el-input-number>
+          <el-input-number v-model="filters.age"></el-input-number>
         </el-form-item>
         <el-form-item label="岗位名称">
           <el-input v-model="filters.position" placeholder="岗位名称" clearable></el-input>
@@ -90,11 +90,11 @@
           <el-input v-model="resumeInfo.position" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item prop="interviewTime" label="面试时间" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.interviewTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="面试时间">
+          <el-date-picker v-model="resumeInfo.interviewTime" type="date" placeholder="面试时间" value-format="yyyy-MM-dd 00:00:00">
           </el-date-picker>
         </el-form-item>
         <el-form-item prop="inviteTime" label="邀约时间" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.inviteTime" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="邀约时间">
+          <el-date-picker v-model="resumeInfo.inviteTime" type="date" placeholder="邀约时间" value-format="yyyy-MM-dd 00:00:00">
           </el-date-picker>
         </el-form-item>
         <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
@@ -107,17 +107,17 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="birthday" label="出生日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.birthday" type="date" value-format="yyyy-MM-dd HH:mm:ss" default-time="00:00:00" :editable="true" placeholder="出生日期">
+          <el-date-picker v-model="resumeInfo.birthday" type="date" placeholder="出生日期" value-format="yyyy-MM-dd 00:00:00">
           </el-date-picker>
         </el-form-item>
         <el-form-item prop="phone" label="联系电话" :label-width="formLabelWidth">
-          <el-input v-model="resumeInfo.phone" auto-complete="off"></el-input>
+          <el-input v-model="resumeInfo.phone" maxlength="11" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item prop="email" label="邮箱" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.email" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item prop="experience" label="工作年限" :label-width="formLabelWidth">
-          <el-input-number v-model="resumeInfo.experience" :min="0" :max="200"></el-input-number>
+          <el-input-number v-model="resumeInfo.experience" :min="0" :max="70"></el-input-number>
         </el-form-item>
         <el-form-item prop="education" label="学历" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.education" auto-complete="off"></el-input>
@@ -182,6 +182,7 @@ export default {
         sex: '',
         status: ''
       },
+      // 校验规则
       resumeInfoRules: {
         position: [
           { required: true, message: '请输入岗位名称', trigger: 'blur' }
@@ -193,7 +194,7 @@ export default {
           { required: true, message: '请输入邀约时间', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入姓名', trigger: 'change' }
+          { required: true, message: '请输入姓名', trigger: 'blur' }
         ],
         sex: [
           { required: true, message: '请选择性别', trigger: 'change' }
@@ -202,10 +203,23 @@ export default {
           { required: true, message: '请输入出生日期', trigger: 'blur' }
         ],
         phone: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' }
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          {
+            validator: (rule, value, callback) => {
+              if (value.trim() === '') {
+                callback(new Error('请输入手机号码'))
+              } else if (!(/^1[3456789]\d{9}$/.test(value))) {
+                callback(new Error('您输入手机号码不正确'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
         ],
         email: [
-          { required: true, message: '请输入邮箱', trigger: 'blur' }
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
         ],
         experience: [
           { required: true, message: '请输入工作年限', trigger: 'change' }
@@ -292,6 +306,7 @@ export default {
     handleAddDialogVisible() {
       this.dialogStatus = 'add'
       this.dialogVisible = true
+      this.$refs.resumeInfo.clearValidate()
       this.resumeInfo = {
         id: '',
         birthday: '',
@@ -309,6 +324,7 @@ export default {
         sex: '',
         status: 1
       }
+      console.log(this.resumeInfo)
     },
     // 新增简历
     handleAdd() {
@@ -339,6 +355,7 @@ export default {
     handleEditDialogVisible(row) {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
+      this.$refs.resumeInfo.clearValidate()
       this.resumeInfo = Object.assign({}, row)
       this.resumeInfo.status = this.statusFormat(row)
     },

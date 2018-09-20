@@ -96,10 +96,7 @@
       </el-table-column>
       <el-table-column prop="sex" label="性别" width="80">
       </el-table-column>
-      <el-table-column label="出生日期" sortable min-width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="birthday" label="出生日期" sortable min-width="160" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="position" label="职位" width="120">
       </el-table-column>
@@ -111,19 +108,13 @@
       </el-table-column>
       <el-table-column prop="expatriateUnit" label="外派单位" min-width="160">
       </el-table-column>
-      <el-table-column label="入职时间" min-width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.entryTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="entryTime" label="入职时间" sortable min-width="160" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="workingPlace" label="所在职场" min-width="160">
       </el-table-column>
-      <el-table-column label="到岗时间" min-width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.arrivalTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="arrivalTime" label="到岗时间" sortable min-width="160" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
+      <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width" :formatter="formatter">
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="410">
         <template slot-scope="scope">
@@ -175,7 +166,7 @@
           <el-input v-model="leaveForm.leaveReason" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item prop="leaveWorkingTime" label="离职日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="leaveForm.leaveWorkingTime" type="date" placeholder="离职日期">
+          <el-date-picker v-model="leaveForm.leaveWorkingTime" type="date" placeholder="离职日期" value-format="yyyy-MM-dd 00:00:00">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -238,6 +229,7 @@ const checkOptions = [
   { prop: 'contactAddress', label: '联系地址', width: 180 },
   { prop: 'contactPhone', label: '联系电话', width: 120 },
   { prop: 'education', label: '学历', width: 50 },
+  { prop: 'graduationTime', label: '毕业时间', width: 120 },
   { prop: 'email', label: '邮箱', width: 180 }
 ]
 export default {
@@ -268,12 +260,7 @@ export default {
           { required: true, message: '请选择离职类型', trigger: 'change' }
         ],
         leaveWorkingTime: [
-          {
-            type: 'date',
-            required: true,
-            message: '请选择日期',
-            trigger: 'change'
-          }
+          { required: true, message: '请选择日期', trigger: 'change' }
         ],
         leaveReason: [
           { required: true, message: '请填写离职原因', trigger: 'blur' }
@@ -570,6 +557,14 @@ export default {
     }
   },
   methods: {
+    // 时间格式转换
+    dateFormat: function(row, column) {
+      var date = row[column.property]
+      if (date === undefined) {
+        return ''
+      }
+      return this.tools.dateFormat(new Date(date)).slice(0, 10)
+    },
     // 动态插入table列
     handleCheckedColumsChange(event, value) {
       if (event) {
@@ -765,7 +760,7 @@ export default {
                 data => {
                   this.tools.alertInfo(this, '办理成功！')
                   this.dialogLeaveVisible = false
-                  this.$router.go(0)
+                  this.handleFilters()
                 }
               )
             })
@@ -795,6 +790,7 @@ export default {
       }
       this.clearValidate('salaryInfo')
     },
+    // 调薪幅度与调薪后工资联动
     handleChangeRange(value) {
       this.salaryInfo.finalSalary = value + this.salaryInfo.workerPay
     },

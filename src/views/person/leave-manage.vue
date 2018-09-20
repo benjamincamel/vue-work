@@ -42,10 +42,7 @@
       </el-table-column>
       <el-table-column prop="sex" label="性别" width="80">
       </el-table-column>
-      <el-table-column label="出生日期" sortable min-width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="birthday" label="出生日期" sortable min-width="160" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="position" label="职位" width="120">
       </el-table-column>
@@ -57,10 +54,7 @@
       </el-table-column>
       <el-table-column prop="expatriateUnit" label="外派单位" min-width="160">
       </el-table-column>
-      <el-table-column label="离职时间" min-width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.leaveWorkingTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="leaveWorkingTime" label="离职时间" sortable min-width="160" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="leaveType" :formatter="leaveTypeFormat" label="离职类型" min-width="160">
       </el-table-column>
@@ -347,6 +341,14 @@ export default {
     }
   },
   methods: {
+    // 时间格式转换
+    dateFormat: function(row, column) {
+      var date = row[column.property]
+      if (date === undefined) {
+        return ''
+      }
+      return this.tools.dateFormat(new Date(date)).slice(0, 10)
+    },
     // 动态插入table列
     handleCheckedColumsChange(event, value) {
       if (event) {
