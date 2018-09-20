@@ -17,66 +17,34 @@ import {
 const whiteList = ['/login'] // 不重定向白名单
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  // if (sessionStorage.getItem('name')) {
+  if (to.path === '/login') {
+  // 如果是登录页面路径，就直接next()
+    console.log('111111111111')
+    next()
+    NProgress.done()
+  }
   if (getToken()) {
     /* has token*/
-    if (to.path === '/login') {
-      next({ path: '/' })
-      NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
+    console.log('222222222222222')
+    console.log(store.getters.permission_routers)
+    if (!store.getters.permission_routers) {
+      const functionIds = getToken()
+      store.dispatch('GenerateRoutes', { functionIds }).then(() => { // 根据roles权限生成可访问的路由表
+        router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
+        next({ ...to }) // 放行路由// next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+      })
+      // next()
+      NProgress.done()
     } else {
-      if (getToken()) {
-        const functionIds = getToken()
-        store.dispatch('GenerateRoutes', { functionIds }).then(() => { // 根据roles权限生成可访问的路由表
-          router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
-          // next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-        })
-        next()
-        // this.ax.get('user/getRoles').then(response => {
-        //   if (response.data.code === 0) {
-        //     // 请求成功
-        //     this.tools.alertInfo(this, response.data.data)
-        //     const roles = response.data.data.rolenames
-        //     store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
-        //       router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
-        //       next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-        //     })
-        //     // this.$router.push({ path: '/' })
-        //   } else {
-        //     this.tools.alertError(this, response)
-        //   }
-        // }).catch((Error) => {
-        //   this.tools.alertError(this, '请求错误！')
-        //   next({ path: '/' })
-        // })
-        // // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓
-        // store.dispatch('GetInfo').then(res => { // 拉取用户信息
-        // const roles = store.getters.roles // note: roles must be a array! such as: ['editor','develop']
-        // store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
-        //   router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
-        //   next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-        // })
-        // next() // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-        // }).catch((err) => {
-        //   store.dispatch('FedLogOut').then(() => {
-        //     Message.error(err || 'Verification failed, please login again')
-        //     next({ path: '/' })
-        //   })
-        // })
-      } else {
-        next('/login')
-        NProgress.done()
-        // // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓
-        // if (hasPermission(sessionStorage.getItem('roles'), to.meta.roles)) {
-        //   next()//
-        // } else {
-        //   next({ path: '/401', replace: true, query: { noGoBack: true }})
-        // }
-      }
+      next()
+      NProgress.done()
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
+      console.log('3333333333333')
       next()
     } else {
+      console.log('444444444444')
       next('/login')
       NProgress.done()
     }
