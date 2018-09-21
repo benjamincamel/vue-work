@@ -108,6 +108,10 @@
               <el-date-picker v-model="personalAll.personalSalaryInfo.arrivalTime" type="date" placeholder="入职时间">
               </el-date-picker>
             </el-form-item>
+            <el-form-item label="转正时间">
+              <el-date-picker v-model="personalAll.personalSalaryInfo.workerTime" type="date" :editable="true" placeholder="转正时间">
+              </el-date-picker>
+            </el-form-item>
             <el-form-item label="招商银行账号">
               <el-input v-model="personalAll.personalSalaryInfo.bankCardNumber" auto-complete="off"></el-input>
             </el-form-item>
@@ -115,48 +119,46 @@
               <el-input v-model="personalAll.personalSalaryInfo.bankOpenPlace" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="基本工资" class="is-required">
-              <el-input v-model="personalAll.personalSalaryInfo.basePay" auto-complete="off"></el-input>
+              <el-input-number v-model="personalAll.personalSalaryInfo.basePay" :step="500" :min="0" :max="20000"></el-input-number>
             </el-form-item>
             <el-form-item label="绩效工资" class="is-required">
-              <el-input v-model="personalAll.personalSalaryInfo.meritPay" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="试用期工资">
-              <el-input v-model="personalAll.personalSalaryInfo.probationaryPay" auto-complete="off"></el-input>
+              <el-input-number v-model="personalAll.personalSalaryInfo.meritPay" :step="500" :min="0" :max="10000"></el-input-number>
             </el-form-item>
             <el-form-item label="试用期">
-              <el-input v-model="personalAll.personalSalaryInfo.probationPeriod" auto-complete="off"></el-input>
+              <el-input v-model="personalAll.personalSalaryInfo.probationPeriod"></el-input>
+            </el-form-item>
+            <el-form-item label="试用期工资">
+              <el-input-number v-model="personalAll.personalSalaryInfo.probationaryPay" :step="500" :min="0" :max="20000"></el-input-number>
             </el-form-item>
             <el-form-item label="试用期福利">
-              <el-input v-model="personalAll.personalSalaryInfo.probationPeriodWelfare" auto-complete="off"></el-input>
+              <el-input v-model="personalAll.personalSalaryInfo.probationPeriodWelfare"></el-input>
             </el-form-item>
             <el-form-item label="补贴" class="is-required">
-              <el-input v-model="personalAll.personalSalaryInfo.subsidy" auto-complete="off"></el-input>
+              <el-input-number v-model="personalAll.personalSalaryInfo.subsidy" :step="100" :min="0" :max="5000"></el-input-number>
+            </el-form-item>
+            <el-form-item label="转正工资">
+              <el-input-number v-model="personalAll.personalSalaryInfo.workerPay" :step="500" :min="0" :max="20000"></el-input-number>
+            </el-form-item>
+            <el-form-item label="转正福利">
+              <el-input v-model="personalAll.personalSalaryInfo.workerWelfare"></el-input>
             </el-form-item>
             <el-form-item label="创建时间">
               <el-date-picker v-model="personalAll.personalSalaryInfo.createTime" type="date" :editable="true" placeholder="创建时间" :disabled="true">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="缴纳社保起始月份">
-              <el-input v-model="personalAll.personalSalaryInfo.insuranceBeginDate" auto-complete="off"></el-input>
+              <el-date-picker v-model="personalAll.personalSalaryInfo.insuranceBeginDate" type="date" :editable="true" placeholder="缴纳社保起始月份">
+              </el-date-picker>
             </el-form-item>
             <el-form-item label="实际缴纳社保起始月份">
-              <el-input v-model="personalAll.personalSalaryInfo.insuranceRealDate" auto-complete="off"></el-input>
+              <el-date-picker v-model="personalAll.personalSalaryInfo.insuranceRealDate" type="date" :editable="true" placeholder="实际缴纳社保起始月份">
+              </el-date-picker>
             </el-form-item>
             <el-form-item label="社保缴纳地点">
               <el-input v-model="personalAll.personalSalaryInfo.insurancePlace" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="结算价">
-              <el-input v-model="personalAll.personalSalaryInfo.settlementPrice" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="转正工资">
-              <el-input v-model="personalAll.personalSalaryInfo.workerPay" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="转正时间">
-              <el-date-picker v-model="personalAll.personalSalaryInfo.workerTime" type="date" :editable="true" placeholder="转正时间">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="转正福利">
-              <el-input v-model="personalAll.personalSalaryInfo.workerWelfare" auto-complete="off"></el-input>
+              <el-input-number v-model="personalAll.personalSalaryInfo.settlementPrice" :step="500" :min="3000" :max="20000"></el-input-number>
             </el-form-item>
             <el-form-item label="工龄">
               <el-input v-model="personalAll.personalSalaryInfo.workingYears" auto-complete="off" :disabled="true"></el-input>
@@ -193,6 +195,24 @@
                 <el-option v-for="item in expatriateUnitOptions" clearable :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item label="职位">
+              <el-input v-model="personalAll.personalWorkInfo.position" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="岗位类别">
+              <el-input v-model="personalAll.personalWorkInfo.postType" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="项目">
+              <el-input v-model="personalAll.personalWorkInfo.project" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="招聘渠道">
+              <el-input v-model="personalAll.personalWorkInfo.recruitChannel" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="工作地址">
+              <el-input v-model="personalAll.personalWorkInfo.workingAddress" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="工作地点">
+              <el-input v-model="personalAll.personalWorkInfo.workingPlace" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="合同签署次数">
               <el-input-number v-model="personalAll.personalWorkInfo.contractCount" :min="1" :max="20" :disabled="true"></el-input-number>
@@ -231,24 +251,6 @@
             <el-form-item label="离职日期">
               <el-date-picker v-model="personalAll.personalWorkInfo.leaveWorkingTime" type="date" :editable="true" placeholder="离职日期" :disabled="true">
               </el-date-picker>
-            </el-form-item>
-            <el-form-item label="职位">
-              <el-input v-model="personalAll.personalWorkInfo.position" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="岗位类别">
-              <el-input v-model="personalAll.personalWorkInfo.postType" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="项目">
-              <el-input v-model="personalAll.personalWorkInfo.project" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="招聘渠道">
-              <el-input v-model="personalAll.personalWorkInfo.recruitChannel" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="工作地址">
-              <el-input v-model="personalAll.personalWorkInfo.workingAddress" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="工作地点">
-              <el-input v-model="personalAll.personalWorkInfo.workingPlace" auto-complete="off"></el-input>
             </el-form-item>
           </el-form>
         </el-tab-pane>

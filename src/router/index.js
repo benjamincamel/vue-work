@@ -166,9 +166,9 @@ export const asyncRouterMap = [
   },
   // 职场管理
   {
-    path: '/table',
+    path: '/attendance',
     component: Layout,
-    redirect: '/table/complex-table',
+    redirect: '/attendance/complex-table',
     name: '职场管理',
     meta: {
       title: '职场管理',
@@ -177,33 +177,21 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'complex-table',
-        name: '全通考勤',
-        component: () => import('@/views/table/complex-table'),
-        meta: { title: '全通考勤', icon: 'fa fa-id-badge', roles: ',14,' }
+        path: 'attendance-common',
+        name: '全通物联网考勤',
+        component: () => import('@/views/attendance/attendance-common'),
+        meta: { title: '全通物联网考勤', icon: 'fa fa-id-badge', roles: ',14,' }
       },
       {
-        path: 'complex-table',
-        name: '北京物联网考勤',
-        component: () => import('@/views/table/complex-table'),
-        meta: { title: '北京物联网考勤', icon: 'fa fa-id-badge', roles: ',15,' }
-      },
-      {
-        path: 'complex-table',
-        name: '成都物联网考勤',
-        component: () => import('@/views/table/complex-table'),
-        meta: { title: '成都物联网考勤', icon: 'fa fa-id-badge', roles: ',16,' }
-      },
-      {
-        path: 'complex-table',
+        path: 'attendance-baidu',
         name: '百度考勤',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/attendance/attendance-baidu'),
         meta: { title: '百度考勤', icon: 'fa fa-id-badge', roles: ',17,' }
       },
       {
-        path: 'complex-table',
+        path: 'attendance-manage',
         name: '考勤管理',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/attendance/attendance-manage'),
         meta: { title: '考勤管理', icon: 'fa fa-id-badge', roles: ',18,' }
       }
     ]
@@ -233,18 +221,18 @@ export const asyncRouterMap = [
         meta: { title: '奖惩管理', icon: 'fa fa-meh-o', roles: ',20,' }
       },
       {
-        path: 'search-manage',
-        name: '查询管理',
-        component: () => import('@/views/salary/search-manage'),
-        meta: { title: '查询管理', icon: 'fa fa-search', roles: ',21,' }
+        path: 'insurance-manage',
+        name: '社保管理',
+        component: () => import('@/views/salary/insurance-manage'),
+        meta: { title: '社保管理', icon: 'fa fa-laptop', roles: ',21,' }
       }
     ]
   },
   // 项目经管
   {
-    path: '/table',
+    path: '/project',
     component: Layout,
-    redirect: '/table/complex-table',
+    redirect: '/project/profit-calculation',
     name: '项目经管',
     meta: {
       title: '项目经管',
@@ -253,9 +241,9 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'complex-table',
+        path: 'profit-calculation',
         name: '利润测算表',
-        component: () => import('@/views/table/complex-table'),
+        component: () => import('@/views/project/profit-calculation'),
         meta: { title: '利润测算表', icon: 'fa fa-calculator', roles: ',22,' }
       }
     ]
