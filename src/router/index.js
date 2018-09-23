@@ -183,16 +183,16 @@ export const asyncRouterMap = [
         meta: { title: '全通物联网考勤', icon: 'fa fa-id-badge', roles: ',14,' }
       },
       {
+        path: 'attendance-manage',
+        name: '年假休假加班管理',
+        component: () => import('@/views/attendance/attendance-manage'),
+        meta: { title: '年假休假加班管理', icon: 'fa fa-id-badge', roles: ',18,' }
+      },
+      {
         path: 'attendance-baidu',
         name: '百度考勤',
         component: () => import('@/views/attendance/attendance-baidu'),
         meta: { title: '百度考勤', icon: 'fa fa-id-badge', roles: ',17,' }
-      },
-      {
-        path: 'attendance-manage',
-        name: '考勤管理',
-        component: () => import('@/views/attendance/attendance-manage'),
-        meta: { title: '考勤管理', icon: 'fa fa-id-badge', roles: ',18,' }
       }
     ]
   },

@@ -25,6 +25,22 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <!-- 导入操作区 -->
+    <div class="toolbar clearfix">
+      <el-form :inline="true" :model="upMouth" @submit.native.prevent style="float: left">
+        <el-form-item label="选择上传考勤月份">
+          <el-date-picker size="small" v-model="upMouth.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择上传考勤月份">
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
+        <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
+          <el-button slot="trigger" size="small">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="primary" @click="submitUpload">导入</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+        </el-upload>
+      </form>
+    </div>
     <!--列表-->
     <el-table :data="checkList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
@@ -144,6 +160,11 @@
 </template>
 
 <script>
+import axios from 'axios' // axios请求插件
+const curax = axios.create({
+  timeout: 30000, // 超时时间 10s
+  baseURL: this.env ? '正式环境' : 'api'
+})
 export default {
   data() {
     return {
@@ -154,6 +175,9 @@ export default {
         pageIndex: 0,
         // 查询条数
         pageSize: 8
+      },
+      upMouth: {
+        term: ''
       },
       checkInfo: {},
       rules: {
@@ -172,6 +196,36 @@ export default {
     }
   },
   methods: {
+    // 导入
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleURemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleChange(file, fileList) {
+      console.log(file)
+      console.log(fileList)
+    },
+    beforeUpload: function(file) {
+      console.log(file)
+      // 这里是重点，将文件转化为formdata数据上传
+      // var data = document.getElementById('upload')
+      var filedata = new FormData('#myForm')
+      filedata.append('filedata', file)
+      curax.post('checkwork/importQtWlwExcel', { term: this.upMouth.term }, filedata).then(
+        res => {
+          console.log(res)
+        },
+        res => {
+          console.log(res)
+        }
+      )
+      return false
+    },
     // 时间格式转换
     dateFormat: function(row, column) {
       var date = row[column.property]
