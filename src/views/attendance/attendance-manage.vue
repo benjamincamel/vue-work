@@ -51,8 +51,8 @@
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--新增/修改合同信息-->
-    <el-dialog class="addEditDialog" :visible.sync="dialogVisible" :close-on-click-modal="false">
+    <!--修改考勤信息-->
+    <el-dialog title="修改考勤信息" class="addEditDialog" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="checkInfo" ref="checkInfo" :rules="rules">
         <el-form-item label="年度" :label-width="formLabelWidth">
           <el-date-picker v-model="checkInfo.term" type="year" value-format="yyyy" placeholder="选择账期" :disabled="true">
@@ -155,7 +155,6 @@ export default {
     },
     // 显示修改考勤信息
     handleEditDialogVisible(row) {
-      this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.checkInfo = Object.assign({}, row)
       this.$refs.checkInfo.clearValidate()

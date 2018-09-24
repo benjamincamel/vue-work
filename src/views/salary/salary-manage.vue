@@ -346,11 +346,6 @@ export default {
             closeOnClickModal: false
           })
             .then(() => {
-              // this.salaryInfo.entryTime = this.tools.dateFormat(new Date(this.salaryInfo.entryTime))
-              // this.salaryInfo.updateTime = this.tools.dateFormat(new Date(this.salaryInfo.updateTime))
-              // this.salaryInfo.endDate = this.tools.dateFormat(new Date(this.salaryInfo.endDate))
-              // this.salaryInfo.startDate = this.tools.dateFormat(new Date(this.salaryInfo.startDate))
-              // this.salaryInfo.createTime = this.tools.dateFormat(new Date(this.salaryInfo.createTime))
               this.getData(
                 'salary/updateSalaryDetail',
                 { salaryDetailJsonStr: JSON.stringify(this.salaryInfo) },

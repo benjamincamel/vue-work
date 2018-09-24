@@ -27,17 +27,13 @@
     </el-col>
     <!-- 导入操作区 -->
     <div class="toolbar clearfix">
-      <el-form :inline="true" :model="upMouth" @submit.native.prevent style="float: left">
-        <el-form-item label="选择上传考勤月份">
-          <el-date-picker size="small" v-model="upMouth.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择上传考勤月份">
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
       <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
-        <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
+        <el-upload class="upload-demo" :modal="upload" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
           <el-button slot="trigger" size="small">选取文件</el-button>
+          <el-date-picker size="small" v-model="upload.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择上传考勤月份">
+          </el-date-picker>
           <el-button style="margin-left: 10px;" size="small" type="primary" @click="submitUpload">导入</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+          <div slot="tip" class="el-upload__tip">只能上传excel文件，必须选择上传考勤月份</div>
         </el-upload>
       </form>
     </div>
@@ -94,9 +90,9 @@
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--新增/修改合同信息-->
-    <el-dialog class="addEditDialog" :visible.sync="dialogVisible" :close-on-click-modal="false">
-      <el-form :model="checkInfo" ref="checkInfo" :rules="rules">
+    <!--修改考勤信息-->
+    <el-dialog title="修改考勤信息" class="addEditDialog" :visible.sync="dialogVisible" :close-on-click-modal="false">
+      <el-form :model="checkInfo" ref="checkInfo">
         <el-form-item label="账期" :label-width="formLabelWidth">
           <el-date-picker v-model="checkInfo.term" type="month" format="yyyyMM" value-format="yyyyMM" placeholder="选择账期" :disabled="true">
           </el-date-picker>
@@ -170,24 +166,16 @@ export default {
     return {
       dialogVisible: false,
       formLabelWidth: '140px',
+      upload: {
+        term: ''
+      },
       filters: {
         // 查询页页码
         pageIndex: 0,
         // 查询条数
         pageSize: 8
       },
-      upMouth: {
-        term: ''
-      },
       checkInfo: {},
-      rules: {
-        startDate: [
-          { required: true, message: '请选择日期', trigger: 'change' }
-        ],
-        endDate: [
-          { required: true, message: '请选择日期', trigger: 'change' }
-        ]
-      },
       // 数据总共数量 多少条
       count: 0,
       // 是否展示table的loading状态
@@ -214,21 +202,23 @@ export default {
       console.log(file)
       // 这里是重点，将文件转化为formdata数据上传
       // var data = document.getElementById('upload')
-      var filedata = new FormData('#myForm')
+      const filedata = new FormData('#myForm')
       filedata.append('filedata', file)
-      curax.post('checkwork/importQtWlwExcel', { term: this.upMouth.term }, filedata).then(
-        res => {
-          console.log(res)
-        },
-        res => {
-          console.log(res)
-        }
-      )
+      filedata.append('term', this.upload.term)
+      curax.post('checkwork/importQtWlwExcel', filedata)
+        .then(
+          res => {
+            console.log(res)
+          },
+          res => {
+            console.log(res)
+          }
+        )
       return false
     },
     // 时间格式转换
     dateFormat: function(row, column) {
-      var date = row[column.property]
+      const date = row[column.property]
       if (date === undefined) {
         return ''
       }
@@ -267,7 +257,6 @@ export default {
     },
     // 显示修改考勤信息
     handleEditDialogVisible(row) {
-      this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.checkInfo = Object.assign({}, row)
       this.$refs.checkInfo.clearValidate()

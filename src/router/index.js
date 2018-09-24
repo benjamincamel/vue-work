@@ -186,7 +186,7 @@ export const asyncRouterMap = [
         path: 'attendance-manage',
         name: '年假休假加班管理',
         component: () => import('@/views/attendance/attendance-manage'),
-        meta: { title: '年假休假加班管理', icon: 'fa fa-id-badge', roles: ',18,' }
+        meta: { title: '年假休假加班管理', icon: 'fa fa-calendar', roles: ',18,' }
       },
       {
         path: 'attendance-baidu',
