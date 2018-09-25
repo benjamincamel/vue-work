@@ -40,6 +40,8 @@
       </el-table-column>
       <el-table-column prop="entryTime" label="入职时间" width="120" :formatter="dateFormat">
       </el-table-column>
+      <el-table-column prop="probationaryPay" label="试用期工资" width="100">
+      </el-table-column>
       <el-table-column prop="realPay" label="实发工资" width="100">
       </el-table-column>
       <el-table-column prop="shouldPay" label="本月应发工资" width="120">
@@ -76,8 +78,6 @@
       </el-table-column>
       <el-table-column prop="phoneSubsidy" label="话补" width="80">
       </el-table-column>
-      <el-table-column prop="probationaryPay" label="试用期工资" width="100">
-      </el-table-column>
       <el-table-column prop="tax" label="税率" width="80">
       </el-table-column>
       <el-table-column prop="taxPay" label="报税工资" width="100">
@@ -107,27 +107,81 @@
     <el-dialog class="addEditDialog" title="修改工资" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="salaryInfo" ref="salaryInfo">
         <el-form-item label="账期" :label-width="formLabelWidth">
-          <el-date-picker v-model="salaryInfo.term" type="month" format="yyyyMM" value-format="yyyyMM" placeholder="选择账期" :disabled.sync="disablebBoolean">
+          <el-date-picker v-model="salaryInfo.term" type="month" format="yyyyMM" value-format="yyyyMM" placeholder="选择账期" :disabled="true">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="salaryInfo.name" auto-complete="off" :disabled.sync="disablebBoolean"></el-input>
+          <el-input v-model="salaryInfo.name" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="外派单位" :label-width="formLabelWidth">
-          <el-input v-model="salaryInfo.expatriateUnit" auto-complete="off" :disabled.sync="disablebBoolean"></el-input>
+          <el-input v-model="salaryInfo.expatriateUnit" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="入职时间" :label-width="formLabelWidth">
-          <el-date-picker v-model="salaryInfo.entryTime" type="date" placeholder="入职时间" format="yyyy-MM-dd 00:00:00" :disabled.sync="disablebBoolean">
+          <el-date-picker v-model="salaryInfo.entryTime" type="date" placeholder="入职时间" format="yyyy-MM-dd" :disabled="true">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="实发工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.realPay" :step="500" :min="0" :max="20000"></el-input-number>
+        <el-form-item label="试用期工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.probationaryPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="本月应发工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.shouldPay" :step="500" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="salaryInfo.shouldPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="实发工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.realPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="招行代发" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.bankPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="现金" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.cash" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="税率" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.tax" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="报税工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.taxPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="速算扣除数" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.deductNumber" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="应纳税所得额" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.shouldTaxAmount" :step="500" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="salaryInfo.shouldTaxAmount" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="代扣代缴所得税" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.incomeTax" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="个人社保及公积金扣款合计" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.insuranceDeduction" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="基本工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.basePay" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="绩效工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.meritPay" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="其他工资" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.otherPay" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="交通补助" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.trafficSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="电脑补助" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.computerSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="餐补" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.mealSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="话补" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.phoneSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="养老个人合计" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.endowment" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="医疗个人合计" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.medical" :step="500" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="失业个人合计" :label-width="formLabelWidth">
+          <el-input-number v-model="salaryInfo.unemployment" :step="500" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="公积金合计" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.accumulationFund" :step="500" :min="0" :max="20000"></el-input-number>
@@ -135,62 +189,8 @@
         <el-form-item label="考勤扣款" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.attendanceDeduction" :step="500" :min="0" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="招行代发" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.bankPay" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="基本工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.basePay" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="现金" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.cash" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="电脑补助" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.computerSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="养老个人合计" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.endowment" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="代扣代缴所得税" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.incomeTax" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="个人社保及公积金扣款合计" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.insuranceDeduction" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="餐补" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.mealSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="医疗个人合计" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.medical" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="绩效工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.meritPay" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
         <el-form-item label="其它扣款" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.otherDeduction" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="其他工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.otherPay" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="话补" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.phoneSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="试用期工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.probationaryPay" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="税率" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.tax" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="报税工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.taxPay" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="交通补助" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.trafficSubsidy" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="失业个人合计" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.unemployment" :step="500" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="速算扣除数" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.deductNumber" :step="500" :min="0" :max="20000"></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -218,7 +218,6 @@
 export default {
   data() {
     return {
-      disablebBoolean: false,
       dialogVisible: false,
       dialogAddVisible: false,
       dialogStatus: '',
@@ -334,9 +333,7 @@ export default {
     // 显示修改工资信息
     handleEditDialogVisible(row) {
       this.dialogVisible = true
-      this.disablebBoolean = true
       this.salaryInfo = Object.assign({}, row)
-      this.$refs.salaryInfo.clearValidate()
     },
     // 修改工资信息
     handleEdit(row) {
