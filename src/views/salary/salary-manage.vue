@@ -130,10 +130,10 @@
           <el-input-number v-model="salaryInfo.realPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="招行代发" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.bankPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.bankPay" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="现金" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.cash" :step="500" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="salaryInfo.cash" @change="handleChangeCash" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="税率" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.tax" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
@@ -261,6 +261,10 @@ export default {
     }
   },
   methods: {
+    // 调薪幅度与调薪后工资联动
+    handleChangeCash(value) {
+      const oldBankPay = Object.assign(this.salaryInfo.bankPay)
+    },
     // 时间格式转换
     dateFormat: function(row, column) {
       var date = row[column.property]
