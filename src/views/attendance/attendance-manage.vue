@@ -149,7 +149,7 @@ export default {
       this.getData('checkwork/getCurrentList', this.filters, data => {
         console.log(data)
         this.count = data.count
-        this.currentList = data.checkWorkDetailLists
+        this.currentList = data.checkWorkCurrentLists
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
@@ -189,7 +189,7 @@ export default {
       this.filters.pageIndex = value - 1
       this.getData('checkwork/getCurrentList', this.filters, data => {
         this.count = data.count
-        this.currentList = data.checkWorkDetailLists
+        this.currentList = data.checkWorkCurrentLists
         console.log(data)
       })
       this.$refs.table.bodyWrapper.scrollTop = 0

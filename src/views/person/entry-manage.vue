@@ -789,6 +789,8 @@ export default {
         reason: '', // 调薪原因
         type: '' // 调薪类型
       }
+      // 初始化调薪前工资值
+      this.handleChangeRange(0)
       this.clearValidate('salaryInfo')
     },
     // 调薪幅度与调薪后工资联动
