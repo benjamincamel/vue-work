@@ -335,6 +335,12 @@ export default {
     }
   },
   methods: {
+    // 清除验证信息
+    clearValidate(formName) {
+      if (this.$refs[formName] !== undefined) {
+        this.$refs[formName].clearValidate()
+      }
+    },
     // 数据请求方法
     getData(funName, param, fun) {
       this.showLoading = true
@@ -370,7 +376,7 @@ export default {
     handleAddDialogVisible() {
       this.dialogStatus = 'add'
       this.dialogVisible = true
-      this.$refs.recruitInfo.clearValidate()
+      this.clearValidate('recruitInfo')
       this.recruitInfo = {
         id: '',
         center: '',
@@ -416,7 +422,7 @@ export default {
     handleEditDialogVisible(row) {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
-      this.$refs.recruitInfo.clearValidate()
+      this.clearValidate('recruitInfo')
       this.recruitInfo = Object.assign({}, row)
       this.recruitInfo.status = this.statusFormat(row)
     },
