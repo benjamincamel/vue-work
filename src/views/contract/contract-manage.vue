@@ -163,6 +163,12 @@ export default {
     }
   },
   methods: {
+    // 清除验证信息
+    clearValidate(formName) {
+      if (this.$refs[formName] !== undefined) {
+        this.$refs[formName].clearValidate()
+      }
+    },
     // 数据请求方法
     getData(funName, param, fun) {
       this.showLoading = true
@@ -198,7 +204,6 @@ export default {
     handleAddDialogVisible(row) {
       this.dialogStatus = 'add'
       this.dialogVisible = true
-      this.$refs.contractInfo.clearValidate()
       this.contractInfo = {
         contractNumber: '',
         contractCount: row.contractCount + 1,
@@ -214,6 +219,7 @@ export default {
         serialVersionUID: '',
         startDate: ''
       }
+      this.clearValidate('contractInfo')
       console.log(this.contractInfo)
     },
     // 新增合同信息
@@ -246,7 +252,7 @@ export default {
       this.dialogStatus = 'edit'
       this.dialogVisible = true
       this.contractInfo = Object.assign({}, row)
-      this.$refs.contractInfo.clearValidate()
+      this.clearValidate('contractInfo')
     },
     // 修改合同信息
     handleEdit(row) {
