@@ -41,23 +41,23 @@
     <el-table :data="insurList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
+      <el-table-column prop="term" label="账期" width="80">
+      </el-table-column>
       <el-table-column prop="name" label="姓名" width="80">
       </el-table-column>
       <el-table-column prop="expatriateUnit" label="外派单位" width="100">
       </el-table-column>
-      <el-table-column prop="term" label="账期" width="80">
-      </el-table-column>
-      <el-table-column prop="insuranceBeginDate" label="缴纳社保起始月份" width="160">
+      <el-table-column prop="insuranceBeginDate" label="缴纳社保起始月份" width="160" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="insuranceRealDate" label="实际缴纳社保起始月份" width="160">
       </el-table-column>
       <el-table-column prop="insurancePlace" label="社保缴纳地点" width="120">
       </el-table-column>
-      <el-table-column prop="socialSecurity" label="社保单位合计" width="120">
-      </el-table-column>
       <el-table-column prop="agencyCompany" label="代理公司" width="100">
       </el-table-column>
       <el-table-column prop="agencyPay" label="代理费" width="100">
+      </el-table-column>
+      <el-table-column prop="socialSecurity" label="社保单位合计" width="120">
       </el-table-column>
       <el-table-column prop="socialSecurityPersonal" label="社保个人合计" width="120">
       </el-table-column>
@@ -162,12 +162,12 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="缴纳社保起始月份" :label-width="formLabelWidth">
-          <el-date-picker v-model="insurInfo.insuranceBeginDate" type="date" placeholder="合同开始日期">
+          <el-date-picker v-model="insurInfo.insuranceBeginDate" type="date" placeholder="缴纳社保起始月份">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="合同开始日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="insurInfo.insuranceRealDate" type="date" placeholder="实际缴纳社保起始月份">
-          </el-date-picker>
+        <el-form-item label="实际缴纳社保起始月份" :label-width="formLabelWidth">
+          <el-input v-model="insurInfo.insuranceRealDate" placeholder="实际缴纳社保起始月份">
+          </el-input>
         </el-form-item>
         <el-form-item label="社保缴纳地点" :label-width="formLabelWidth">
           <el-input v-model="insurInfo.insurancePlace" auto-complete="off" :disabled="true"></el-input>
@@ -314,7 +314,7 @@ export default {
         term: ''
       },
       dialogVisible: false,
-      formLabelWidth: '200px',
+      formLabelWidth: '230px',
       filters: {
         // 查询页页码
         pageIndex: 0,
@@ -365,7 +365,7 @@ export default {
     },
     dateFormat: function(row, column) {
       const date = row[column.property]
-      if (date === undefined) {
+      if (date === undefined || date === '') {
         return ''
       }
       return this.tools.dateFormat(new Date(date)).slice(0, 10)
