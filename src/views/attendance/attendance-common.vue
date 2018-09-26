@@ -217,7 +217,7 @@ export default {
       return false
     },
     // 时间格式转换
-    dateFormat: function(row, column) {
+    dateFormat(row, column) {
       const date = row[column.property]
       if (date === undefined) {
         return ''
@@ -259,7 +259,7 @@ export default {
     handleEditDialogVisible(row) {
       this.dialogVisible = true
       this.checkInfo = Object.assign({}, row)
-      this.$refs.checkInfo.clearValidate()
+      console.log(this.checkInfo.surplusAnnualLeave)
     },
     // 修改考勤信息
     handleEdit(row) {

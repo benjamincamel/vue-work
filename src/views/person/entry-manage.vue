@@ -557,6 +557,12 @@ export default {
     }
   },
   methods: {
+    // 清除验证信息
+    clearValidate(formName) {
+      if (this.$refs[formName] !== undefined) {
+        this.$refs[formName].clearValidate()
+      }
+    },
     // 时间格式转换
     dateFormat: function(row, column) {
       var date = row[column.property]
@@ -712,6 +718,7 @@ export default {
       this.dialogAssignVisible = true
       this.assignForm.id = row.id
       this.assignForm.role = ''
+      this.clearValidate('assignForm')
     },
     // 分配员工账号
     handleAssign() {
@@ -746,6 +753,7 @@ export default {
       this.leaveForm.leaveType = ''
       this.leaveForm.leaveWorkingTime = ''
       this.leaveForm.leaveReason = ''
+      this.clearValidate('leaveForm')
     },
     // 办理离职
     handleLeave() {
@@ -771,9 +779,6 @@ export default {
           return false
         }
       })
-    },
-    clearValidate(formName) {
-      this.$refs[formName].clearValidate()
     },
     // 显示新增调薪信息
     handleDialogAddSalaryVisible(row) {
