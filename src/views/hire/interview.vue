@@ -49,31 +49,19 @@
       </el-table-column>
       <el-table-column prop="location" label="驻场位置" width="150">
       </el-table-column>
-      <el-table-column label="面试时间" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.interviewTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="interviewTime" label="面试时间" width="120" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column label="初步沟通时间" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.firstCommunicateTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="firstCommunicateTime" label="初步沟通时间" width="120" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="finalCommunicateResult" label="初步沟通结果" width="150">
       </el-table-column>
-      <el-table-column label="最终沟通时间" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.finalCommunicateTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="finalCommunicateTime" label="最终沟通时间" width="120" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="firstCommunicateResult" label="最终沟通结果" width="150">
       </el-table-column>
       <el-table-column prop="firstTime" label="首日回访到岗情况" width="150">
       </el-table-column>
-      <el-table-column label="办理入职时间" width="150">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.entryTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="entryTime" label="办理入职时间" width="150" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="name" label="姓名" width="120">
       </el-table-column>
@@ -103,15 +91,9 @@
       </el-table-column>
       <el-table-column prop="subsidy" label="补贴" width="120">
       </el-table-column>
-      <el-table-column label="创建时间" width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.createTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column label="修改时间" width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.updateTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="updateTime" label="修改时间" width="160" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="status" label="状态" min-width="120" :formatter="statusFormat">
       </el-table-column>
@@ -330,7 +312,19 @@ export default {
     }
   },
   methods: {
+    // 时间格式转换
+    dateFormat: function(row, column) {
+      var date = row[column.property]
+      if (date === undefined) {
+        return ''
+      }
+      return this.tools.dateFormat(new Date(date)).slice(0, 10)
+    },
+    // 试用期加单位“月”
     completeProbationPeriod(row, column) {
+      if (row.probationPeriod === undefined) {
+        return ''
+      }
       return ` ${row.probationPeriod}月 `
     },
     // 数据请求方法

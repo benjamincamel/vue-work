@@ -121,7 +121,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="试用期工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.probationaryPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.probationaryPay" @change="handleChangeSalary" :step="500" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="基本工资" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.basePay" @change="handleChangeSalary" :step="500" :min="0" :max="20000"></el-input-number>
@@ -169,10 +169,10 @@
           <el-input-number v-model="salaryInfo.insuranceDeduction" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="报税工资" :label-width="formLabelWidth">
-          <el-input v-model="salaryInfo.taxPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input>
+          <el-input-number v-model="salaryInfo.taxPay" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="应纳税所得额" :label-width="formLabelWidth">
-          <el-input v-model="salaryInfo.shouldTaxAmount" :step="500" :min="0" :max="20000" :disabled="true"></el-input>
+          <el-input-number v-model="salaryInfo.shouldTaxAmount" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="税率" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.tax" :step="500" :min="0" :max="20000" :disabled="true"></el-input-number>
@@ -268,13 +268,14 @@ export default {
     // },
     // 工资组成变更与工资联动
     handleChangeSalary(value) {
-      this.salaryInfo.shouldPay = this.salaryInfo.basePay + this.salaryInfo.meritPay + this.salaryInfo.otherPay + this.salaryInfo.trafficSubsidy + this.salaryInfo.computerSubsidy + this.salaryInfo.mealSubsidy + this.salaryInfo.phoneSubsidy - this.salaryInfo.attendanceDeduction - this.salaryInfo.otherDeduction
+      // 计算应发工资
+      this.salaryInfo.shouldPay = this.salaryInfo.probationaryPay + this.salaryInfo.basePay + this.salaryInfo.meritPay + this.salaryInfo.otherPay + this.salaryInfo.trafficSubsidy + this.salaryInfo.computerSubsidy + this.salaryInfo.mealSubsidy + this.salaryInfo.phoneSubsidy - this.salaryInfo.attendanceDeduction - this.salaryInfo.otherDeduction
       // 计算报税工资
       this.salaryInfo.taxPay = this.salaryInfo.shouldPay - this.salaryInfo.insuranceDeduction
       // 计算应纳税所得额
       this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 3500
       // 计算税率
-      this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount < 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount >= 1500 && this.salaryInfo.shouldTaxAmount < 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount >= 4500 && this.salaryInfo.shouldTaxAmount < 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount >= 9000 ? 0.25 : 0
+      this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount <= 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount > 1500 && this.salaryInfo.shouldTaxAmount <= 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount > 4500 && this.salaryInfo.shouldTaxAmount <= 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount > 9000 ? 0.25 : 0
       console.log(this.salaryInfo.tax)
       // 根据税率返回速算扣除数
       this.salaryInfo.deductNumber = this.salaryInfo.tax === 0.03 ? 0 : this.salaryInfo.tax === 0.1 ? 105 : this.salaryInfo.tax === 0.2 ? 555 : this.salaryInfo.tax === 0.25 ? 1005 : 0
@@ -297,7 +298,7 @@ export default {
       // 计算应纳税所得额
       this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 3500
       // 计算税率
-      this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount < 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount >= 1500 && this.salaryInfo.shouldTaxAmount < 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount >= 4500 && this.salaryInfo.shouldTaxAmount < 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount >= 9000 ? 0.25 : 0
+      this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount <= 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount > 1500 && this.salaryInfo.shouldTaxAmount <= 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount > 4500 && this.salaryInfo.shouldTaxAmount <= 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount > 9000 ? 0.25 : 0
       console.log(this.salaryInfo.tax)
       // 根据税率返回速算扣除数
       this.salaryInfo.deductNumber = this.salaryInfo.tax === 0.03 ? 0 : this.salaryInfo.tax === 0.1 ? 105 : this.salaryInfo.tax === 0.2 ? 555 : this.salaryInfo.tax === 0.25 ? 1005 : 0

@@ -43,23 +43,23 @@
       </el-table-column>
       <el-table-column prop="term" label="考勤月份" width="80">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120">
+      <el-table-column prop="manufacturer" label="合作厂家" width="100">
+      </el-table-column>
+      <el-table-column prop="name" label="姓名" width="100">
       </el-table-column>
       <el-table-column prop="expatriateUnit" label="外派单位" width="120">
       </el-table-column>
       <el-table-column prop="entryTime" label="入职时间" width="120" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column prop="manager" label="负责人" width="120">
-      </el-table-column>
-      <el-table-column prop="manufacturer" label="合作厂家" width="120">
+      <el-table-column prop="attendanceDays" label="出勤天数" width="100">
       </el-table-column>
       <el-table-column prop="checkWorkDays" label="考勤天数" width="100">
-      </el-table-column>
-      <el-table-column prop="attendanceDays" label="出勤天数" width="100">
       </el-table-column>
       <el-table-column prop="overtimeDays" label="加班天数" width="100">
       </el-table-column>
       <el-table-column prop="leaveDays" label="请假天数" width="100">
+      </el-table-column>
+      <el-table-column prop="manager" label="负责人" width="100">
       </el-table-column>
       <el-table-column prop="settlementDays" label="当月考勤扣款天数" width="160">
       </el-table-column>
@@ -97,6 +97,9 @@
           <el-date-picker v-model="checkInfo.term" type="month" format="yyyyMM" value-format="yyyyMM" placeholder="选择账期" :disabled="true">
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="合作厂家" :label-width="formLabelWidth">
+          <el-input v-model="checkInfo.manufacturer" auto-complete="off" :disabled="true"></el-input>
+        </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
           <el-input v-model="checkInfo.name" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
@@ -106,12 +109,6 @@
         <el-form-item label="入职时间" :label-width="formLabelWidth">
           <el-date-picker v-model="checkInfo.entryTime" type="date" placeholder="入职时间" format="yyyy-MM-dd" :disabled="true">
           </el-date-picker>
-        </el-form-item>
-        <el-form-item label="负责人" :label-width="formLabelWidth">
-          <el-input v-model="checkInfo.manager" auto-complete="off" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="合作厂家" :label-width="formLabelWidth">
-          <el-input v-model="checkInfo.manufacturer" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="考勤天数" :label-width="formLabelWidth">
           <el-input-number v-model="checkInfo.checkWorkDays" :step=".5" :min="0" :max="20000"></el-input-number>
@@ -127,6 +124,9 @@
         </el-form-item>
         <el-form-item label="当月考勤扣款天数" :label-width="formLabelWidth">
           <el-input-number v-model="checkInfo.settlementDays" :step=".5" :min="0" :max="20000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="负责人" :label-width="formLabelWidth">
+          <el-input v-model="checkInfo.manager" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
         <el-form-item label="剩余年休天数" :label-width="formLabelWidth">
           <el-input-number v-model="checkInfo.surplusAnnualLeave" :step=".5" :min="0" :max="20000"></el-input-number>
