@@ -262,6 +262,12 @@ export default {
     }
   },
   methods: {
+    // 清除验证信息
+    clearValidate(formName) {
+      if (this.$refs[formName] !== undefined) {
+        this.$refs[formName].clearValidate()
+      }
+    },
     // 现金发放与招行代发联动
     // handleChangeCash(value) {
     //   this.salaryInfo.bankPay = this.baseSalaryInfo.bankPay - value
@@ -354,7 +360,7 @@ export default {
     // 显示新增工资信息
     handleAddDialogVisible(row) {
       this.dialogAddVisible = true
-      this.$refs.salaryAddInfo.clearValidate()
+      this.clearValidate('salaryAddInfo')
     },
     // 新增工资信息
     handleAdd() {
@@ -369,7 +375,7 @@ export default {
                 { term: this.salaryAddInfo.term },
                 data => {
                   this.tools.alertInfo(this, '新增成功！')
-                  this.dialogVisible = false
+                  this.dialogAddVisible = false
                   this.handleFilters()
                 }
               )

@@ -215,9 +215,11 @@
 </template>
 
 <script>
-import axios from 'axios' // axios请求插件
+// axios请求插件
+import axios from 'axios'
 const curax = axios.create({
-  timeout: 30000, // 超时时间 10s
+  // 超时时间 30s
+  timeout: 30000,
   baseURL: this.env ? '正式环境' : 'api'
 })
 const checkOptions = [
@@ -607,14 +609,17 @@ export default {
       // var data = document.getElementById('upload')
       var filedata = new FormData('#myForm')
       filedata.append('filedata', file)
-      curax.post('personal/importExcel', filedata).then(
-        res => {
-          console.log(res)
-        },
-        res => {
-          console.log(res)
-        }
-      )
+      curax.post('personal/importExcel', filedata)
+        .then(res => {
+          if (res.data.code === 0) {
+            // 请求成功
+            this.tools.alertInfo(this, res.data.msg)
+            this.handleFilters()
+            // fun(res.data.data)
+          } else {
+            this.tools.alertError(this, res.data.msg)
+          }
+        })
       return false
     },
     // 数据请求方法

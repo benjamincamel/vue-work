@@ -156,9 +156,11 @@
 </template>
 
 <script>
-import axios from 'axios' // axios请求插件
+// axios请求插件
+import axios from 'axios'
 const curax = axios.create({
-  timeout: 30000, // 超时时间 10s
+  // 超时时间 30s
+  timeout: 30000,
   baseURL: this.env ? '正式环境' : 'api'
 })
 export default {
@@ -206,14 +208,16 @@ export default {
       filedata.append('filedata', file)
       filedata.append('term', this.upload.term)
       curax.post('checkwork/importQtWlwExcel', filedata)
-        .then(
-          res => {
-            console.log(res)
-          },
-          res => {
-            console.log(res)
+        .then(res => {
+          if (res.data.code === 0) {
+            // 请求成功
+            this.tools.alertInfo(this, res.data.msg)
+            this.handleFilters()
+            // fun(res.data.data)
+          } else {
+            this.tools.alertError(this, res.data.msg)
           }
-        )
+        })
       return false
     },
     // 时间格式转换
