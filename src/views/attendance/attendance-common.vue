@@ -32,7 +32,7 @@
           <el-button slot="trigger" size="small">选取文件</el-button>
           <el-date-picker size="small" v-model="upload.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择上传考勤月份">
           </el-date-picker>
-          <el-button style="margin-left: 10px;" size="small" type="primary" @click="submitUpload">导入</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
           <div slot="tip" class="el-upload__tip">只能上传excel文件，必须选择上传考勤月份</div>
         </el-upload>
       </form>

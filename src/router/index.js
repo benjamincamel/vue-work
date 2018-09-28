@@ -94,9 +94,9 @@ export const asyncRouterMap = [
       },
       {
         path: 'resume',
-        name: '简历筛选',
+        name: '邀约面试',
         component: () => import('@/views/hire/resume'),
-        meta: { title: '简历筛选', icon: 'fa fa-filter', roles: ',10,' }
+        meta: { title: '邀约面试', icon: 'fa fa-filter', roles: ',10,' }
       },
       {
         path: 'interview',

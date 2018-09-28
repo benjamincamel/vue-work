@@ -29,7 +29,7 @@
           <el-button type="primary" v-on:click="handleFilters">查询</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleAddDialogVisible">新增</el-button>
+          <el-button type="success" @click="handleAddDialogVisible">新增</el-button>
         </el-form-item>
       </el-form>
     </el-col>

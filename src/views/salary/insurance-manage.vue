@@ -1,5 +1,6 @@
 <template>
   <section class="app-container hx-container">
+    <!-- 面包屑 -->
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
@@ -32,7 +33,7 @@
           <el-button slot="trigger" size="small">选取文件</el-button>
           <el-date-picker size="small" v-model="upload.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择上传社保月份">
           </el-date-picker>
-          <el-button style="margin-left: 10px;" size="small" type="primary" @click="submitUpload">导入</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
           <div slot="tip" class="el-upload__tip">只能上传excel文件，必须选择上传社保月份</div>
         </el-upload>
       </form>
@@ -179,118 +180,118 @@
           <el-input v-model="insurInfo.agencyPay" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="社保单位合计" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.socialSecurity" :precision="2" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.socialSecurity" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="社保个人合计" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.socialSecurityPersonal" :precision="2" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.socialSecurityPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="社保小计" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.socialSecurityTotal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.socialSecurityTotal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="单位缴费合计" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.insurancePay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.insurancePay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="个人缴费合计" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.insurancePayPersonal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.insurancePayPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="总合计" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.insurancePayTotal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.insurancePayTotal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="住房公积金基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.housingBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.housingBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="住房公积金单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.housingRate" @change="handleChangeInsur" :step="0.01" :min="0" :max="1"></el-input-number>
+          <el-input-number v-model="insurInfo.housingRate" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="1"></el-input-number>
         </el-form-item>
         <el-form-item label="住房公积金单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.housingPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.housingPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="住房公积金个人比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.housingRatePersonal" @change="handleChangeInsur" :step="0.01" :min="0" :max="1"></el-input-number>
+          <el-input-number v-model="insurInfo.housingRatePersonal" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="1"></el-input-number>
         </el-form-item>
         <el-form-item label="住房公积金个人" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.housingPayPersonal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.housingPayPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="公积金小计缴费" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.housingPayTotal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.housingPayTotal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="生育基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.birthBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.birthBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="生育单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.birthRate" @change="handleChangeInsur" :step="0.01" :min="0" :max="1"></el-input-number>
+          <el-input-number v-model="insurInfo.birthRate" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="1"></el-input-number>
         </el-form-item>
         <el-form-item label="生育单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.birthPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.birthPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="养老基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.endowmentBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.endowmentBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="养老单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.endowmentRate" @change="handleChangeInsur" :step="0.01" :min="0" :max="1"></el-input-number>
+          <el-input-number v-model="insurInfo.endowmentRate" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="1"></el-input-number>
         </el-form-item>
         <el-form-item label="养老单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.endowmentPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.endowmentPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="养老个人比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.endowmentRatePersonal" @change="handleChangeInsur" :step="0.01" :min="0" :max="1"></el-input-number>
+          <el-input-number v-model="insurInfo.endowmentRatePersonal" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="1"></el-input-number>
         </el-form-item>
         <el-form-item label="养老个人" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.endowmentPayPersonal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.endowmentPayPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="医疗基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.medicalBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.medicalBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="医疗单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.medicalRate" @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.medicalRate" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="医疗单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.medicalPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.medicalPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="医疗个人比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.medicalRatePersonal" @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.medicalRatePersonal" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="医疗个人" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.medicalPayPersonal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.medicalPayPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="大病/残保基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.sickBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.sickBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="大病/残保单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.sickRate" @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.sickRate" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="大病/残保单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.sickPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.sickPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="大病/残保个人比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.sickRatePersonal" @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.sickRatePersonal" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="大病/残保个人" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.sickPayPersonal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.sickPayPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="失业基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.unemploymentBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.unemploymentBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="失业单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.unemploymentRate" @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.unemploymentRate" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="失业单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.unemploymentPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.unemploymentPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="失业个人比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.unemploymentRatePersonal" @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.unemploymentRatePersonal" @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="失业个人" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.unemploymentPayPersonal" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.unemploymentPayPersonal" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="工伤基数" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.workInjuryBase" @change="handleChangeInsur" :step="100" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.workInjuryBase" @change="handleChangeInsur" :precision="3" :step="100" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="工伤单位比例" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.workInjuryRate"  @change="handleChangeInsur" :step="0.01" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="insurInfo.workInjuryRate"  @change="handleChangeInsur" :precision="3" :step="0.01" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="工伤单位" :label-width="formLabelWidth">
-          <el-input-number v-model="insurInfo.workInjuryPay" :precision="2"  :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="insurInfo.workInjuryPay" :precision="3" :step="0.01" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

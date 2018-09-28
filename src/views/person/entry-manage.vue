@@ -1,5 +1,6 @@
 <template>
   <section class="app-container hx-container">
+    <!-- 面包屑 -->
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
@@ -79,12 +80,17 @@
       <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
         <el-upload class="upload-demo" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
           <el-button slot="trigger" size="small">选取文件</el-button>
-          <el-button style="margin-left: 10px;" size="small" type="primary" @click="submitUpload">导入</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
           <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
         </el-upload>
       </form>
-      <el-button size="small" type="primary" style="float: right" @click="handleExport">导出</el-button>
+      <el-button size="small" style="margin-left: 10px;" type="primary" @click="handleExport">导出</el-button>
       <a :href="downloadURL" ref="downloadA2" class="download-a" style="display: none"></a>
+      <el-button type="primary" style="float: right" size="small" @click="handleShowOperation">
+        <span v-if="colOperationShow">隐藏</span>
+        <span v-else>显示</span>
+        <span>操作列</span>
+      </el-button>
     </div>
     <!--列表-->
     <el-table :data="personalAllList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
@@ -116,7 +122,7 @@
       </el-table-column>
       <el-table-column v-for="{ prop, label, width } in colConfigs" :key="prop" :prop="prop" :label="label" :width="width">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="410">
+      <el-table-column v-if="colOperationShow" fixed="right" label="操作" width="420">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row.id)">删除</el-button>
@@ -237,6 +243,7 @@ const checkOptions = [
 export default {
   data() {
     return {
+      colOperationShow: false,
       dialogLeaveVisible: false,
       dialogAssignVisible: false,
       dialogAddSalaryVisible: false,
@@ -559,6 +566,10 @@ export default {
     }
   },
   methods: {
+    // 操作列显示隐藏
+    handleShowOperation() {
+      this.colOperationShow = !this.colOperationShow
+    },
     // 清除验证信息
     clearValidate(formName) {
       if (this.$refs[formName] !== undefined) {
@@ -650,8 +661,7 @@ export default {
       const bdStart = this.filters.birthdayStartDate
       const bdEnd = this.filters.birthdayEndDate
       if (
-        new Date(bdStart === null ? '' : bdStart) >
-        new Date(bdEnd === null ? '' : bdEnd)
+        new Date(bdStart === null ? '' : bdStart) > new Date(bdEnd === null ? '' : bdEnd)
       ) {
         this.tools.alertError(
           this,
@@ -663,8 +673,7 @@ export default {
       const edStart = this.filters.entryStartDate
       const edEnd = this.filters.entryEndDate
       if (
-        new Date(edStart === null ? '' : edStart) >
-        new Date(edEnd === null ? '' : edEnd)
+        new Date(edStart === null ? '' : edStart) > new Date(edEnd === null ? '' : edEnd)
       ) {
         this.tools.alertError(
           this,
