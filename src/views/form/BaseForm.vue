@@ -16,7 +16,6 @@
                         <el-select v-model="form.region" placeholder="请选择">
                             <el-option key="1" label="下拉1" value="1"></el-option>
                             <el-option key="2" label="下拉2" value="2"></el-option>
-                            <el-option key="3" label="下拉3" value="3"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="日期时间">
