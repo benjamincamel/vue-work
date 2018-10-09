@@ -29,10 +29,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mgbq/nx-admin.git"
+    "url": "git+https://github.com/benjamincamel/vue-work.git"
   },
   "bugs": {
-    "url": "https://github.com/mgbq/nx-admin/issues"
+    "url": "https://github.com/benjamincamel/vue-work/issues"
   },
   "dependencies": {
     "axios": "0.17.1",
@@ -42,6 +42,7 @@
     "font-awesome": "^4.7.0",
     "highlight.js": "^9.12.0",
     "js-cookie": "2.2.0",
+    "node-sass": "^4.9.3",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "qs": "^6.5.2",
@@ -60,8 +61,6 @@
     "vuex": "3.0.1"
   },
   "devDependencies": {
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1",
     "autoprefixer": "7.2.3",
     "axios-mock-adapter": "^1.15.0",
     "babel-core": "6.26.0",
@@ -88,11 +87,10 @@
     "file-loader": "1.1.5",
     "friendly-errors-webpack-plugin": "1.6.1",
     "html-webpack-plugin": "2.30.1",
-    "lint-staged": "7.2.0",
     "jquery": "^1.12.4",
+    "lint-staged": "7.2.0",
     "mockjs": "^1.0.1-beta3",
     "node-notifier": "5.1.2",
-    "node-sass": "^4.9.0",
     "optimize-css-assets-webpack-plugin": "3.2.0",
     "ora": "1.3.0",
     "portfinder": "1.0.13",
@@ -103,6 +101,8 @@
     "sass-loader": "^6.0.6",
     "semver": "5.4.1",
     "shelljs": "0.7.8",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1",
     "svg-sprite-loader": "3.5.2",
     "text-loader": "^0.0.1",
     "uglifyjs-webpack-plugin": "1.1.3",
