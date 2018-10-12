@@ -10,17 +10,11 @@
     <!--查询区域-->
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
-        <el-form-item label="员工编号">
-          <el-input v-model="filters.employeeNumber" clearable></el-input>
-        </el-form-item>
         <el-form-item label="姓名">
           <el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
         </el-form-item>
-        <el-form-item label="合同结束时间">
-          <el-date-picker v-model="filters.startDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
-          </el-date-picker>
-          <span class="el-range-separator">至</span>
-          <el-date-picker v-model="filters.endDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
+        <el-form-item label="考勤月份">
+          <el-date-picker v-model="filters.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择考勤月份">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -28,140 +22,200 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <!-- 导入操作区 -->
+    <div class="toolbar clearfix">
+      <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
+        <el-upload class="upload-demo" :modal="upload" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
+          <el-button slot="trigger" size="small">选取文件</el-button>
+          <el-date-picker size="small" v-model="upload.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择上传考勤月份">
+          </el-date-picker>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传excel文件，必须选择上传考勤月份</div>
+        </el-upload>
+      </form>
+    </div>
     <!--列表-->
-    <el-table :data="contractList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table :data="checkBaiduList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
-      <el-table-column prop="contractNumber" label="合同编号" width="150">
+      <el-table-column prop="term" label="考勤月份" width="80">
       </el-table-column>
-      <el-table-column prop="contractCount" label="合同签署次数" width="110">
+      <el-table-column prop="name" label="姓名" width="100">
       </el-table-column>
-      <el-table-column label="合同开始日期" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.startDate)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="attendanceHours" label="应出勤小时数" width="100">
       </el-table-column>
-      <el-table-column label="合同截止日期" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.endDate)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="	checkWorkHours" label="实际出勤小时数" width="100">
       </el-table-column>
-      <el-table-column prop="employeeNumber" label="员工编号" width="150">
+      <el-table-column prop="overstepHours" label="超出小时数" width="100">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120">
+      <el-table-column prop="overstepDays" label="超出小时折算全通给我司结算为天数" width="100">
       </el-table-column>
-      <el-table-column prop="position" label="职位" width="120">
+      <el-table-column prop="overtimeHours" label="加班小时数" width="100">
       </el-table-column>
-      <el-table-column label="创建时间" width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.createTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="oneHours" label="1倍核算天数" width="100">
       </el-table-column>
-      <el-table-column prop="memo" label="备注" min-width="250">
+      <el-table-column prop="onePointFiveHours" label="1.5倍核算天数" width="100">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="170">
+      <el-table-column prop="twoHours" label="2倍核算天数" width="100">
+      </el-table-column>
+      <el-table-column prop="threeHours" label="3倍核算天数" width="100">
+      </el-table-column>
+      <el-table-column prop="overtimeSumHours" label="加班应发工资合计小时数" width="100">
+      </el-table-column>
+      <el-table-column prop="overtimeSettleDays" label="折算全通给我司结算为天数" width="100">
+      </el-table-column>
+      <el-table-column prop="settlementDays" label="全通加班结算天数合计" width="100">
+      </el-table-column>
+      <el-table-column prop="startDate" label="考勤开始时间" width="120" :formatter="dateFormat">
+      </el-table-column>
+      <el-table-column prop="endDate" label="考勤结束时间" width="120" :formatter="dateFormat">
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="120" :formatter="dateFormat">
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="80">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
-          <el-button type="success" size="small" @click="handleAddDialogVisible(scope.row)">续签合同</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--新增/修改合同信息-->
-    <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
-      <el-form :model="contractInfo" ref="contractInfo" :rules="rules">
-        <el-form-item label="合同签署次数" :label-width="formLabelWidth">
-          <el-input-number v-model="contractInfo.contractCount" :min="1" :max="20" disabled></el-input-number>
-        </el-form-item>
-        <el-form-item prop="startDate" label="合同开始日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="contractInfo.startDate" type="date" placeholder="合同开始日期" required>
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item prop="endDate" label="合同截止日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="contractInfo.endDate" type="date" placeholder="合同截止日期" required>
+    <!--修改考勤信息-->
+    <el-dialog title="修改考勤信息" class="addEditDialog" :visible.sync="dialogVisible" :close-on-click-modal="false">
+      <el-form :model="checkBaiduInfo" ref="checkBaiduInfo">
+        <el-form-item label="账期" :label-width="formLabelWidth">
+          <el-date-picker v-model="checkBaiduInfo.term" type="month" format="yyyyMM" value-format="yyyyMM" placeholder="选择账期" :disabled="true">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="姓名" :label-width="formLabelWidth">
-          <el-input v-model="contractInfo.name" auto-complete="off" disabled></el-input>
+          <el-input v-model="checkBaiduInfo.name" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="岗位名称" :label-width="formLabelWidth">
-          <el-input v-model="contractInfo.position" auto-complete="off" disabled></el-input>
+        <el-form-item label="应出勤小时数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.attendanceHours" @change="handleChangeBaiduCheck" :step="1" :min="0" :max="300"></el-input-number>
         </el-form-item>
-        <el-form-item label="备注" prop="memo" :label-width="formLabelWidth">
-          <el-input v-model="contractInfo.memo" type="textarea" auto-complete="off"></el-input>
+        <el-form-item label="实际出勤小时数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.checkWorkHours" @change="handleChangeBaiduCheck" :step="1" :min="0" :max="300"></el-input-number>
+        </el-form-item>
+        <el-form-item label="超出小时数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.overstepHours" :step="1" :min="0" :max="100" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="超出小时折算全通给我司结算为天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.overstepDays" :step="1" :min="0" :max="100" :disabled="true"></el-input-number>
+        </el-form-item>
+        <el-form-item label="加班小时数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.overtimeHours" :step="1" :min="0" :max="100" :disabled="true"></el-input-number>
+        </el-form-item>        
+        <el-form-item label="1倍核算天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.oneHours" :step="1" :min="0" :max="100"></el-input-number>
+        </el-form-item>        
+        <el-form-item label="1.5倍核算天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.onePointFiveHours" :step="1" :min="0" :max="100"></el-input-number>
+        </el-form-item>        
+        <el-form-item label="2倍核算天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.twoHours" :step="1" :min="0" :max="100"></el-input-number>
+        </el-form-item>        
+        <el-form-item label="3倍核算天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.threeHours" :step="1" :min="0" :max="100"></el-input-number>
+        </el-form-item>        
+        <el-form-item label="加班应发工资合计小时数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.overtimeSumHours" :step="1" :min="0" :max="100" :disabled="true"></el-input-number>
+        </el-form-item> 
+        <el-form-item label="折算全通给我司结算为天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.overtimeSettleDays" :step="1" :min="0" :max="100" :disabled="true"></el-input-number>
+        </el-form-item> 
+        <el-form-item label="全通加班结算天数合计" :label-width="formLabelWidth">
+          <el-input-number v-model="checkBaiduInfo.settlementDays" :step="1" :min="0" :max="100" :disabled="true"></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button v-if="dialogStatus==='add'" type="primary" @click="handleAdd">新 增</el-button>
-        <el-button v-else type="primary" @click="handleEdit">修 改</el-button>
+        <el-button type="primary" @click="handleEdit">修 改</el-button>
       </div>
     </el-dialog>
   </section>
 </template>
 
 <script>
+// axios请求插件
+import axios from 'axios'
+const curax = axios.create({
+  // 超时时间 30s
+  timeout: 30000,
+  baseURL: this.env ? '正式环境' : 'api'
+})
 export default {
   data() {
     return {
-      dialogVisible: false,
-      dialogStatus: '',
-      passStatus: '',
-      textMap: {
-        edit: '修改合同信息',
-        add: '续签合同'
+      dialogVisible: true,
+      formLabelWidth: '240px',
+      upload: {
+        term: ''
       },
-      formLabelWidth: '120px',
       filters: {
         // 查询页页码
         pageIndex: 0,
         // 查询条数
         pageSize: 8
       },
-      contractInfo: {
-        contractNumber: '',
-        contractCount: '',
-        createTime: '',
-        employeeNumber: '',
-        endDate: '',
-        id: '',
-        isDel: '',
-        memo: '',
-        name: '',
-        personalInfoId: '',
-        position: '',
-        serialVersionUID: '',
-        startDate: '',
-        updateTime: ''
-      },
-      rules: {
-        startDate: [
-          {
-            type: 'date',
-            required: true,
-            message: '请选择日期',
-            trigger: 'change'
-          }
-        ],
-        endDate: [
-          {
-            type: 'date',
-            required: true,
-            message: '请选择日期',
-            trigger: 'change'
-          }
-        ]
-      },
+      checkBaiduInfo: {},
       // 数据总共数量 多少条
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
-      contractList: null
+      checkBaiduList: null
     }
   },
   methods: {
+    // 工资组成变更与工资联动
+    handleChangeBaiduCheck(value) {
+      // 计算超出小时数
+      this.checkBaiduInfo.overstepHours = this.checkBaiduInfo.checkWorkHours - this.checkBaiduInfo.attendanceHours
+      // 计算超出小时折算全通给我司结算为天数
+      this.checkBaiduInfo.overstepDays = this.checkBaiduInfo.overstepHours * 1.5 / this.checkBaiduInfo.attendanceHours * 22
+    },
+    // 导入
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleURemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleChange(file, fileList) {
+      console.log(file)
+      console.log(fileList)
+    },
+    beforeUpload: function(file) {
+      console.log(file)
+      // 这里是重点，将文件转化为formdata数据上传
+      // var data = document.getElementById('upload')
+      const filedata = new FormData('#myForm')
+      filedata.append('filedata', file)
+      filedata.append('term', this.upload.term)
+      curax.post('checkwork/importBaiduExcel', filedata)
+        .then(res => {
+          if (res.data.code === 0) {
+            // 请求成功
+            this.tools.alertInfo(this, res.data.msg)
+            this.handleFilters()
+            // fun(res.data.data)
+          } else {
+            this.tools.alertError(this, res.data.msg)
+          }
+        })
+      return false
+    },
+    // 时间格式转换
+    dateFormat(row, column) {
+      const date = row[column.property]
+      if (date === undefined) {
+        return ''
+      }
+      return this.tools.dateFormat(new Date(date)).slice(0, 10)
+    },
     // 数据请求方法
     getData(funName, param, fun) {
       this.showLoading = true
@@ -186,78 +240,29 @@ export default {
     // 查询按钮事件
     handleFilters() {
       this.filters.pageIndex = 0
-      this.getData('contract/getList', this.filters, data => {
+      this.getData('checkwork/getBaiduList', this.filters, data => {
         console.log(data)
         this.count = data.count
-        this.contractList = data.contractViewList
+        this.checkBaiduList = data.checkWorkBaiduLists
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
-    // 显示新增合同信息
-    handleAddDialogVisible(row) {
-      this.dialogStatus = 'add'
-      this.dialogVisible = true
-      this.$refs.contractInfo.clearValidate()
-      this.contractInfo = {
-        contractNumber: '',
-        contractCount: row.contractCount + 1,
-        id: '',
-        createTime: '',
-        employeeNumber: row.employeeNumber,
-        endDate: '',
-        personalInfoId: row.personalInfoId,
-        isDel: '',
-        memo: '',
-        name: row.name,
-        position: row.position,
-        serialVersionUID: '',
-        startDate: ''
-      }
-      console.log(this.contractInfo)
-    },
-    // 新增合同信息
-    handleAdd() {
-      this.$refs.contractInfo.validate(valid => {
-        if (valid) {
-          this.$confirm('确认新增合同信息?', '提示', {
-            closeOnClickModal: false
-          })
-            .then(() => {
-              this.getData(
-                'contract/addContractInfo',
-                { contractInfoJsonStr: JSON.stringify(this.contractInfo) },
-                data => {
-                  this.tools.alertInfo(this, '新增成功！')
-                  this.dialogVisible = false
-                  this.handleFilters()
-                }
-              )
-            })
-            .catch()
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    // 显示修改合同信息
+    // 显示修改考勤信息
     handleEditDialogVisible(row) {
-      this.dialogStatus = 'edit'
       this.dialogVisible = true
-      this.contractInfo = Object.assign({}, row)
-      this.$refs.contractInfo.clearValidate()
+      this.checkBaiduInfo = Object.assign({}, row)
     },
-    // 修改合同信息
+    // 修改考勤信息
     handleEdit(row) {
-      this.$refs.contractInfo.validate(valid => {
+      this.$refs.checkBaiduInfo.validate(valid => {
         if (valid) {
-          this.$confirm('确认修改合同信息?', '提示', {
+          this.$confirm('确认修改考勤信息?', '提示', {
             closeOnClickModal: false
           })
             .then(() => {
               this.getData(
-                'contract/updateContractInfo',
-                { contractInfoJsonStr: JSON.stringify(this.contractInfo) },
+                'checkwork/updateCheckWorkBaidu',
+                { detailInfoJsonStr: JSON.stringify(this.checkBaiduInfo) },
                 data => {
                   this.tools.alertInfo(this, '修改成功！')
                   this.dialogVisible = false
@@ -275,9 +280,9 @@ export default {
     // 分页change方法
     currentChange(value) {
       this.filters.pageIndex = value - 1
-      this.getData('contract/getList', this.filters, data => {
+      this.getData('checkwork/getBaiduList', this.filters, data => {
         this.count = data.count
-        this.contractList = data.contractViewList
+        this.checkBaiduList = data.checkWorkBaiduLists
         console.log(data)
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
@@ -291,9 +296,9 @@ export default {
       this.filters.pageIndex = 0
     }
     // 页面展示后 第一次请求人员列表
-    this.getData('contract/getList', this.filters, data => {
+    this.getData('checkwork/getBaiduList', this.filters, data => {
       this.count = data.count
-      this.contractList = data.contractViewList
+      this.checkBaiduList = data.checkWorkBaiduLists
       console.log(data)
     })
   },
