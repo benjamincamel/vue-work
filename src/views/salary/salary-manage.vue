@@ -167,28 +167,28 @@
           <el-input-number v-model="salaryInfo.accumulationFund" @change="handleChangeSalary" :step="10" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="个人社保及公积金扣款合计" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.insuranceDeduction" :precision="2" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.insuranceDeduction" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="报税工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.taxPay" :precision="2" :step="0.1" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.taxPay" :step="0.1" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="应纳税所得额" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.shouldTaxAmount" :precision="2" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.shouldTaxAmount" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="税率" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.tax" :precision="2" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.tax" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="速算扣除数" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.deductNumber" :precision="2" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.deductNumber" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="代扣代缴所得税" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.incomeTax" :precision="2" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.incomeTax" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="实发工资" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.realPay" :precision="2" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.realPay" :step="0.1" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="招行代发" :label-width="formLabelWidth">
-          <el-input-number v-model="salaryInfo.bankPay" :precision="2" :min="0" :max="20000" :disabled="true"></el-input-number>
+          <el-input-number v-model="salaryInfo.bankPay" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <!-- <el-form-item label="现金" :label-width="formLabelWidth">
           <el-input-number v-model="salaryInfo.cash" @change="handleChangeCash" :step="100" :min="0" :max="20000"></el-input-number>
@@ -263,6 +263,10 @@ export default {
     }
   },
   methods: {
+    // 小数点余两位
+    roundFun(value, n) {
+      return Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
+    },
     // 清除验证信息
     clearValidate(formName) {
       if (this.$refs[formName] !== undefined) {
@@ -277,10 +281,16 @@ export default {
     handleChangeSalary(value) {
       // 计算应发工资
       this.salaryInfo.shouldPay = this.salaryInfo.probationaryPay + this.salaryInfo.basePay + this.salaryInfo.meritPay + this.salaryInfo.otherPay + this.salaryInfo.trafficSubsidy + this.salaryInfo.computerSubsidy + this.salaryInfo.mealSubsidy + this.salaryInfo.phoneSubsidy - this.salaryInfo.attendanceDeduction - this.salaryInfo.otherDeduction
+      this.salaryInfo.shouldPay = this.roundFun(this.salaryInfo.shouldPay, 2)
+      console.log(this.salaryInfo.shouldPay)
       // 计算个人社保及公积金扣款合计
       this.salaryInfo.insuranceDeduction = this.salaryInfo.endowment + this.salaryInfo.medical + this.salaryInfo.unemployment + this.salaryInfo.accumulationFund
+      this.salaryInfo.insuranceDeduction = this.roundFun(this.salaryInfo.insuranceDeduction, 2)
+      console.log(this.salaryInfo.insuranceDeduction)
       // 计算报税工资
       this.salaryInfo.taxPay = this.salaryInfo.shouldPay - this.salaryInfo.insuranceDeduction
+      this.salaryInfo.taxPay = this.roundFun(this.salaryInfo.taxPay, 2)
+      console.log(this.salaryInfo.taxPay)
       // 计算应纳税所得额
       this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 3500
       // 计算税率
@@ -291,34 +301,13 @@ export default {
       console.log(this.salaryInfo.deductNumber)
       // 计算代扣代缴所得税
       this.salaryInfo.incomeTax = this.salaryInfo.shouldTaxAmount * this.salaryInfo.tax - this.salaryInfo.deductNumber
+      this.salaryInfo.incomeTax = this.roundFun(this.salaryInfo.incomeTax, 2)
       console.log(this.salaryInfo.incomeTax)
       // 计算实发工资
       this.salaryInfo.realPay = this.salaryInfo.taxPay - this.salaryInfo.incomeTax
-      console.log(this.salaryInfo.realPay)
       // 返回银行代发
       this.salaryInfo.bankPay = this.salaryInfo.realPay
     },
-    // 个人缴费变更与工资联动
-    // handleChangeSalary(value) {
-    //   // 计算报税工资
-    //   this.salaryInfo.taxPay = this.salaryInfo.shouldPay - this.salaryInfo.insuranceDeduction
-    //   // 计算应纳税所得额
-    //   this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 3500
-    //   // 计算税率
-    //   this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount <= 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount > 1500 && this.salaryInfo.shouldTaxAmount <= 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount > 4500 && this.salaryInfo.shouldTaxAmount <= 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount > 9000 ? 0.25 : 0
-    //   console.log(this.salaryInfo.tax)
-    //   // 根据税率返回速算扣除数
-    //   this.salaryInfo.deductNumber = this.salaryInfo.tax === 0.03 ? 0 : this.salaryInfo.tax === 0.1 ? 105 : this.salaryInfo.tax === 0.2 ? 555 : this.salaryInfo.tax === 0.25 ? 1005 : 0
-    //   console.log(this.salaryInfo.deductNumber)
-    //   // 计算代扣代缴所得税
-    //   this.salaryInfo.incomeTax = this.salaryInfo.shouldTaxAmount * this.salaryInfo.tax - this.salaryInfo.deductNumber
-    //   console.log(this.salaryInfo.incomeTax)
-    //   // 计算实发工资
-    //   this.salaryInfo.realPay = this.salaryInfo.taxPay - this.salaryInfo.incomeTax
-    //   console.log(this.salaryInfo.realPay)
-    //   // 返回银行代发
-    //   this.salaryInfo.bankPay = this.salaryInfo.realPay
-    // },
     // 时间格式转换
     dateFormat: function(row, column) {
       var date = row[column.property]

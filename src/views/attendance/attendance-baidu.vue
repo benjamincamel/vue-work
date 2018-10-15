@@ -167,12 +167,17 @@ export default {
     }
   },
   methods: {
-    // 工资组成变更与工资联动
+    // 小数点余两位
+    roundFun(value, n) {
+      return Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
+    },
+    // 百度考勤联动
     handleChangeBaiduCheck(value) {
       // 计算超出小时数
       this.checkBaiduInfo.overstepHours = this.checkBaiduInfo.checkWorkHours - this.checkBaiduInfo.attendanceHours
       // 计算超出小时折算全通给我司结算为天数
       this.checkBaiduInfo.overstepDays = this.checkBaiduInfo.overstepHours * 1.5 / this.checkBaiduInfo.attendanceHours * 22
+      this.checkBaiduInfo.overstepDays = this.roundFun(this.checkBaiduInfo.overstepDays, 2)
     },
     // 导入
     submitUpload() {
