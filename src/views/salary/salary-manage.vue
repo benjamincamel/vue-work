@@ -282,27 +282,21 @@ export default {
       // 计算应发工资
       this.salaryInfo.shouldPay = this.salaryInfo.probationaryPay + this.salaryInfo.basePay + this.salaryInfo.meritPay + this.salaryInfo.otherPay + this.salaryInfo.trafficSubsidy + this.salaryInfo.computerSubsidy + this.salaryInfo.mealSubsidy + this.salaryInfo.phoneSubsidy - this.salaryInfo.attendanceDeduction - this.salaryInfo.otherDeduction
       this.salaryInfo.shouldPay = this.roundFun(this.salaryInfo.shouldPay, 2)
-      console.log(this.salaryInfo.shouldPay)
       // 计算个人社保及公积金扣款合计
       this.salaryInfo.insuranceDeduction = this.salaryInfo.endowment + this.salaryInfo.medical + this.salaryInfo.unemployment + this.salaryInfo.accumulationFund
       this.salaryInfo.insuranceDeduction = this.roundFun(this.salaryInfo.insuranceDeduction, 2)
-      console.log(this.salaryInfo.insuranceDeduction)
       // 计算报税工资
       this.salaryInfo.taxPay = this.salaryInfo.shouldPay - this.salaryInfo.insuranceDeduction
       this.salaryInfo.taxPay = this.roundFun(this.salaryInfo.taxPay, 2)
-      console.log(this.salaryInfo.taxPay)
       // 计算应纳税所得额
       this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 3500
       // 计算税率
       this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount <= 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount > 1500 && this.salaryInfo.shouldTaxAmount <= 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount > 4500 && this.salaryInfo.shouldTaxAmount <= 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount > 9000 ? 0.25 : 0
-      console.log(this.salaryInfo.tax)
       // 根据税率返回速算扣除数
       this.salaryInfo.deductNumber = this.salaryInfo.tax === 0.03 ? 0 : this.salaryInfo.tax === 0.1 ? 105 : this.salaryInfo.tax === 0.2 ? 555 : this.salaryInfo.tax === 0.25 ? 1005 : 0
-      console.log(this.salaryInfo.deductNumber)
       // 计算代扣代缴所得税
       this.salaryInfo.incomeTax = this.salaryInfo.shouldTaxAmount * this.salaryInfo.tax - this.salaryInfo.deductNumber
       this.salaryInfo.incomeTax = this.roundFun(this.salaryInfo.incomeTax, 2)
-      console.log(this.salaryInfo.incomeTax)
       // 计算实发工资
       this.salaryInfo.realPay = this.salaryInfo.taxPay - this.salaryInfo.incomeTax
       // 返回银行代发
