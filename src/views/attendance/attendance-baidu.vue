@@ -43,9 +43,9 @@
       </el-table-column>
       <el-table-column prop="name" label="姓名" width="100">
       </el-table-column>
-      <el-table-column prop="attendanceHours" label="应出勤小时数" width="120">
-      </el-table-column>
       <el-table-column prop="attendanceDays" label="应出勤天数" width="120">
+      </el-table-column>
+      <el-table-column prop="attendanceHours" label="应出勤小时数" width="120">
       </el-table-column>
       <el-table-column prop="checkWorkHours" label="实际出勤小时数" width="120">
       </el-table-column>
@@ -97,17 +97,17 @@
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="120" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="180">
+      <el-table-column fixed="right" label="操作" width="220">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
-          <el-button type="success" size="small" @click="handleBaiduDetails(scope.row)">查看详细</el-button>
+          <el-button type="success" size="small" @click="handleBaiduDetails(scope.row)">查看当月出勤详情</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--修改考勤信息-->
+    <!--修改百度考勤信息-->
     <el-dialog title="修改百度考勤信息" class="addEditDialog" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="checkBaiduInfo" ref="checkBaiduInfo">
         <el-form-item label="账期" :label-width="formLabelWidth">
@@ -186,6 +186,28 @@
         <el-button type="primary" @click="handleEdit">修 改</el-button>
       </div>
     </el-dialog>
+    <!--查看百度当月考勤信息-->
+    <el-dialog title="查看百度当月考勤信息" class="addEditDialog" :visible.sync="dialogDetailVisible" :close-on-click-modal="false">
+      <el-header>
+        <i class="fa fa-user-o"></i>
+        <span>姓名: {{ detailName }} </span>
+        <i class="fa fa-calendar-check-o" style="margin-left: 10px"></i>
+        <span>账期: {{ detailTerm }}</span>
+      </el-header>
+      <el-table :data="baiduDetails" border stripe highlight-current-row ref="table" style="width: 100%;" :default-sort="{prop: 'currentDay', order: 'ascending'}">
+        <el-table-column prop="currentDay" label="考勤日" sortable>
+        </el-table-column>
+        <el-table-column prop="type" label="白班/晚班" :formatter="typeFormat">
+        </el-table-column>
+        <el-table-column prop="workType" label="工作类型" :formatter="workTypeFormat">
+        </el-table-column>
+        <el-table-column prop="workHours" label="工作小时数">
+        </el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogDetailVisible = false">关 闭</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -201,7 +223,10 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      dialogDetailVisible: false,
       formLabelWidth: '240px',
+      detailName: '',
+      detailTerm: '',
       upload: {
         term: '',
         attendanceDays: ''
@@ -217,7 +242,8 @@ export default {
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
-      checkBaiduList: null
+      checkBaiduList: null,
+      baiduDetails: null
     }
   },
   methods: {
@@ -335,12 +361,6 @@ export default {
         this.tools.setLocal(this.$route.name, 'filters', this.filters)
       })
     },
-    // 查询百度考勤详情
-    handleBaiduDetails(row) {
-      this.getData('checkwork/getCheckWorkBaiduById', row.id, data => {
-
-      })
-    },
     // 显示修改考勤信息
     handleEditDialogVisible(row) {
       this.dialogVisible = true
@@ -370,6 +390,46 @@ export default {
           return false
         }
       })
+    },
+    // 根据ID查看百度月度出勤详情
+    handleBaiduDetails(row) {
+      this.getData(
+        'checkwork/getCheckWorkBaiduById',
+        { baiduId: row.id },
+        data => {
+          console.log(data)
+          this.baiduDetails = data.baiduDetails
+          this.detailName = data.name
+          this.detailTerm = data.term
+          this.dialogDetailVisible = true
+        }
+      )
+    },
+    // 白班/晚班数据翻译
+    typeFormat(row, column) {
+      if (row.type === 0) {
+        return '白班'
+      } else if (row.type === 1) {
+        return '晚班'
+      }
+    },
+    // 工作类型数据翻译
+    workTypeFormat(row, column) {
+      if (row.workType === 0) {
+        return '正常班'
+      } else if (row.workType === 1) {
+        return '普通加班'
+      } else if (row.workType === 2) {
+        return '周末加班'
+      } else if (row.workType === 3) {
+        return '节假日加班'
+      } else if (row.workType === 4) {
+        return '年假算正常班'
+      } else if (row.workType === 5) {
+        return '病假算正常班'
+      } else if (row.workType === 6) {
+        return '病假不算上班'
+      }
     },
     // 分页change方法
     currentChange(value) {
@@ -404,6 +464,13 @@ export default {
 </script>
 
 <style>
+.hx-container .el-header {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: left;
+    line-height: 60px;
+    font-size: 18px;
+  }
 .hx-container .el-table {
   border: 1px solid rgb(235, 238, 245);
   border-bottom-width: 0;
