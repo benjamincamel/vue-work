@@ -16,6 +16,12 @@
         <el-form-item label="姓名">
           <el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
         </el-form-item>
+        <el-form-item label="合同状态">
+          <el-select v-model="filters.status" clearable size="medium" placeholder="请选择合同状态">
+            <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="合同结束时间">
           <el-date-picker v-model="filters.startDate" type="date" value-format="yyyy-MM-dd 00:00:00" placeholder="选择日期">
           </el-date-picker>
@@ -33,7 +39,7 @@
     <el-table :data="contractList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
-      <el-table-column prop="contractNumber" label="合同编号" width="150">
+      <el-table-column prop="contractNumber" label="合同编号" width="120">
       </el-table-column>
       <el-table-column prop="contractCount" label="合同签署次数" width="110">
       </el-table-column>
@@ -47,16 +53,18 @@
           {{tools.dateFormat(new Date(scope.row.endDate)).slice(0, 10)}}
         </template>
       </el-table-column>
-      <el-table-column prop="employeeNumber" label="员工编号" width="150">
+      <el-table-column prop="employeeNumber" label="员工编号" width="120">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120">
+      <el-table-column prop="name" label="姓名" width="100">
       </el-table-column>
       <el-table-column prop="position" label="职位" width="120">
       </el-table-column>
-      <el-table-column label="创建时间" width="160">
+      <el-table-column label="创建时间" width="120">
         <template slot-scope="scope">
           {{tools.dateFormat(new Date(scope.row.createTime)).slice(0, 10)}}
         </template>
+      </el-table-column>
+      <el-table-column prop="status" label="合同状态" min-width="100" :formatter="statusFormat">
       </el-table-column>
       <el-table-column prop="memo" label="备注" min-width="250">
       </el-table-column>
@@ -116,6 +124,7 @@ export default {
       },
       formLabelWidth: '120px',
       filters: {
+        status: 1,
         // 查询页页码
         pageIndex: 0,
         // 查询条数
@@ -137,6 +146,20 @@ export default {
         startDate: '',
         updateTime: ''
       },
+      statusOptions: [
+        {
+          value: 0,
+          label: '历史合同'
+        },
+        {
+          value: 1,
+          label: '最新合同'
+        },
+        {
+          value: 2,
+          label: '全部'
+        }
+      ],
       rules: {
         startDate: [
           {
@@ -163,6 +186,14 @@ export default {
     }
   },
   methods: {
+    // 状态数据翻译
+    statusFormat(row, column) {
+      if (row.status === 0) {
+        return this.statusOptions[0].label
+      } else if (row.status === 1) {
+        return this.statusOptions[1].label
+      }
+    },
     // 清除验证信息
     clearValidate(formName) {
       if (this.$refs[formName] !== undefined) {

@@ -34,7 +34,7 @@
       </el-form>
     </el-col>
     <!--列表-->
-    <el-table :data="recruitList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table :data="recruitList" :row-class-name="tableRowClassName" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="position" label="岗位名称" width="150">
@@ -58,20 +58,23 @@
       </el-table-column>
       <el-table-column prop="city" label="城市" width="120">
       </el-table-column>
+      <el-table-column prop="urgentStatus" label="紧急状态" min-width="120" :formatter="urgentStatusFormat">
+      </el-table-column>
       <el-table-column prop="status" label="状态" min-width="120" :formatter="statusFormat">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="240">
+      <el-table-column fixed="right" label="操作" width="270">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
-          <el-button type="danger" v-if="scope.row.status===1" size="small" @click="handleStatus(scope.row)">更改状态</el-button>
+          <el-button v-if="scope.row.status === 0" type="warning" size="small" @click="handleStatus(scope.row)">更改为进行中</el-button>
+          <el-button v-else type="success" size="small" @click="handleStatus(scope.row)">更改为已完成</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!--分页-->
     <el-pagination @current-change="currentChange" :page-size="filters.pageSize" background layout="total, prev, pager, next, jumper" :current-page="filters.pageIndex + 1" :total="count">
     </el-pagination>
-    <!--新增招聘需求-->
+    <!--新增/修改招聘需求-->
     <el-dialog class="addEditDialog" :title="textMap[dialogStatus]" :visible.sync="dialogVisible" :close-on-click-modal="false">
       <el-form :model="recruitInfo" ref="recruitInfo" :rules="recruitInfoRules">
         <el-form-item prop="position" label="岗位名称" :label-width="formLabelWidth">
@@ -103,9 +106,15 @@
         <el-form-item prop="city" label="城市" :label-width="formLabelWidth">
           <el-input v-model="recruitInfo.city" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
-          <el-select v-model="recruitInfo.status" placeholder="请选择状态" disabled>
-            <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+        <el-form-item prop="urgentStatus" label="紧急状态" :label-width="formLabelWidth">
+          <el-select v-model="recruitInfo.urgentStatus" clearable placeholder="请选择紧急状态">
+            <el-option v-for="item in urgentStatusOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="status" label="状态" :label-width="formLabelWidth">
+          <el-select v-model="recruitInfo.status" clearable placeholder="请选择状态">
+            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -176,6 +185,12 @@ export default {
         ],
         city: [
           { required: true, message: '请输入城市', trigger: 'blur' }
+        ],
+        urgentStatus: [
+          { required: true, message: '请选择紧急状态', trigger: 'change' }
+        ],
+        status: [
+          { required: true, message: '请选择状态', trigger: 'change' }
         ]
       },
       isDelOptions: [
@@ -190,12 +205,22 @@ export default {
       ],
       statusOptions: [
         {
-          value: '0',
+          value: 0,
           label: '已完成'
         },
         {
-          value: '1',
+          value: 1,
           label: '进行中'
+        }
+      ],
+      urgentStatusOptions: [
+        {
+          value: 0,
+          label: '普通'
+        },
+        {
+          value: 1,
+          label: '紧急'
         }
       ],
       expatriateUnitOptions: [
@@ -424,7 +449,7 @@ export default {
       this.dialogVisible = true
       this.clearValidate('recruitInfo')
       this.recruitInfo = Object.assign({}, row)
-      this.recruitInfo.status = this.statusFormat(row)
+      // this.recruitInfo.status = this.statusFormat(row)
     },
     // 编辑招聘信息
     handleEdit(row) {
@@ -495,6 +520,19 @@ export default {
         return this.statusOptions[1].label
       }
     },
+    urgentStatusFormat(row, column) {
+      if (row.urgentStatus === 0) {
+        return this.urgentStatusOptions[0].label
+      } else if (row.urgentStatus === 1) {
+        return this.urgentStatusOptions[1].label
+      }
+    },
+    // 招聘紧急状态
+    tableRowClassName({ row, rowIndex }) {
+      if (row.urgentStatus === 1) {
+        return 'warning-row'
+      }
+    },
     // 分页change方法
     currentChange(value) {
       this.filters.pageIndex = value - 1
@@ -549,5 +587,9 @@ export default {
 .hx-container .addEditDialog .el-dialog__body {
   height: 60vh;
   overflow: auto;
+}
+.hx-container .el-table .warning-row td {
+  background: oldlace !important;
+  color: #F56C6C;
 }
 </style>

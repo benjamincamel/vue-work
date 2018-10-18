@@ -97,12 +97,13 @@
       </el-table-column>
       <el-table-column prop="status" label="状态" min-width="120" :formatter="statusFormat">
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="360">
+      <el-table-column fixed="right" label="操作" width="260">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEditDialogVisible(scope.row)">查看/编辑</el-button>
           <el-button type="success" size="small" v-if="scope.row.status === 1" @click="handleEntry(scope.row)">入职</el-button>
           <el-button type="danger" size="small" v-if="scope.row.status === 1" @click="handleNotEntry(scope.row)">未入职</el-button>
-          <el-button type="success" size="small" v-if="scope.row.status === 2" @click="handleReEntry(scope.row)">再次入职</el-button>
+          <el-button type="warning" size="small" v-if="scope.row.status === 0" @click="handleUpdateInterviewRecovery(scope.row)">更改为待入职</el-button>
+          <!-- <el-button type="success" size="small" v-if="scope.row.status === 2" @click="handleReEntry(scope.row)">再次入职</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -442,6 +443,23 @@ export default {
         .then(() => {
           this.getData(
             'resume/updateInterviewNotEntry',
+            { resumeInterviewId: row.id },
+            data => {
+              this.tools.alertInfo(this, '更改成功！')
+              this.handleFilters()
+            }
+          )
+        })
+        .catch()
+    },
+    // 变更为待入职
+    handleUpdateInterviewRecovery(row) {
+      this.$confirm('确认变更为待入职?', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'resume/updateInterviewRecovery',
             { resumeInterviewId: row.id },
             data => {
               this.tools.alertInfo(this, '更改成功！')

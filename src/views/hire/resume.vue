@@ -4,20 +4,30 @@
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
           <i class="el-icon-date"></i> 招聘管理</el-breadcrumb-item>
-        <el-breadcrumb-item>简历筛选</el-breadcrumb-item>
+        <el-breadcrumb-item>邀约面试</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <!--查询区域-->
     <el-col :span="24" class="toolbar clearfix" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters" @submit.native.prevent>
-        <el-form-item label="年龄">
-          <el-input-number v-model="filters.age"></el-input-number>
-        </el-form-item>
         <el-form-item label="岗位名称">
           <el-input v-model="filters.position" placeholder="岗位名称" clearable></el-input>
         </el-form-item>
+        <el-form-item label="入职状态">
+          <el-select v-model="filters.status" clearable size="medium" placeholder="请选择">
+            <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="年龄">
+          <el-input-number v-model="filters.startAge" clearable :min="20" :max="65" label="起始年龄"></el-input-number>
+          <span class="el-range-separator">至</span>
+          <el-input-number v-model="filters.endAge" clearable :min="20" :max="65" label="截止年龄"></el-input-number>
+        </el-form-item>
         <el-form-item label="工作年限">
-          <el-input-number v-model="filters.experience" :min="0" :max="50"></el-input-number>
+          <el-input-number v-model="filters.startExperience" :min="1" :max="50" label="起始工作年限"></el-input-number>
+          <span class="el-range-separator">至</span>
+          <el-input-number v-model="filters.endExperience" :min="1" :max="50" label="截止工作年限"></el-input-number>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-on:click="handleFilters">查询</el-button>
@@ -77,6 +87,7 @@
           <el-button type="danger" size="small" @click="handleRemove(scope.row)">删除</el-button>
           <el-button type="success" size="small" v-if="scope.row.status===1" @click="handlePass(scope.row)">通过</el-button>
           <el-button type="danger" size="small" v-if="scope.row.status===1" @click="handleNotPass(scope.row)">未通过</el-button>
+          <el-button type="success" size="small" v-if="scope.row.status===0" @click="handleUpdateResumeRecovery(scope.row)">恢复为进行中</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -107,7 +118,7 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="birthday" label="出生日期" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.birthday" type="date" placeholder="出生日期" value-format="yyyy-MM-dd 00:00:00">
+          <el-date-picker v-model="resumeInfo.birthday" type="date" placeholder="出生日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item prop="phone" label="联系电话" :label-width="formLabelWidth">
@@ -417,6 +428,24 @@ export default {
         .then(() => {
           this.getData(
             'resume/updateResumeNotPass',
+            { resumeInfoId: row.id },
+            data => {
+              console.log(row.id)
+              this.tools.alertInfo(this, '更改成功！')
+              this.handleFilters()
+            }
+          )
+        })
+        .catch()
+    },
+    // 更改恢复进行中状态
+    handleUpdateResumeRecovery(row) {
+      this.$confirm('确认恢复为进行中?', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.getData(
+            'resume/updateResumeRecovery',
             { resumeInfoId: row.id },
             data => {
               console.log(row.id)
