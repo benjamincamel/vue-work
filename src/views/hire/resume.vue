@@ -37,49 +37,51 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <!-- 导入操作区 -->
+    <div class="toolbar clearfix">
+      <form id="myForm" enctype="multipart/form-data" method="post" style="float: left">
+        <el-upload class="upload-demo" :modal="upload" ref="upload" action="url" :on-preview="handlePreview" :on-remove="handleURemove" :on-change="handleChange" :before-upload="beforeUpload" :auto-upload="false">
+          <el-button slot="trigger" size="small">选取文件</el-button>
+          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">导入</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+        </el-upload>
+      </form>
+    </div>
     <!--列表-->
     <el-table :data="resumeList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="position" label="岗位名称" width="150">
       </el-table-column>
-      <el-table-column label="面试时间" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.interviewTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="inviteTime" label="邀约时间" width="120" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column label="邀约时间" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.inviteTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="interviewTime" label="面试时间" width="150">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120">
+      <el-table-column prop="name" label="姓名" width="100">
       </el-table-column>
       <el-table-column prop="sex" label="性别" width="50">
       </el-table-column>
-      <el-table-column label="出生日期" width="120">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.birthday)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="birthday" label="出生日期" width="120" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="phone" label="联系电话" width="120">
       </el-table-column>
       <el-table-column prop="email" label="邮箱" width="220">
       </el-table-column>
-      <el-table-column prop="experience" label="工作年限" width="120">
+      <el-table-column prop="experience" label="工作年限" width="80">
       </el-table-column>
-      <el-table-column prop="education" label="学历" width="120">
+      <el-table-column prop="graduationTime" label="毕业时间" width="120" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column prop="school" label="毕业院校" width="120">
+      <el-table-column prop="education" label="学历" width="80">
       </el-table-column>
-      <el-table-column prop="major" label="专业" width="120">
+      <el-table-column prop="school" label="毕业院校" width="160">
       </el-table-column>
-      <el-table-column label="创建时间" width="160">
-        <template slot-scope="scope">
-          {{tools.dateFormat(new Date(scope.row.createTime)).slice(0, 10)}}
-        </template>
+      <el-table-column prop="major" label="专业" width="160">
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="120" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="status" label="状态" min-width="120" :formatter="statusFormat">
+      </el-table-column>
+      <el-table-column prop="memo" label="备注" min-width="250">
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="300">
         <template slot-scope="scope">
@@ -100,13 +102,12 @@
         <el-form-item prop="position" label="岗位名称" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.position" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item prop="interviewTime" label="面试时间" :label-width="formLabelWidth">
-          <el-date-picker v-model="resumeInfo.interviewTime" type="date" placeholder="面试时间" value-format="yyyy-MM-dd 00:00:00">
-          </el-date-picker>
-        </el-form-item>
         <el-form-item prop="inviteTime" label="邀约时间" :label-width="formLabelWidth">
           <el-date-picker v-model="resumeInfo.inviteTime" type="date" placeholder="邀约时间" value-format="yyyy-MM-dd 00:00:00">
           </el-date-picker>
+        </el-form-item>
+        <el-form-item prop="interviewTime" label="面试时间" :label-width="formLabelWidth">
+          <el-input v-model="resumeInfo.interviewTime" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item prop="name" label="姓名" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.name" auto-complete="off"></el-input>
@@ -130,6 +131,10 @@
         <el-form-item prop="experience" label="工作年限" :label-width="formLabelWidth">
           <el-input-number v-model="resumeInfo.experience" :min="0" :max="70"></el-input-number>
         </el-form-item>
+        <el-form-item prop="graduationTime" label="毕业时间" :label-width="formLabelWidth">
+          <el-date-picker v-model="resumeInfo.graduationTime" type="date" placeholder="毕业时间">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item prop="education" label="学历" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.education" auto-complete="off"></el-input>
         </el-form-item>
@@ -139,11 +144,14 @@
         <el-form-item prop="major" label="专业" :label-width="formLabelWidth">
           <el-input v-model="resumeInfo.major" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="入职状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
+        <el-form-item label="状态" v-if="dialogStatus==='edit'" :label-width="formLabelWidth">
           <el-select v-model="resumeInfo.status" clearable size="medium" placeholder="请选择" disabled>
             <el-option v-for="item in statusOptions" clearable :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item prop="memo" label="备注" :label-width="formLabelWidth">
+          <el-input v-model="resumeInfo.memo" type="textarea" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -156,6 +164,13 @@
 </template>
 
 <script>
+// axios请求插件
+import axios from 'axios'
+const curax = axios.create({
+  // 超时时间 30s
+  timeout: 30000,
+  baseURL: this.env ? '正式环境' : 'api'
+})
 export default {
   data() {
     return {
@@ -167,6 +182,7 @@ export default {
         add: '新增简历'
       },
       formLabelWidth: '120px',
+      upload: {},
       filters: {
         age: '',
         position: '',
@@ -176,23 +192,7 @@ export default {
         // 查询条数
         pageSize: 8
       },
-      resumeInfo: {
-        id: '',
-        birthday: '',
-        createTime: '',
-        education: '',
-        email: '',
-        experience: '',
-        interviewTime: '',
-        inviteTime: '',
-        major: '',
-        name: '',
-        phone: '',
-        position: '',
-        school: '',
-        sex: '',
-        status: ''
-      },
+      resumeInfo: {},
       // 校验规则
       resumeInfoRules: {
         position: [
@@ -235,6 +235,9 @@ export default {
         experience: [
           { required: true, message: '请输入工作年限', trigger: 'change' }
         ],
+        graduationTime: [
+          { required: true, message: '请输入毕业时间', trigger: 'blur' }
+        ],
         education: [
           { required: true, message: '请输入学历', trigger: 'blur' }
         ],
@@ -243,6 +246,9 @@ export default {
         ],
         major: [
           { required: true, message: '请输入专业', trigger: 'blur' }
+        ],
+        memo: [
+          { required: true, message: '请输入备注', trigger: 'blur' }
         ]
       },
       isDelOptions: [
@@ -277,6 +283,47 @@ export default {
     }
   },
   methods: {
+    // 导入
+    submitUpload() {
+      this.$refs.upload.submit()
+    },
+    handleURemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleChange(file, fileList) {
+      console.log(file)
+      console.log(fileList)
+    },
+    beforeUpload: function(file) {
+      console.log(file)
+      // 这里是重点，将文件转化为formdata数据上传
+      // var data = document.getElementById('upload')
+      const filedata = new FormData('#myForm')
+      filedata.append('filedata', file)
+      curax.post('resume/importResumeExcel', filedata)
+        .then(res => {
+          if (res.data.code === 0) {
+            // 请求成功
+            this.tools.alertInfo(this, res.data.msg)
+            this.handleFilters()
+            // fun(res.data.data)
+          } else {
+            this.tools.alertError(this, res.data.msg)
+          }
+        })
+      return false
+    },
+    // 时间格式转换
+    dateFormat: function(row, column) {
+      var date = row[column.property]
+      if (date === undefined) {
+        return ''
+      }
+      return this.tools.dateFormat(new Date(date)).slice(0, 10)
+    },
     // 清除验证信息
     clearValidate(formName) {
       if (this.$refs[formName] !== undefined) {
@@ -488,6 +535,7 @@ export default {
       this.filters.pageIndex = value - 1
       this.getData('resume/getResumeList', this.filters, data => {
         this.count = data.count
+        console.log(data)
         this.resumeList = data.resumeViewList
       })
       this.$refs.table.bodyWrapper.scrollTop = 0
