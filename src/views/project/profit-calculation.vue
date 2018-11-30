@@ -25,6 +25,22 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <!-- 导出操作区 -->
+    <div class="toolbar clearfix">
+      <el-form :inline="true" :model="exportFilters" @submit.native.prevent>
+        <el-form-item label="姓名">
+          <el-input size="small" v-model="exportFilters.name" placeholder="姓名" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="账期">
+          <el-date-picker size="small" v-model="exportFilters.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择导出账期" clearable>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" style="margin-left: 10px;" type="primary" @click="handleExport">导出</el-button>
+          <a :href="downloadURL" ref="downloadA2" class="download-a" style="display: none"></a>
+        </el-form-item>
+      </el-form>
+    </div>
     <!--列表-->
     <el-table :data="profitList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
@@ -121,6 +137,7 @@ export default {
     return {
       dialogAddVisible: false,
       formLabelWidth: '120px',
+      exportFilters: {},
       filters: {
         // 查询页页码
         pageIndex: 0,
@@ -155,10 +172,37 @@ export default {
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
-      profitList: null
+      profitList: null,
+      downloadURL: ''
     }
   },
   methods: {
+    // 导出excel
+    handleExport() {
+      this.$confirm('确认导出利润表格？', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.ax
+            .post(
+              'salary/exportProfitDetailList',
+              this.exportFilters,
+              { responseType: 'blob' }
+            )
+            .then(response => {
+              this.downloadURL = window.URL.createObjectURL(response.data)
+              console.log(this.downloadURL)
+              this.$refs.downloadA2.href = this.downloadURL
+              this.$refs.downloadA2.click()
+              this.tools.alertInfo(this, '导出成功！')
+            })
+            .catch(Error => {
+              this.showLoading = false
+              this.tools.alertError(this, '请求错误！')
+            })
+        })
+        .catch()
+    },
     // 清除验证信息
     clearValidate(formName) {
       if (this.$refs[formName] !== undefined) {
