@@ -422,13 +422,15 @@ export default {
       } else if (row.workType === 2) {
         return '周末加班'
       } else if (row.workType === 3) {
-        return '节假日加班'
+        return '节假日正常班'
       } else if (row.workType === 4) {
-        return '年假算正常班'
+        return '节假日加班'
       } else if (row.workType === 5) {
-        return '病假算正常班'
+        return '年假'
       } else if (row.workType === 6) {
-        return '病假不算上班'
+        return '病假'
+      } else if (row.workType === 7) {
+        return '事假'
       }
     },
     // 分页change方法
