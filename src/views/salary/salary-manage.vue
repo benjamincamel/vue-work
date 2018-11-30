@@ -18,7 +18,7 @@
           <el-input v-model="filters.expatriateUnit" clearable></el-input>
         </el-form-item>
         <el-form-item label="账期">
-          <el-date-picker v-model="filters.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择账期">
+          <el-date-picker v-model="filters.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择查询账期" clearable>
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -29,6 +29,25 @@
         </el-form-item>
       </el-form>
     </el-col>
+    <!-- 导出操作区 -->
+    <div class="toolbar clearfix">
+      <el-form :inline="true" :model="exportFilters" @submit.native.prevent>
+        <el-form-item label="姓名">
+          <el-input size="small" v-model="exportFilters.name" placeholder="姓名" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="外派单位">
+          <el-input size="small" v-model="exportFilters.expatriateUnit" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="账期">
+          <el-date-picker size="small" v-model="exportFilters.term" type="month" format="yyyy-MM" value-format="yyyyMM" placeholder="选择导出账期" clearable>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" style="margin-left: 10px;" type="primary" @click="handleExport">导出</el-button>
+          <a :href="downloadURL" ref="downloadA2" class="download-a" style="display: none"></a>
+        </el-form-item>
+      </el-form>
+    </div>
     <!--列表-->
     <el-table :data="salaryList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
@@ -223,6 +242,7 @@ export default {
       dialogAddVisible: false,
       dialogStatus: '',
       formLabelWidth: '180px',
+      exportFilters: {},
       filters: {
         // 查询页页码
         pageIndex: 0,
@@ -259,10 +279,37 @@ export default {
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
-      salaryList: null
+      salaryList: null,
+      downloadURL: ''
     }
   },
   methods: {
+    // 导出excel
+    handleExport() {
+      this.$confirm('确认导出工资表格？', '提示', {
+        closeOnClickModal: false
+      })
+        .then(() => {
+          this.ax
+            .post(
+              'salary/exportSalaryDetailList',
+              this.exportFilters,
+              { responseType: 'blob' }
+            )
+            .then(response => {
+              this.downloadURL = window.URL.createObjectURL(response.data)
+              console.log(this.downloadURL)
+              this.$refs.downloadA2.href = this.downloadURL
+              this.$refs.downloadA2.click()
+              this.tools.alertInfo(this, '导出成功！')
+            })
+            .catch(Error => {
+              this.showLoading = false
+              this.tools.alertError(this, '请求错误！')
+            })
+        })
+        .catch()
+    },
     // 小数点余两位
     roundFun(value, n) {
       return Math.round(value * Math.pow(10, n)) / Math.pow(10, n)
@@ -289,16 +336,18 @@ export default {
       this.salaryInfo.taxPay = this.salaryInfo.shouldPay - this.salaryInfo.insuranceDeduction
       this.salaryInfo.taxPay = this.roundFun(this.salaryInfo.taxPay, 2)
       // 计算应纳税所得额
-      this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 3500
+      this.salaryInfo.shouldTaxAmount = this.salaryInfo.taxPay - 5000
+      this.salaryInfo.shouldTaxAmount = this.roundFun(this.salaryInfo.shouldTaxAmount, 2)
       // 计算税率
-      this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount <= 1500 ? 0.03 : this.salaryInfo.shouldTaxAmount > 1500 && this.salaryInfo.shouldTaxAmount <= 4500 ? 0.1 : this.salaryInfo.shouldTaxAmount > 4500 && this.salaryInfo.shouldTaxAmount <= 9000 ? 0.2 : this.salaryInfo.shouldTaxAmount > 9000 ? 0.25 : 0
+      this.salaryInfo.tax = this.salaryInfo.shouldTaxAmount > 0 && this.salaryInfo.shouldTaxAmount <= 3000 ? 0.03 : this.salaryInfo.shouldTaxAmount > 3000 && this.salaryInfo.shouldTaxAmount <= 12000 ? 0.1 : this.salaryInfo.shouldTaxAmount > 12000 && this.salaryInfo.shouldTaxAmount <= 25000 ? 0.2 : this.salaryInfo.shouldTaxAmount > 25000 ? 0.25 : 0
       // 根据税率返回速算扣除数
-      this.salaryInfo.deductNumber = this.salaryInfo.tax === 0.03 ? 0 : this.salaryInfo.tax === 0.1 ? 105 : this.salaryInfo.tax === 0.2 ? 555 : this.salaryInfo.tax === 0.25 ? 1005 : 0
+      this.salaryInfo.deductNumber = this.salaryInfo.tax === 0.03 ? 0 : this.salaryInfo.tax === 0.1 ? 210 : this.salaryInfo.tax === 0.2 ? 1410 : this.salaryInfo.tax === 0.25 ? 2660 : 0
       // 计算代扣代缴所得税
       this.salaryInfo.incomeTax = this.salaryInfo.shouldTaxAmount * this.salaryInfo.tax - this.salaryInfo.deductNumber
       this.salaryInfo.incomeTax = this.roundFun(this.salaryInfo.incomeTax, 2)
       // 计算实发工资
       this.salaryInfo.realPay = this.salaryInfo.taxPay - this.salaryInfo.incomeTax
+      this.salaryInfo.realPay = this.roundFun(this.salaryInfo.realPay, 2)
       // 返回银行代发
       this.salaryInfo.bankPay = this.salaryInfo.realPay
     },
