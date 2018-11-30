@@ -180,7 +180,7 @@ export const asyncRouterMap = [
         path: 'attendance-common',
         name: '全通物联网考勤',
         component: () => import('@/views/attendance/attendance-common'),
-        meta: { title: '全通物联网考勤', icon: 'fa fa-id-badge', roles: ',14,' }
+        meta: { title: '全通物联网考勤', icon: 'fa fa-calendar-check-o', roles: ',14,' }
       },
       {
         path: 'attendance-manage',
@@ -192,7 +192,13 @@ export const asyncRouterMap = [
         path: 'attendance-baidu',
         name: '百度考勤',
         component: () => import('@/views/attendance/attendance-baidu'),
-        meta: { title: '百度考勤', icon: 'fa fa-id-badge', roles: ',17,' }
+        meta: { title: '百度考勤', icon: 'fa fa-calendar-plus-o', roles: ',17,' }
+      },
+      {
+        path: 'attendance-holiday',
+        name: '节假日管理',
+        component: () => import('@/views/attendance/attendance-holiday'),
+        meta: { title: '节假日管理', icon: 'fa fa-calendar-o', roles: ',17,' }
       }
     ]
   },
