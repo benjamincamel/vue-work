@@ -1,5 +1,5 @@
 <template>
-  <section class="app-container hx-container">
+  <section v-loading="showLoading" class="app-container hx-container">
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
@@ -36,7 +36,7 @@
       </form>
     </div>
     <!--列表-->
-    <el-table :data="checkBaiduList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table v-loading="listLoading" :data="checkBaiduList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="term" label="考勤月份" width="80">
@@ -216,7 +216,7 @@
 import axios from 'axios'
 const curax = axios.create({
   // 超时时间 30s
-  timeout: 30000,
+  timeout: 600000,
   baseURL: this.env ? '正式环境' : 'api'
 })
 export default {
@@ -242,6 +242,7 @@ export default {
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
+      listLoading: true,
       checkBaiduList: null,
       baiduDetails: null
     }
@@ -303,6 +304,7 @@ export default {
     },
     beforeUpload: function(file) {
       console.log(file)
+      this.showLoading = true
       // 这里是重点，将文件转化为formdata数据上传
       // var data = document.getElementById('upload')
       const filedata = new FormData('#myForm')
@@ -316,8 +318,10 @@ export default {
             this.tools.alertInfo(this, res.data.msg)
             this.handleFilters()
             // fun(res.data.data)
+            this.showLoading = false
           } else {
             this.tools.alertError(this, res.data.msg)
+            this.showLoading = false
           }
         })
       return false
@@ -332,12 +336,12 @@ export default {
     },
     // 数据请求方法
     getData(funName, param, fun) {
-      this.showLoading = true
+      this.listLoading = true
       this.ax
         .post(funName, param)
         .then(response => {
           // console.log(response)
-          this.showLoading = false
+          this.listLoading = false
           if (response.data.code === 0) {
             // 请求成功
             this.tools.alertInfo(this, response.data.msg)
@@ -347,7 +351,7 @@ export default {
           }
         })
         .catch(Error => {
-          this.showLoading = false
+          this.listLoading = false
           this.tools.alertError(this, '请求错误！')
         })
     },
@@ -451,6 +455,7 @@ export default {
       this.filters = this.tools.getLocal(this.$route.name, 'filters')
       this.filters.pageIndex = 0
     }
+    this.showLoading = false
     // 页面展示后 第一次请求人员列表
     this.getData('checkwork/getBaiduList', this.filters, data => {
       this.count = data.count

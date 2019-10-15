@@ -34,7 +34,7 @@
       </el-form>
     </el-col>
     <!--列表-->
-    <el-table :data="recruitList" :row-class-name="tableRowClassName" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table v-loading="listLoading" :data="recruitList" :row-class-name="tableRowClassName" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="position" label="岗位名称" width="150">
@@ -355,7 +355,7 @@ export default {
       // 数据总共数量 多少条
       count: 0,
       // 是否展示table的loading状态
-      showLoading: true,
+      listLoading: true,
       recruitList: null
     }
   },
@@ -368,12 +368,12 @@ export default {
     },
     // 数据请求方法
     getData(funName, param, fun) {
-      this.showLoading = true
+      this.listLoading = true
       this.ax
         .post(funName, param)
         .then(response => {
           // console.log(response)
-          this.showLoading = false
+          this.listLoading = false
           if (response.data.code === 0) {
             // 请求成功
             this.tools.alertInfo(this, response.data.msg)
@@ -383,7 +383,7 @@ export default {
           }
         })
         .catch(Error => {
-          this.showLoading = false
+          this.listLoading = false
           this.tools.alertError(this, '请求错误！')
         })
     },
@@ -415,7 +415,7 @@ export default {
         postDuty: '',
         serialVersionUID: '',
         workPlace: '',
-        status: '1'
+        status: 1
       }
     },
     // 新增招聘需求

@@ -1,5 +1,5 @@
 <template>
-  <section class="app-container hx-container">
+  <section v-loading="showLoading" class="app-container hx-container">
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
@@ -42,7 +42,7 @@
       </el-form>
     </div>
     <!--列表-->
-    <el-table :data="profitList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table v-loading="listLoading" :data="profitList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="term" label="账期" width="120">
@@ -172,6 +172,7 @@ export default {
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
+      listLoading: true,
       profitList: null,
       downloadURL: ''
     }
@@ -183,6 +184,7 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
+          this.showLoading = true
           this.ax
             .post(
               'salary/exportProfitDetailList',
@@ -194,6 +196,7 @@ export default {
               console.log(this.downloadURL)
               this.$refs.downloadA2.href = this.downloadURL
               this.$refs.downloadA2.click()
+              this.showLoading = false
               this.tools.alertInfo(this, '导出成功！')
             })
             .catch(Error => {
@@ -219,12 +222,12 @@ export default {
     },
     // 数据请求方法
     getData(funName, param, fun) {
-      this.showLoading = true
+      this.listLoading = true
       this.ax
         .post(funName, param)
         .then(response => {
           // console.log(response)
-          this.showLoading = false
+          this.listLoading = false
           if (response.data.code === 0) {
             // 请求成功
             this.tools.alertInfo(this, response.data.msg)
@@ -234,7 +237,7 @@ export default {
           }
         })
         .catch(Error => {
-          this.showLoading = false
+          this.listLoading = false
           this.tools.alertError(this, '请求错误！')
         })
     },
@@ -296,6 +299,7 @@ export default {
       this.filters = this.tools.getLocal(this.$route.name, 'filters')
       this.filters.pageIndex = 0
     }
+    this.showLoading = false
     // 页面展示后 第一次请求人员列表
     this.getData('salary/getProfitDetailList', this.filters, data => {
       this.count = data.count

@@ -69,7 +69,7 @@ const ax = axios.create({
     return data
   }],
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  timeout: 30000, // 超时时间 10s
+  timeout: 600000, // 超时时间 10m
   baseURL: env ? '正式环境' : 'api'
 })
 Vue.prototype.ax = ax // 注册axios_instance到Vue实例原型中 名为ax

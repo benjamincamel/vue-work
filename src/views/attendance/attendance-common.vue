@@ -1,5 +1,5 @@
 <template>
-  <section class="app-container hx-container">
+  <section v-loading="showLoading" class="app-container hx-container">
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
@@ -38,7 +38,7 @@
       </form>
     </div>
     <!--列表-->
-    <el-table :data="checkList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
+    <el-table v-loading="listLoading" :data="checkList" stripe highlight-current-row ref="table" height="570" style="width: 100%;">
       <el-table-column type="selection" width="55">
       </el-table-column>
       <el-table-column prop="term" label="考勤月份" width="80">
@@ -51,9 +51,9 @@
       </el-table-column>
       <el-table-column prop="entryTime" label="入职时间" width="120" :formatter="dateFormat">
       </el-table-column>
-      <el-table-column prop="attendanceDays" label="出勤天数" width="100">
-      </el-table-column>
       <el-table-column prop="checkWorkDays" label="考勤天数" width="100">
+      </el-table-column>
+      <el-table-column prop="attendanceDays" label="出勤天数" width="100">
       </el-table-column>
       <el-table-column prop="overtimeDays" label="加班天数" width="100">
       </el-table-column>
@@ -63,21 +63,21 @@
       </el-table-column>
       <el-table-column prop="settlementDays" label="当月考勤扣款天数" width="160">
       </el-table-column>
-      <el-table-column prop="surplusAnnualLeave" label="剩余年休天数" width="120">
+      <el-table-column prop="curOffDutyShiftDays" label="本月调休天数" width="160">
       </el-table-column>
-      <el-table-column prop="surplusOvertimeHours" label="剩余加班小时数" width="120">
+      <el-table-column prop="curCompassionateDays" label="本月事假天数" width="120">
       </el-table-column>
-      <el-table-column prop="annualLeaveDays" label="可休年假天数" width="120">
+      <el-table-column prop="curAnnualDays" label="本月年假天数" width="120">
       </el-table-column>
-      <el-table-column prop="compassionateLeaveDays" label="累计长期事假天数" width="160">
-      </el-table-column>
-      <el-table-column prop="sickLeaveDays" label="累计长期病假天数" width="160">
+      <el-table-column prop="curMaritalDays" label="婚假" width="160">
       </el-table-column>
       <el-table-column prop="startDate" label="考勤开始时间" width="120" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="endDate" label="考勤结束时间" width="120" :formatter="dateFormat">
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="120" :formatter="dateFormat">
+      </el-table-column>
+      <el-table-column prop="surplusOvertimeDays" label="上一年剩余加班天数" width="160">
       </el-table-column>
       <el-table-column prop="memo" label="备注" min-width="160">
       </el-table-column>
@@ -111,37 +111,34 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="考勤天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.checkWorkDays" :step=".5" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="checkInfo.checkWorkDays" @change="handleChangeCheck" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="出勤天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.attendanceDays" :step=".5" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="checkInfo.attendanceDays" :step=".5" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="加班天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.overtimeDays" :step=".5" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="checkInfo.overtimeDays" @change="handleChangeCheck" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="请假天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.leaveDays" :step=".5" :min="0" :max="20000"></el-input-number>
+          <el-input-number v-model="checkInfo.leaveDays" @change="handleChangeCheck" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="当月考勤扣款天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.settlementDays" :step=".5" :min="0" :max="20000"></el-input-number>
+        <el-form-item label="本月考勤扣款天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkInfo.settlementDays" :step=".5" :min="0" :max="20000" :disabled="true"></el-input-number>
         </el-form-item>
         <el-form-item label="负责人" :label-width="formLabelWidth">
           <el-input v-model="checkInfo.manager" auto-complete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="剩余年休天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.surplusAnnualLeave" :step=".5" :min="0" :max="20000"></el-input-number>
+        <el-form-item label="本月调休天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkInfo.curOffDutyShiftDays" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="剩余加班小时数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.surplusOvertimeHours" :step=".5" :min="0" :max="20000"></el-input-number>
+        <el-form-item label="本月事假天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkInfo.curCompassionateDays" @change="handleChangeCheck" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="可休年假天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.annualLeaveDays" :step=".5" :min="0" :max="20000"></el-input-number>
+        <el-form-item label="本月年假天数" :label-width="formLabelWidth">
+          <el-input-number v-model="checkInfo.curAnnualDays" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
-        <el-form-item label="累计长期事假天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.compassionateLeaveDays" :step=".5" :min="0" :max="20000"></el-input-number>
-        </el-form-item>
-        <el-form-item label="累计长期病假天数" :label-width="formLabelWidth">
-          <el-input-number v-model="checkInfo.sickLeaveDays" :step=".5" :min="0" :max="20000"></el-input-number>
+        <el-form-item label="婚假" :label-width="formLabelWidth">
+          <el-input-number v-model="checkInfo.curMaritalDays" :step=".5" :min="0" :max="20000"></el-input-number>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input v-model="checkInfo.memo" type="textarea" auto-complete="off"></el-input>
@@ -160,7 +157,7 @@
 import axios from 'axios'
 const curax = axios.create({
   // 超时时间 30s
-  timeout: 30000,
+  timeout: 600000,
   baseURL: this.env ? '正式环境' : 'api'
 })
 export default {
@@ -182,6 +179,7 @@ export default {
       count: 0,
       // 是否展示table的loading状态
       showLoading: true,
+      listLoading: true,
       checkList: null
     }
   },
@@ -202,6 +200,7 @@ export default {
     },
     beforeUpload: function(file) {
       console.log(file)
+      this.showLoading = true
       // 这里是重点，将文件转化为formdata数据上传
       // var data = document.getElementById('upload')
       const filedata = new FormData('#myForm')
@@ -214,8 +213,10 @@ export default {
             this.tools.alertInfo(this, res.data.msg)
             this.handleFilters()
             // fun(res.data.data)
+            this.showLoading = false
           } else {
             this.tools.alertError(this, res.data.msg)
+            this.showLoading = false
           }
         })
       return false
@@ -228,14 +229,20 @@ export default {
       }
       return this.tools.dateFormat(new Date(date)).slice(0, 10)
     },
+    handleChangeCheck(value) {
+      // 计算考勤扣款天数
+      this.checkInfo.settlementDays = this.checkInfo.curCompassionateDays
+      // 计算出勤天数
+      this.checkInfo.attendanceDays = this.checkInfo.checkWorkDays + this.checkInfo.overtimeDays - this.checkInfo.leaveDays
+    },
     // 数据请求方法
     getData(funName, param, fun) {
-      this.showLoading = true
+      this.listLoading = true
       this.ax
         .post(funName, param)
         .then(response => {
           // console.log(response)
-          this.showLoading = false
+          this.listLoading = false
           if (response.data.code === 0) {
             // 请求成功
             this.tools.alertInfo(this, response.data.msg)
@@ -245,7 +252,7 @@ export default {
           }
         })
         .catch(Error => {
-          this.showLoading = false
+          this.listLoading = false
           this.tools.alertError(this, '请求错误！')
         })
     },
@@ -308,6 +315,7 @@ export default {
       this.filters = this.tools.getLocal(this.$route.name, 'filters')
       this.filters.pageIndex = 0
     }
+    this.showLoading = false
     // 页面展示后 第一次请求人员列表
     this.getData('checkwork/getQtWlwList', this.filters, data => {
       this.count = data.count
